@@ -13,7 +13,9 @@ import actions from './action'
 export function* getLectureListSaga(payload) {
   try {
     const { page } = payload
-    const result = yield call(getLectureList, page)
+    const { date } = payload
+    const { createdDateSort } = payload
+    const result = yield call(getLectureList, page, date, createdDateSort)
     const { data } = result
     const { lecture } = data
 

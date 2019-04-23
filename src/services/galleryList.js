@@ -1,10 +1,26 @@
 import axios from 'axios'
 import serverAddress from './config'
 
-export async function getTopicList() {
-  const url = `${serverAddress}/api/topic/`
+export async function getMainGallery() {
+  const url = `${serverAddress}/api/gallerylist/`
   return axios
     .get(url)
+    .then(response => {
+      console.log('response =====>>>>>>>', response)
+      if (response && response.data) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export async function createMainGallery(body) {
+  const url = `${serverAddress}/api/gallerylist/create/`
+  return axios
+    .post(url, body)
     .then(response => {
       if (response && response.data) {
         return response
@@ -16,40 +32,10 @@ export async function getTopicList() {
     })
 }
 
-export async function getQuoteTopicList() {
-  const url = `${serverAddress}/api/quotetopiclist/`
+export async function removeMainGallery(uuid) {
+  const url = `${serverAddress}/api/gallerylist/${uuid}/remove`
   return axios
-    .get(url)
-    .then(response => {
-      if (response && response.data) {
-        return response
-      }
-      return false
-    })
-    .catch(error => {
-      return error
-    })
-}
-
-export async function getEventList() {
-  const url = `${serverAddress}/api/event/`
-  return axios
-    .get(url)
-    .then(response => {
-      if (response && response.data) {
-        return response
-      }
-      return false
-    })
-    .catch(error => {
-      return error
-    })
-}
-
-export async function getLocationList() {
-  const url = `${serverAddress}/api/location/`
-  return axios
-    .get(url)
+    .post(url)
     .then(response => {
       if (response && response.data) {
         return response

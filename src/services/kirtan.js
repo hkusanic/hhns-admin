@@ -1,17 +1,9 @@
 import axios from 'axios'
 import serverAddress from './config'
-/* eslint-disable */
 
-export async function getLectureList(page, date, createdDateSort) {
+export async function getKirtanList(page) {
   const pageNumber = page || 1
-  const dateNow = date || null
-  const createdDateSorting = createdDateSort || null
-  const url =
-    serverAddress +
-    '/api/lecture?page=' +
-    pageNumber +
-    (dateNow ? '&date=' + date : '') +
-    (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '')
+  const url = `${serverAddress}/api/kirtan?page=${pageNumber}`
   return axios
     .get(url)
     .then(response => {
@@ -25,8 +17,8 @@ export async function getLectureList(page, date, createdDateSort) {
     })
 }
 
-export async function createLecture(body) {
-  const url = `${serverAddress}/api/lecture/create/`
+export async function createKirtan(body) {
+  const url = `${serverAddress}/api/kirtan/create`
   return axios
     .post(url, body)
     .then(response => {
@@ -40,8 +32,8 @@ export async function createLecture(body) {
     })
 }
 
-export async function deleteLectureByUuid(uuid) {
-  const url = `${serverAddress}/api/lecture/${uuid}/remove`
+export async function deleteKirtanByUuid(uuid) {
+  const url = `${serverAddress}/api/kirtan/${uuid}/remove`
   return axios
     .post(url)
     .then(response => {
@@ -55,9 +47,9 @@ export async function deleteLectureByUuid(uuid) {
     })
 }
 
-export async function updateLecture(uuid, body) {
+export async function updateKirtan(uuid, body) {
   console.log('value in api ====>>>', body, uuid)
-  const url = `${serverAddress}/api/lecture/${uuid}/update`
+  const url = `${serverAddress}/api/kirtan/${uuid}/update`
   return axios
     .post(url, body)
     .then(response => {
@@ -73,7 +65,7 @@ export async function updateLecture(uuid, body) {
 
 export async function getLectureByUuid(request) {
   const body = request.payload
-  const url = `${serverAddress}/api/lecture/getlecturebyid/`
+  const url = `${serverAddress}/api/kirtan/getkirtanbyid/`
   return axios
     .post(url, body)
     .then(response => {

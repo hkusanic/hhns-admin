@@ -115,6 +115,9 @@ class BlogList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              rowClassName={record =>
+                record.needs_translation === true ? 'NotTranslated' : 'translated'
+              }
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

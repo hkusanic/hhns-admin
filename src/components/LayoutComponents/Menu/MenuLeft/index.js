@@ -240,7 +240,7 @@ class MenuLeft extends React.Component {
           >
             {menu}
           </Menu>
-          <div className={styles.buyPro}>
+          {/* <div className={styles.buyPro}>
             <p>
               <strong>More components, more styles, more themes, and premium support!</strong>
             </p>
@@ -252,7 +252,7 @@ class MenuLeft extends React.Component {
             >
               Buy Pro 24$
             </a>
-          </div>
+          </div> */}
         </Scrollbars>
       </Sider>
     )

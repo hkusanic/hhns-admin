@@ -71,3 +71,18 @@
     margin-bottom: 0;
   }
 }
+
+.translated {
+  background-color: #fff !important;
+  // color: #fff !important;
+}
+
+.NotTranslated {
+  background-color: #df9595fc !important;
+  color: #fff !important;
+}
+
+.closeIcon {
+  color: red !important;
+  cursor: pointer;
+}

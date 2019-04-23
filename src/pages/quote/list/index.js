@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable */
 import React from 'react'
 import { Table, DatePicker, Select } from 'antd'
 import { Helmet } from 'react-helmet'
@@ -9,23 +10,23 @@ import { Link } from 'react-router-dom'
 
 const { Option } = Select
 
-@connect(({ lecture }) => ({ lecture }))
-class ProductsList extends React.Component {
+@connect(({ quote }) => ({ quote }))
+class QuotesList extends React.Component {
   state = {}
 
   componentDidMount() {
     const { dispatch } = this.props
     dispatch({
-      type: 'lecture/GET_LECTURES',
+      type: 'quote/GET_QUOTES',
       page: 1,
     })
   }
 
   componentWillReceiveProps(nextProps) {
     const { dispatch } = this.props
-    if (nextProps.lecture.isDeleted) {
+    if (nextProps.quote.isDeleted) {
       dispatch({
-        type: 'lecture/GET_LECTURES',
+        type: 'quote/QUOTES',
         page: 1,
       })
     }
@@ -45,24 +46,28 @@ class ProductsList extends React.Component {
     const { dispatch } = this.props
 
     dispatch({
-      type: 'lecture/GET_LECTURES',
+      type: 'quote/GET_QUOTES',
       page,
     })
   }
 
-  deleteLecture = uuid => {
+  deleteQuote = uuid => {
     const { dispatch } = this.props
     console.log('uuid====????', uuid)
     dispatch({
-      type: 'lecture/DELETE_LECTURE',
+      type: 'quote/DELETE_QUOTE_BY_ID',
       uuid,
+    })
+    dispatch({
+      type: 'quote/GET_QUOTES',
+      page: 1,
     })
   }
 
   onChangeDate = date => {
     const { dispatch } = this.props
     dispatch({
-      type: 'lecture/GET_LECTURES',
+      type: 'quote/GET_QUOTES',
       page: 1,
       date: date ? date.format('YYYY-MM-DD') : null,
     })
@@ -71,65 +76,53 @@ class ProductsList extends React.Component {
   onChangeDateSort = order => {
     const { dispatch } = this.props
     dispatch({
-      type: 'lecture/GET_LECTURES',
+      type: 'quote/GET_QUOTES',
       page: 1,
       createdDateSort: order,
     })
   }
 
   render() {
-    const { lecture } = this.props
-    const { lectures, totalLectures } = lecture
-    const data = lectures
+    const { quote } = this.props
+    const { quotes, totalQuotes } = quote
+    const data = quotes
     const columns = [
       {
         title: 'Title',
         dataIndex:
           window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
         key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
-        render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
+        render: title =>
+          title ? renderHTML(this.showing100Characters(title)) : 'Translation missing',
       },
       {
-        title: 'Need Translation',
-        dataIndex: 'translation_required',
-        key: 'translation_required',
-        render: type => <span>{`${type}`}</span>,
-      },
-      {
-        title: 'Need Translation',
+        title: 'Topic',
         dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
-      },
-      {
-        title: 'Event',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
+          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.topic' : 'en.topic',
+        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.topic' : 'en.topic',
+        render: topic =>
+          topic ? renderHTML(this.showing100Characters(topic)) : 'Translation missing',
       },
       {
         title: 'Author',
-        dataIndex: 'author',
-        key: 'author',
-      },
-      {
-        title: 'Date',
-        dataIndex: 'created_date',
-        key: 'created_date',
-        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
+        dataIndex:
+          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.author' : 'en.author',
+        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.author' : 'en.author',
+        render: author =>
+          author ? renderHTML(this.showing100Characters(author)) : 'Translation missing',
       },
       {
         title: 'Action',
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/lecture/create', state: record.uuid }}>
+            <Link to={{ pathname: '/quote/create', state: record.uuid }}>
               <i className="fa fa-edit mr-2" />
             </Link>
             <i
               className="fa fa-trash mr-2"
               onClick={() => {
-                this.deleteLecture(record.uuid)
+                this.deleteQuote(record.uuid)
               }}
             />
           </span>
@@ -143,24 +136,8 @@ class ProductsList extends React.Component {
         <div className="card">
           <div className="card-header">
             <div className="utils__title">
-              <strong>Lecture List</strong>
+              <strong>Quote List</strong>
             </div>
-            <DatePicker onChange={this.onChangeDate} />
-            <Select
-              id="product-edit-colors"
-              showSearch
-              style={{ width: '20%' }}
-              onChange={this.onChangeDateSort}
-              placeholder="Select Order"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Option value="asc">Ascending</Option>
-              <Option value="desc">Descending</Option>
-            </Select>
-            ,
           </div>
           <div className="card-body">
             <Table
@@ -175,7 +152,7 @@ class ProductsList extends React.Component {
               pagination={{
                 pageSize: 20,
                 onChange: this.handlePageChnage,
-                total: totalLectures,
+                total: totalQuotes,
               }}
             />
           </div>
@@ -185,4 +162,4 @@ class ProductsList extends React.Component {
   }
 }
 
-export default ProductsList
+export default QuotesList

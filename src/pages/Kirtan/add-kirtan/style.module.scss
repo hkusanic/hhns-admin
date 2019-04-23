@@ -18,10 +18,28 @@
   }
 }
 
-.bg {
-  background-color: red;
+.filesList {
+  margin-left: -30px !important;
+  color: green;
+  list-style: none;
 }
 
-.mg {
-  background-color: black;
+.closeIcon {
+  color: red !important;
+  padding-left: 15px !important;
+}
+
+.editor {
+  padding: 1rem;
+  border-radius: 5px;
+  border: 1px solid $gray-border;
+}
+
+.addPost {
+  max-width: rem(1000);
+  margin: 0 auto;
+
+  :global(.ant-form-item) {
+    margin-bottom: 0;
+  }
 }

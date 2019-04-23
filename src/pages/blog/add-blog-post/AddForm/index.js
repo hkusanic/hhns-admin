@@ -5,7 +5,7 @@
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { Form, Input, Button, Select, Upload, Icon, message, notification } from 'antd'
+import { Form, Input, Button, Checkbox, Select, Upload, Icon, message, notification } from 'antd'
 import { connect } from 'react-redux'
 import $ from 'jquery'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
@@ -26,6 +26,8 @@ class AddForm extends React.Component {
     editorState: EditorState.createEmpty(),
     editingBlog: '',
     editedBody: '',
+    translationRequired: false,
+    upoading: true,
   }
 
   componentDidMount() {
@@ -44,7 +46,8 @@ class AddForm extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.blog.editBlog) {
+    const { upoading } = this.state
+    if (nextProps.blog.editBlog && upoading) {
       const { blog, english } = nextProps
       const { editBlog } = blog
       const html = editBlog ? (english ? editBlog.body_en : editBlog.body_ru) : ''
@@ -58,6 +61,7 @@ class AddForm extends React.Component {
         this.setState({
           editingBlog: blog.editBlog,
           files: blog.editBlog.files,
+          translationRequired: editBlog.needs_translation,
           editorState,
         })
       }
@@ -88,7 +92,7 @@ class AddForm extends React.Component {
     const { form, dispatch, router, english } = this.props
     const { location } = router
     const uuid = location.state
-    const { files, editorState, editingBlog } = this.state
+    const { files, editorState, editingBlog, translationRequired } = this.state
     const titleEn = form.getFieldValue('title')
     const tag = form.getFieldValue('tag')
     const language = form.getFieldValue('language')
@@ -98,17 +102,18 @@ class AddForm extends React.Component {
       uuid: uuid || this.uuidv4(),
       language,
       files,
+      needs_translation: translationRequired,
     }
     if (english) {
       body.title_en = titleEn
       body.body_en = bodyEn
       body.tags_en = tag
-      body.needs_translation = true
+      body.needs_translation = translationRequired
     } else {
       body.title_ru = titleEn
       body.body_ru = bodyEn
       body.tags_ru = tag
-      body.needs_translation = false
+      body.needs_translation = translationRequired
     }
     if (editingBlog) {
       const payload = {
@@ -141,7 +146,9 @@ class AddForm extends React.Component {
 
   handleFileChange = info => {
     if (info.file.status === 'done') {
-      this.uploads3(info.file)
+      this.setState({ upoading: false }, () => {
+        this.uploads3(info.file)
+      })
     }
   }
 
@@ -235,7 +242,6 @@ class AddForm extends React.Component {
   }
 
   handleReset = () => {
-    // event.preventDefault()
     // const { form } = this.props
     // form.resetFields()
     // this.setState({
@@ -245,9 +251,17 @@ class AddForm extends React.Component {
     // })
   }
 
+  handleCheckbox = event => {
+    setTimeout(() => {
+      this.setState({
+        translationRequired: event.target.checked,
+      })
+    }, 0)
+  }
+
   render() {
     const { form, english } = this.props
-    const { editingBlog, editedBody, editorState } = this.state
+    const { editingBlog, editedBody, editorState, translationRequired } = this.state
     const { files } = this.state
 
     return (
@@ -295,7 +309,17 @@ class AddForm extends React.Component {
             )}
           </FormItem>
         </div>
-
+        <div className="form-group">
+          <FormItem>
+            {form.getFieldDecorator('translation', {
+              initialValue: translationRequired,
+            })(
+              <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                Need Translation ?
+              </Checkbox>,
+            )}
+          </FormItem>
+        </div>
         <div className="form-group">
           <FormItem label={english ? 'Body_En' : 'Body_Ru'}>
             {form.getFieldDecorator('content', {
@@ -308,23 +332,25 @@ class AddForm extends React.Component {
           </FormItem>
         </div>
         <div className="form-group">
-          <ul>
-            {files && files.length > 0
-              ? files.map(item => {
-                  return (
-                    <li className="filesList">
-                      {item}{' '}
-                      <i
-                        className="fa fa-close closeIcon"
-                        onClick={() => {
-                          this.delereFile(item)
-                        }}
-                      />
-                    </li>
-                  )
-                })
-              : null}
-          </ul>
+          <FormItem label="Attachment">
+            <ul>
+              {files && files.length > 0
+                ? files.map(item => {
+                    return (
+                      <li className="filesList">
+                        {item}{' '}
+                        <i
+                          className="fa fa-close closeIcon"
+                          onClick={() => {
+                            this.delereFile(item)
+                          }}
+                        />
+                      </li>
+                    )
+                  })
+                : null}
+            </ul>
+          </FormItem>
         </div>
         <div className="form-group">
           <FormItem>
