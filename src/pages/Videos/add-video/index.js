@@ -10,27 +10,183 @@ import {
   Checkbox,
   Upload,
   notification,
+  AutoComplete,
 } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
-import { Editor } from 'react-draft-wysiwyg'
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { EditorState, convertToRaw } from 'draft-js'
-import draftToHtml from 'draftjs-to-html'
-import $ from 'jquery'
 import moment from 'moment'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
 const { Option } = Select
-const { Dragger } = Upload
 
 @Form.create()
-@connect(({ kirtan }) => ({ kirtan }))
+@connect(({ video }) => ({ video }))
 class AddVideo extends React.Component {
+  state = {
+    autoCompleteDataSource: '',
+    language: true,
+    publishDate: '',
+    event: '',
+    location: '',
+    type: '',
+    videoLanguage: '',
+    videoReference: '',
+    videoUrlFields: [],
+    videoUrl: [],
+    showReference: false,
+    tempUrl: '',
+  }
+  handleLanguage = () => {
+    const { language } = this.state
+    this.setState({
+      language: !language,
+    })
+  }
+  handlePublishDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        publishDate: dateString,
+      })
+    }, 0)
+  }
+  handleSelectEvent = event => {
+    this.setState({
+      event,
+    })
+  }
+  handleSelectLocation = location => {
+    this.setState({
+      location,
+    })
+  }
+  handleSelectType = type => {
+    if (type !== 'Other') {
+      this.setState({ showReference: true, type })
+    } else {
+      this.setState({ showReference: false, type })
+    }
+  }
+  handleVideoLanguage = language => {
+    this.setState({
+      videoLanguage: language,
+    })
+  }
+  handleVideoReferenceSelect = reference => {
+    this.setState({
+      videoReference: reference,
+    })
+  }
+  handleVideoReferenceSearch = reference => {
+    const { form, dispatch } = this.props
+    const type = form.getFieldValue('type')
+    const body = {
+      type: type,
+      parameter: reference,
+    }
+    dispatch({
+      type: 'video/GET_SUGGESTIONS',
+      payload: body,
+    })
+    setTimeout(() => {
+      let ar = []
+      this.props.video.suggestions.map(a => {
+        ar.push(a.en.title)
+      })
+      this.setState({ autoCompleteDataSource: ar })
+    }, 1000)
+  }
+  handleAddVideoUrl = () => {
+    const { form } = this.props
+    let ar = this.state.videoUrlFields
+    let len = ar.length
+    let arUrls = this.state.videoUrl
+    let tempUrl = this.state.tempUrl
+    if (tempUrl !== '') arUrls.push(tempUrl)
+
+    ar.push(
+      <Input key={++len} onChange={e => this.handleUrlValueChange(e)} placeholder="Youtube Url" />,
+    )
+    this.setState({ videoUrlFields: ar, videoUrl: arUrls })
+  }
+  handleUrlValueChange = e => {
+    this.setState({ tempUrl: e.target.value })
+  }
+  uuidv4 = () => {
+    // eslint-disable-next-line func-names
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      // eslint-disable-next-line no-bitwise
+      const r = (Math.random() * 16) | 0
+
+      // eslint-disable-next-line no-bitwise
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
+  }
+  handleSubmitForm = () => {
+    const { form, dispatch } = this.props
+    const {
+      language,
+      publishDate,
+      event,
+      location,
+      type,
+      videoLanguage,
+      videoReference,
+      videoUrl,
+    } = this.state
+    const titleVideo = form.getFieldValue('title')
+
+    form.validateFields(['title', 'create_date', 'youtube'], (err, values) => {
+      videoUrl.push(form.getFieldValue('youtube'))
+      console.info(values)
+      if (!err) {
+        const body = {
+          uuid: this.uuidv4(),
+          published_date: publishDate,
+          language: videoLanguage,
+          reference: videoReference,
+          type,
+          en: {
+            title: language ? titleVideo : '',
+            event: language ? event : '',
+            location: language ? location : '',
+          },
+          ru: {
+            title: language ? titleVideo : '',
+            event: language ? event : '',
+            location: language ? location : '',
+          },
+          urls: videoUrl,
+        }
+        dispatch({
+          type: 'video/CREATE_VIDEO',
+          payload: body,
+        })
+      }
+    })
+  }
+  handleReset = () => {
+    const { form } = this.props
+    form.resetFields()
+    this.setState({
+      language: true,
+      publishDate: '',
+      event: '',
+      location: '',
+      type: '',
+      videoLanguage: '',
+      videoReference: '',
+      videoUrl: [],
+      videoUrlFields: [],
+      tempUrl: [],
+      showReference: false,
+    })
+  }
   render() {
     const { form } = this.props
-    // const { language, audioLink, translationRequired, editorState } = this.state
+    const { language, audioLink, editorState } = this.state
     const dateFormat = 'YYYY/MM/DD'
     return (
       <React.Fragment>
@@ -40,22 +196,20 @@ class AddVideo extends React.Component {
             <div className="card-header mb-2">
               <div className="utils__title">
                 <strong>Video Add/Edit</strong>
-                {/* <Switch
-                                defaultChecked
-                                checkedChildren={language ? 'en' : 'ru'}
-                                unCheckedChildren={language ? 'en' : 'ru'}
-                                onChange={this.handleLanguage}
-                                className="toggle"
-                                style={{ width: '100px', marginLeft: '10px' }}
-                                /> */}
+                <Switch
+                  defaultChecked
+                  checkedChildren={language ? 'en' : 'ru'}
+                  unCheckedChildren={language ? 'en' : 'ru'}
+                  onChange={this.handleLanguage}
+                  className="toggle"
+                  style={{ width: '100px', marginLeft: '10px' }}
+                />
               </div>
               <div className="card-body">
                 <div className={styles.addPost}>
                   <Form className="mt-3">
                     <div className="form-group">
-                      <FormItem label={'Title'}>
-                        {' '}
-                        {/*change here once stae has been set*/}
+                      <FormItem label={language ? 'Title' : 'Title'}>
                         {form.getFieldDecorator('title', {
                           rules: [
                             {
@@ -70,22 +224,22 @@ class AddVideo extends React.Component {
 
                     <div className="form-group">
                       <FormItem label="Language">
-                        {/* {form.getFieldDecorator('language')(
-                                                <Select
-                                                    id="product-edit-colors"
-                                                    showSearch
-                                                    style={{ width: '100%' }}
-                                                    placeholder="Select language"
-                                                    onChange={this.handleKirtanLanguage}
-                                                    optionFilterProp="children"
-                                                    filterOption={(input, option) =>
-                                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                    }
-                                                    >
-                                                        <Option value="english">English</Option>
-                                                        <Option value="russian">Russian</Option>
-                                                </Select>,
-                                                )} */}
+                        {form.getFieldDecorator('language')(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select language"
+                            onChange={this.handleVideoLanguage}
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            <Option value="english">English</Option>
+                            <Option value="russian">Russian</Option>
+                          </Select>,
+                        )}
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -102,12 +256,32 @@ class AddVideo extends React.Component {
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                           >
-                            <Option value="Kirtan">Kirtan</Option>
-                            <Option value="Bhajan">Bhajan</Option>
+                            <Option value="kirtan">Kirtan</Option>
+                            <Option value="lecture">Lecture</Option>
+                            <Option value="other">Other</Option>
                           </Select>,
                         )}
                       </FormItem>
                     </div>
+                    {this.state.showReference ? (
+                      <div className="form-group">
+                        <FormItem label="Reference">
+                          {form.getFieldDecorator('reference')(
+                            <AutoComplete
+                              id="product-edit-colors"
+                              dataSource={this.state.autoCompleteDataSource}
+                              style={{ width: '100%' }}
+                              placeholder="Reference"
+                              optionFilterProp="children"
+                              onSelect={this.handleVideoReferenceSelect}
+                              onSearch={this.handleVideoReferenceSearch}
+                            />,
+                          )}
+                        </FormItem>
+                      </div>
+                    ) : (
+                      ''
+                    )}
                     <div className="form-group">
                       <FormItem label="Date">
                         {form.getFieldDecorator('create_date', {
@@ -118,7 +292,7 @@ class AddVideo extends React.Component {
                             },
                           ],
                           initialValue: moment(new Date().toLocaleDateString(), dateFormat),
-                        })(<DatePicker onChange={this.handleCreateDate} />)}
+                        })(<DatePicker onChange={this.handlePublishDate} />)}
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -173,10 +347,18 @@ class AddVideo extends React.Component {
                           initialValue: '',
                         })(<Input placeholder="Youtube Url" />)}
                       </FormItem>
+                      {this.state.videoUrlFields.map(input => {
+                        return input
+                      })}
                       <FormItem>
                         <div className={styles.submit}>
                           <span className="mr-3">
-                            <Button type="default" icon="plus-circle" htmlType="submit">
+                            <Button
+                              type="default"
+                              icon="plus-circle"
+                              onClick={this.handleAddVideoUrl}
+                              htmlType="submit"
+                            >
                               Add Another Item
                             </Button>
                           </span>
@@ -186,11 +368,13 @@ class AddVideo extends React.Component {
                     <FormItem>
                       <div className={styles.submit}>
                         <span className="mr-3">
-                          <Button type="primary" htmlType="submit">
+                          <Button type="primary" htmlType="submit" onClick={this.handleSubmitForm}>
                             Save and Post
                           </Button>
                         </span>
-                        <Button type="danger">Discard</Button>
+                        <Button type="danger" onClick={this.handleReset}>
+                          Discard
+                        </Button>
                       </div>
                     </FormItem>
                   </Form>
