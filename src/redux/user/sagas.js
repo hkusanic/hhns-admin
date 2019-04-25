@@ -31,26 +31,24 @@ export function* LOAD_CURRENT_ACCOUNT() {
     },
   })
   const response = yield call(currentAccount)
+  console.log('RESPONSE ======>', response)
   if (response) {
-    const { uid: id, email, photoURL: avatar } = response
     yield put({
       type: 'user/SET_STATE',
       payload: {
-        id,
-        name: 'Administrator',
-        email,
-        avatar,
         role: 'admin',
         authorized: true,
       },
     })
+  } else {
+    yield put({
+      type: 'user/SET_STATE',
+      payload: {
+        authorized: false,
+        loading: false,
+      },
+    })
   }
-  yield put({
-    type: 'user/SET_STATE',
-    payload: {
-      loading: false,
-    },
-  })
 }
 
 export function* LOGOUT() {
@@ -58,11 +56,6 @@ export function* LOGOUT() {
   yield put({
     type: 'user/SET_STATE',
     payload: {
-      id: '',
-      name: '',
-      role: '',
-      email: '',
-      avatar: '',
       authorized: false,
       loading: false,
     },
