@@ -89,13 +89,19 @@ class AddVideo extends React.Component {
       type: 'video/GET_SUGGESTIONS',
       payload: body,
     })
-    setTimeout(() => {
-      let ar = []
-      this.props.video.suggestions.map(a => {
-        ar.push(a.en.title)
-      })
+    let ar = []
+    if (this.props.video.suggestions) {
+      if (this.state.language) {
+        this.props.video.suggestions.map(a => {
+          ar.push(a.en.title)
+        })
+      } else {
+        this.props.video.suggestions.map(a => {
+          ar.push(a.ru.title)
+        })
+      }
       this.setState({ autoCompleteDataSource: ar })
-    }, 1000)
+    }
   }
   handleAddVideoUrl = () => {
     const { form } = this.props
