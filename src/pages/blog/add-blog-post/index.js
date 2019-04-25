@@ -3,6 +3,7 @@ import { Switch, Tabs } from 'antd'
 import { Helmet } from 'react-helmet'
 import AddForm from './AddForm'
 import styles from './style.module.scss'
+import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 
 const { TabPane } = Tabs
 
@@ -51,7 +52,8 @@ class BlogAddPost extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <h1>Audit</h1>
+                {/* <h1>Audit</h1> */}
+                <AuditTimeline />
               </div>
             </section>
           </TabPane>

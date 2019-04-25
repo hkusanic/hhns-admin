@@ -120,6 +120,9 @@ export function* deleteBlogByUuidSaga(payload) {
 export function* updateBlogSaga(payload) {
   try {
     const { body, uuid } = payload.payload
+
+    console.log(payload)
+
     const result = yield call(updateBlog, uuid, body)
     if (result.status === 200) {
       yield put({

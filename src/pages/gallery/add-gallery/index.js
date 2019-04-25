@@ -21,11 +21,13 @@ import {
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Editor } from 'react-draft-wysiwyg'
+
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import $ from 'jquery'
 import moment from 'moment'
+import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 
 import styles from './style.module.scss'
 
@@ -564,7 +566,7 @@ class CreateGallery extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <h1>Audit</h1>
+                <AuditTimeline />
               </div>
             </section>
           </TabPane>
