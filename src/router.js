@@ -292,11 +292,11 @@ const routes = [
 
   // video
 
-  // {
-  //   path: '/video/list',
-  //   component: loadable(() => import('pages/Videos/list')),
-  //   exact: true,
-  // },
+  {
+    path: '/video/list',
+    component: loadable(() => import('pages/Videos/list')),
+    exact: true,
+  },
 
   {
     path: '/video/create',

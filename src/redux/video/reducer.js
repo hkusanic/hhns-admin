@@ -24,6 +24,8 @@ export default function videoReducer(state = initialState, action) {
       return Object.assign({}, state, {
         suggestions: action.payload.suggestions,
       })
+    case types.GET_VIDEO:
+      return Object.assign({}, state, action.payload)
 
     default:
       return state

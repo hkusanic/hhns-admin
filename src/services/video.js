@@ -3,18 +3,18 @@ import serverAddress from './config'
 
 export async function createVideo(body) {
   const url = `${serverAddress}/api/video/create`
-  console.log(body)
-  // return axios
-  //   .post(url, body)
-  //   .then(response => {
-  //     if (response && response.data) {
-  //       return response
-  //     }
-  //     return false
-  //   })
-  //   .catch(error => {
-  //     return error
-  //   })
+  console.log(body);
+  return axios
+    .post(url, body)
+    .then(response => {
+      if (response && response.data) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
 }
 
 export async function getSuggestions(body) {
@@ -27,6 +27,31 @@ export async function getSuggestions(body) {
     url = `${serverAddress}/api/kirtan/?title=${parameter}`
   }
 
+  return axios
+    .get(url)
+    .then(response => {
+      if (response && response.data) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export async function getVideoList(page, date, createdDateSort) {
+  console.log('service');
+  const pageNumber = page || 1
+  const dateNow = date || null
+  const createdDateSorting = createdDateSort || null
+  const url =
+    serverAddress +
+    '/api/video?page=' +
+    pageNumber +
+    (dateNow ? '&date=' + date : '') +
+    (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '')
+    
   return axios
     .get(url)
     .then(response => {

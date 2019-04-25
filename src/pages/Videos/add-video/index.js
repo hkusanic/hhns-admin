@@ -26,11 +26,11 @@ class AddVideo extends React.Component {
   state = {
     autoCompleteDataSource: '',
     language: true,
+    createDate: '',
     publishDate: '',
     event: '',
     location: '',
     type: '',
-    videoLanguage: '',
     videoReference: '',
     videoUrlFields: [],
     videoUrl: [],
@@ -51,6 +51,14 @@ class AddVideo extends React.Component {
       })
     }, 0)
   }
+  handleCreateDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        createDate: dateString,
+      })
+    }, 0)
+  }
   handleSelectEvent = event => {
     this.setState({
       event,
@@ -62,15 +70,15 @@ class AddVideo extends React.Component {
     })
   }
   handleSelectType = type => {
-    if (type !== 'Other') {
+    if (type !== 'other') {
       this.setState({ showReference: true, type })
     } else {
       this.setState({ showReference: false, type })
     }
   }
-  handleVideoLanguage = language => {
+  handleLanguage = checked => {
     this.setState({
-      videoLanguage: language,
+      language: checked,
     })
   }
   handleVideoReferenceSelect = reference => {
@@ -131,53 +139,62 @@ class AddVideo extends React.Component {
     })
   }
   handleSubmitForm = () => {
-    const { form, dispatch } = this.props
+    const { form, dispatch, english } = this.props
     const {
       language,
+      createDate,
       publishDate,
       event,
       location,
       type,
-      videoLanguage,
       videoReference,
       videoUrl,
     } = this.state
-    const titleVideo = form.getFieldValue('title')
-
+    const titleVideo = form.getFieldValue('title');
+    const author = form.getFieldValue('author');
+    const videoLanguage = form.getFieldValue('language');
     form.validateFields(['title', 'create_date', 'youtube'], (err, values) => {
       videoUrl.push(form.getFieldValue('youtube'))
       console.info(values)
       if (!err) {
         const body = {
           uuid: this.uuidv4(),
-          published_date: publishDate,
+          published_date: createDate,
           language: videoLanguage,
           reference: videoReference,
           type,
-          en: {
-            title: language ? titleVideo : '',
-            event: language ? event : '',
-            location: language ? location : '',
-          },
-          ru: {
-            title: language ? titleVideo : '',
-            event: language ? event : '',
-            location: language ? location : '',
-          },
+          location: location,
+          event: event,
           urls: videoUrl,
+          en: {},
+          ru: {},
         }
+        if (language) {
+          body.en.title = titleVideo
+          body.en.event = event
+          body.en.location = location
+          body.en.author = author
+        } else {
+          body.ru.title = titleVideo
+          body.ru.event = event
+          body.ru.location = location
+          body.ru.author = author
+        }
+        
         dispatch({
           type: 'video/CREATE_VIDEO',
           payload: body,
         })
       }
     })
+    this.handleReset();
   }
   handleReset = () => {
     const { form } = this.props
     form.resetFields()
     this.setState({
       language: true,
+      createDate: '',
       publishDate: '',
       event: '',
       location: '',
@@ -227,7 +244,25 @@ class AddVideo extends React.Component {
                         })(<Input placeholder="Video Title" />)}
                       </FormItem>
                     </div>
-
+                    <div className="form-group">
+                      <FormItem label="Author">
+                        {form.getFieldDecorator('author')(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Author"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            <Option value="Niranjana Swami">Niranjana Swami</Option>
+                            <Option value="Other">Other</Option>
+                          </Select>,
+                        )}
+                      </FormItem>
+                </div>
                     <div className="form-group">
                       <FormItem label="Language">
                         {form.getFieldDecorator('language')(
@@ -236,7 +271,6 @@ class AddVideo extends React.Component {
                             showSearch
                             style={{ width: '100%' }}
                             placeholder="Select language"
-                            onChange={this.handleVideoLanguage}
                             optionFilterProp="children"
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -298,7 +332,20 @@ class AddVideo extends React.Component {
                             },
                           ],
                           initialValue: moment(new Date().toLocaleDateString(), dateFormat),
-                        })(<DatePicker onChange={this.handlePublishDate} />)}
+                        })(<DatePicker onChange={this.handleCreateDate} />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Publish Date">
+                        {form.getFieldDecorator('publish_date', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Create Date is required',
+                            },
+                          ],
+                          initialValue: moment(new Date().toLocaleDateString(), dateFormat),
+                        })(<DatePicker onChange={this.handlePublishDate} disabled/>)}
                       </FormItem>
                     </div>
                     <div className="form-group">
