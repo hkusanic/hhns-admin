@@ -36,20 +36,16 @@ export function* createQuoteSaga({ payload }) {
   const userDetails = JSON.parse(localStorage.getItem('user'))
 
   const today = new Date()
-  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
-  const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds()
-  const dateTime = date + ' ' + time
+  const date = `${today.getFullYear()} - ${today.getMonth() + 1} - ${today.getDate()}`
+  const time = `${today.getHours()} : ${today.getMinutes()} : ${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
   let obj = {}
-  //obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
   obj.email = userDetails.email
   obj.dateTime = dateTime
-  console.log('PAYLOAD=====>', JSON.stringify(obj))
-  let temp = JSON.stringify(obj)
   let audit = []
-  audit.push(temp.toString())
+  audit.push(JSON.stringify(obj))
   payload.audit = audit
-
-  console.log('AUDIT====>', payload.audit)
 
   try {
     console.log('====>', payload)
