@@ -78,11 +78,16 @@
 }
 
 .NotTranslated {
-  background-color: #df9595fc !important;
-  color: #fff !important;
+  background-color: #62b0e1fc !important;
+  // color: #fff !important;
 }
 
 .closeIcon {
   color: red !important;
   cursor: pointer;
+}
+
+.editIcon {
+  cursor: pointer;
+  color: green !important;
 }

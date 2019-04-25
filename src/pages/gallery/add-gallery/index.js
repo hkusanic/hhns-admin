@@ -16,6 +16,7 @@ import {
   notification,
   Button,
   Switch,
+  Tabs,
 } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
@@ -29,6 +30,7 @@ import moment from 'moment'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
+const { TabPane } = Tabs
 const { Option } = Select
 const { Dragger } = Upload
 
@@ -379,179 +381,194 @@ class CreateGallery extends React.Component {
     return (
       <div>
         <Helmet title="Create Gallery" />
-        <section className="card">
-          <div className="card-header mb-2">
-            <div className="utils__title">
-              <strong>Create Gallery</strong>
-              <Switch
-                defaultChecked
-                checkedChildren={language ? 'en' : 'ru'}
-                unCheckedChildren={language ? 'en' : 'ru'}
-                onChange={this.handleLanguage}
-                className="toggle"
-                style={{ width: '100px', marginLeft: '10px' }}
-              />
-            </div>
-          </div>
-          <div className="card-body">
-            <div className={styles.addPost}>
-              <Form className="mt-3">
-                <div className="form-group">
-                  <FormItem label="Title">
-                    {form.getFieldDecorator('title', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Title is required',
-                        },
-                      ],
-                      initialValue:
-                        editGallery && editGallery.uuid
-                          ? language
-                            ? editGallery.title_en
-                            : editGallery.title_ru
-                          : '',
-                    })(<Input placeholder="Enter Title" />)}
-                  </FormItem>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Gallery" key="1">
+            <section className="card">
+              <div className="card-header mb-2">
+                <div className="utils__title">
+                  <strong>Create Gallery</strong>
+                  <Switch
+                    defaultChecked
+                    checkedChildren={language ? 'en' : 'ru'}
+                    unCheckedChildren={language ? 'en' : 'ru'}
+                    onChange={this.handleLanguage}
+                    className="toggle"
+                    style={{ width: '100px', marginLeft: '10px' }}
+                  />
                 </div>
-                <div className="form-group">
-                  <FormItem label="Body">
-                    {form.getFieldDecorator('content')(
-                      <div className={styles.editor}>
-                        <Editor
-                          editorState={galleryBody}
-                          onEditorStateChange={this.onEditorStateChange}
-                        />
-                      </div>,
-                    )}
-                  </FormItem>
+              </div>
+              <div className="card-body">
+                <div className={styles.addPost}>
+                  <Form className="mt-3">
+                    <div className="form-group">
+                      <FormItem label="Title">
+                        {form.getFieldDecorator('title', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Title is required',
+                            },
+                          ],
+                          initialValue:
+                            editGallery && editGallery.uuid
+                              ? language
+                                ? editGallery.title_en
+                                : editGallery.title_ru
+                              : '',
+                        })(<Input placeholder="Enter Title" />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Body">
+                        {form.getFieldDecorator('content')(
+                          <div className={styles.editor}>
+                            <Editor
+                              editorState={galleryBody}
+                              onEditorStateChange={this.onEditorStateChange}
+                            />
+                          </div>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Gallery">
+                        <Select
+                          id="gallery-item"
+                          defaultValue="2019"
+                          showSearch
+                          style={{ width: '25%' }}
+                          onChange={this.hadleSelectGallery}
+                          placeholder="Select Gallery"
+                          optionFilterProp="children"
+                          filterOption={(input, option) =>
+                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                          }
+                        >
+                          {mainGallery && mainGallery.length > 0
+                            ? mainGallery.map(item => {
+                                return (
+                                  <Option key={item.uuid} value={item.name_en}>
+                                    {language ? item.name_en : item.name_ru}
+                                  </Option>
+                                )
+                              })
+                            : null}
+                        </Select>
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem>
+                        {form.getFieldDecorator('translation', {
+                          initialValue: translationRequired,
+                        })(
+                          <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                            Need Translation ?
+                          </Checkbox>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Created Date">
+                        {form.getFieldDecorator('create_date', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Date is required',
+                            },
+                          ],
+                          initialValue:
+                            editGallery && editGallery.date
+                              ? moment(editGallery.date, dateFormat)
+                              : '',
+                        })(<DatePicker onChange={this.handleCreateDate} />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Published Date">
+                        {form.getFieldDecorator('publish_date', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Publish Date is required',
+                            },
+                          ],
+                          initialValue:
+                            editGallery && editGallery.publish_date
+                              ? moment(editGallery.publish_date, dateFormat)
+                              : '',
+                        })(<DatePicker onChange={this.handlePublishDate} />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Uploaded Photos">
+                        <ul>
+                          {photoFiles && photoFiles.length > 0
+                            ? photoFiles.map(item => {
+                                if (item !== '') {
+                                  return (
+                                    <li className="filesList">
+                                      {item} &nbsp;&nbsp;
+                                      <i
+                                        className="fa fa-close closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item)
+                                        }}
+                                      />
+                                    </li>
+                                  )
+                                }
+                              })
+                            : null}
+                        </ul>
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Upload Photos">
+                        {form.getFieldDecorator('Files')(
+                          <Dragger
+                            beforeUpload={this.beforeUploadAudio}
+                            multiple
+                            showUploadList={false}
+                            customRequest={this.dummyRequest}
+                            onChange={this.handleFileChange}
+                          >
+                            <p className="ant-upload-drag-icon">
+                              <Icon type="inbox" />
+                            </p>
+                            <p className="ant-upload-text">
+                              Click or drag file to this area to upload
+                            </p>
+                            <p className="ant-upload-hint">
+                              Support for a single or bulk upload. Strictly prohibit from uploading
+                              company data or other band files
+                            </p>
+                          </Dragger>,
+                        )}
+                      </FormItem>
+                    </div>
+                  </Form>
                 </div>
-                <div className="form-group">
-                  <FormItem label="Gallery">
-                    <Select
-                      id="gallery-item"
-                      defaultValue="2019"
-                      showSearch
-                      style={{ width: '25%' }}
-                      onChange={this.hadleSelectGallery}
-                      placeholder="Select Gallery"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      {mainGallery && mainGallery.length > 0
-                        ? mainGallery.map(item => {
-                            return (
-                              <Option key={item.uuid} value={item.name_en}>
-                                {language ? item.name_en : item.name_ru}
-                              </Option>
-                            )
-                          })
-                        : null}
-                    </Select>
-                  </FormItem>
+                <div className={styles.submit}>
+                  <span className="mr-3">
+                    <Button type="primary" onClick={this.handleFormBody}>
+                      Save and Post
+                    </Button>
+                  </span>
+                  <Button type="danger" onClick={this.handleReset}>
+                    Discard
+                  </Button>
                 </div>
-                <div className="form-group">
-                  <FormItem>
-                    {form.getFieldDecorator('translation', {
-                      initialValue: translationRequired,
-                    })(
-                      <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                        Need Translation ?
-                      </Checkbox>,
-                    )}
-                  </FormItem>
-                </div>
-                <div className="form-group">
-                  <FormItem label="Created Date">
-                    {form.getFieldDecorator('create_date', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Date is required',
-                        },
-                      ],
-                      initialValue:
-                        editGallery && editGallery.date ? moment(editGallery.date, dateFormat) : '',
-                    })(<DatePicker onChange={this.handleCreateDate} />)}
-                  </FormItem>
-                </div>
-                <div className="form-group">
-                  <FormItem label="Published Date">
-                    {form.getFieldDecorator('publish_date', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Publish Date is required',
-                        },
-                      ],
-                      initialValue:
-                        editGallery && editGallery.publish_date
-                          ? moment(editGallery.publish_date, dateFormat)
-                          : '',
-                    })(<DatePicker onChange={this.handlePublishDate} />)}
-                  </FormItem>
-                </div>
-                <div className="form-group">
-                  <FormItem label="Uploaded Photos">
-                    <ul>
-                      {photoFiles && photoFiles.length > 0
-                        ? photoFiles.map(item => {
-                            if (item !== '') {
-                              return (
-                                <li className="filesList">
-                                  {item} &nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-close closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item)
-                                    }}
-                                  />
-                                </li>
-                              )
-                            }
-                          })
-                        : null}
-                    </ul>
-                  </FormItem>
-                </div>
-                <div className="form-group">
-                  <FormItem label="Upload Photos">
-                    {form.getFieldDecorator('Files')(
-                      <Dragger
-                        beforeUpload={this.beforeUploadAudio}
-                        multiple
-                        showUploadList={false}
-                        customRequest={this.dummyRequest}
-                        onChange={this.handleFileChange}
-                      >
-                        <p className="ant-upload-drag-icon">
-                          <Icon type="inbox" />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">
-                          Support for a single or bulk upload. Strictly prohibit from uploading
-                          company data or other band files
-                        </p>
-                      </Dragger>,
-                    )}
-                  </FormItem>
-                </div>
-              </Form>
-            </div>
-            <div className={styles.submit}>
-              <span className="mr-3">
-                <Button type="primary" onClick={this.handleFormBody}>
-                  Save and Post
-                </Button>
-              </span>
-              <Button type="danger" onClick={this.handleReset}>
-                Discard
-              </Button>
-            </div>
-          </div>
-        </section>
+              </div>
+            </section>
+          </TabPane>
+          <TabPane tab="Audit" key="2">
+            <section className="card">
+              <div className="card-body">
+                <h1>Audit</h1>
+              </div>
+            </section>
+          </TabPane>
+        </Tabs>
       </div>
     )
   }

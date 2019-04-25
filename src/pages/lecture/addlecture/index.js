@@ -42,6 +42,7 @@ class AddLecture extends React.Component {
     super(props)
     this.state = {
       date: new Date(),
+      // publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
       summaryFiles: [],
@@ -50,6 +51,7 @@ class AddLecture extends React.Component {
       editorStateTranscription: EditorState.createEmpty(),
       editinglecture: '',
       editedBody: '',
+      translation: '',
       language: true,
       uploading: true,
       audioUploading: false,
@@ -94,6 +96,7 @@ class AddLecture extends React.Component {
         summaryFiles: lecture.editLecture.ru.summary.attachment_link,
         transcriptionFiles: lecture.editLecture.en.transcription.attachment_link,
         translationRequired: lecture.editLecture.translation_required,
+        translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
       })
 
       const htmlTranscription = lecture.editLecture ? lecture.editLecture.en.transcription.text : ''
@@ -164,12 +167,14 @@ class AddLecture extends React.Component {
       transcriptionFiles,
       summaryFiles,
       translationRequired,
+      translation,
       language,
     } = this.state
     const { location } = router
     const uuid = location.state
     const title = form.getFieldValue('title')
     const date = form.getFieldValue('date')
+    const publishDate = form.getFieldValue('publish_date')
     const tag = form.getFieldValue('tag')
     // const language = form.getFieldValue('language')
     const bodylecture = draftToHtml(convertToRaw(editorState.getCurrentContent()))
@@ -192,7 +197,9 @@ class AddLecture extends React.Component {
       chapter,
       author,
       tags: tag,
+      translation,
       created_date: date,
+      published_date: publishDate,
       audio_link: audioLink,
       translation_required: translationRequired,
       counters: {
@@ -273,11 +280,11 @@ class AddLecture extends React.Component {
     })
   }
 
-  getBase64 = (img, callback) => {
-    const reader = new FileReader()
-    reader.addEventListener('load', () => callback(reader.result))
-    reader.readAsDataURL(img)
-  }
+  // getBase64 = (img, callback) => {
+  //   const reader = new FileReader()
+  //   reader.addEventListener('load', () => callback(reader.result))
+  //   reader.readAsDataURL(img)
+  // }
 
   handleFileChange = info => {
     this.setState(
@@ -502,6 +509,7 @@ class AddLecture extends React.Component {
       transcriptionFiles: [],
       summaryFiles: [],
       language: true,
+      translation: '',
       translationRequired: false,
     })
   }
@@ -519,6 +527,10 @@ class AddLecture extends React.Component {
         translationRequired: event.target.checked,
       })
     }, 0)
+  }
+
+  handleSelectTranslation = translation => {
+    this.setState({ translation })
   }
 
   render() {
@@ -630,16 +642,38 @@ class AddLecture extends React.Component {
                       <div className="form-group">
                         <FormItem label="Date">
                           {form.getFieldDecorator('date', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Date is required',
+                              },
+                            ],
                             initialValue: editinglecture
                               ? moment(editinglecture.created_date, dateFormat)
-                              : '',
+                              : moment(new Date(), dateFormat),
                           })(<DatePicker onChange={this.onChange} />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Publish Date">
+                          {form.getFieldDecorator('publish_date', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Publish Date is required',
+                              },
+                            ],
+                            initialValue:
+                              editinglecture && editinglecture.published_date
+                                ? moment(editinglecture.published_date, dateFormat)
+                                : moment(new Date(), dateFormat),
+                          })(<DatePicker disabled />)}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem>
                           {form.getFieldDecorator('translation', {
-                            initialValue: translationRequired,
+                            initialValue: editinglecture ? editinglecture.translation_required : '',
                           })(
                             <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
                               Need Translation ?
@@ -768,6 +802,37 @@ class AddLecture extends React.Component {
                           {form.getFieldDecorator('verse', {
                             initialValue: editinglecture ? editinglecture.verse : '',
                           })(<Input type="Number" placeholder="Verse/Text" />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Translation">
+                          {form.getFieldDecorator('translation')(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Artist"
+                              onChange={this.handleSelectTranslation}
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="Moldovan">Moldovan</Option>
+                              <Option value="No translation">No translation</Option>
+                              <Option value="Balinese">Balinese</Option>
+                              <Option value="Hungarian">Hungarian</Option>
+                              <Option value="Hindi">Hindi</Option>
+                              <Option value="Italian">Italian</Option>
+                              <Option value="Lithuanian">Lithuanian</Option>
+                              <Option value="Latvian">Latvian</Option>
+                              <Option value="Mandarian Chinese">Mandarian Chinese</Option>
+                              <Option value="Russain">Russain</Option>
+                              <Option value="Russain dubbed">Russain dubbed</Option>
+                              <Option value="German">German</Option>
+                            </Select>,
+                          )}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -905,7 +970,7 @@ class AddLecture extends React.Component {
           <TabPane tab="Transcription" key="3">
             <section className="card">
               <div className="card-body">
-                {' '}
+                &nbsp;
                 <div className="form-group">
                   <FormItem label={language ? 'Transcription' : 'Transcription'}>
                     {form.getFieldDecorator('transcription', {
@@ -964,6 +1029,13 @@ class AddLecture extends React.Component {
                     )}
                   </FormItem>
                 </div>
+              </div>
+            </section>
+          </TabPane>
+          <TabPane tab="Audit" key="4">
+            <section className="card">
+              <div className="card-body">
+                <h1>Audit</h1>
               </div>
             </section>
           </TabPane>

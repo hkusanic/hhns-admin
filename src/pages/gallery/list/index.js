@@ -85,12 +85,6 @@ class GalleryList extends React.Component {
         render: title => <span>{title}</span>,
       },
       {
-        title: 'Need Translation',
-        dataIndex: 'translation_required',
-        key: 'translation_required',
-        render: type => <span>{`${type}`}</span>,
-      },
-      {
         title: 'Date',
         dataIndex: 'date',
         key: 'date',
@@ -102,10 +96,10 @@ class GalleryList extends React.Component {
         render: record => (
           <span>
             <Link to={{ pathname: '/gallery/create', state: record.uuid }}>
-              <i className="fa fa-edit mr-2" />
+              <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
-              className="fa fa-trash mr-2"
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
                 this.handleDeleteGallery(record.uuid)
               }}

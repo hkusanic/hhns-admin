@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -10,6 +12,7 @@ import {
   Select,
   DatePicker,
   Checkbox,
+  Tabs,
   Upload,
   notification,
 } from 'antd'
@@ -17,35 +20,96 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Editor } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { EditorState, convertToRaw } from 'draft-js'
+import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
+import htmlToDraft from 'html-to-draftjs'
 import $ from 'jquery'
 import moment from 'moment'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
+const { TabPane } = Tabs
 const { Option } = Select
 const { Dragger } = Upload
 
 @Form.create()
-@connect(({ kirtan }) => ({ kirtan }))
+@connect(({ kirtan, lecture, router }) => ({ kirtan, lecture, router }))
 class AddKirtan extends React.Component {
   state = {
     language: true,
     audioLink: '',
-    createDate: '',
-    publishDate: '',
-    artist: '',
-    kirtanLanguage: '',
-    event: '',
-    location: '',
-    type: '',
+    createDate: new Date(),
+    publishDate: new Date(),
     translationRequired: false,
+    editingKirtan: '',
     editorState: EditorState.createEmpty(),
   }
 
+  componentDidMount() {
+    const { dispatch, router } = this.props
+    const { location } = router
+    const uuid = location.state
+    if (uuid !== undefined) {
+      const body = {
+        uuid,
+      }
+
+      dispatch({
+        type: 'kirtan/GET_KIRTAN_BY_ID',
+        payload: body,
+      })
+    }
+    dispatch({
+      type: 'lecture/GET_EVENTS',
+    })
+    dispatch({
+      type: 'lecture/GET_LOCATIONS',
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.kirtan.isKirtanCreated) {
+      this.handleReset()
+    }
+    if (nextProps.kirtan.editKirtan !== '') {
+      const { kirtan } = nextProps
+      const { editKirtan } = kirtan
+      const { language } = this.state
+      this.handleUpdateBody(language, editKirtan)
+      this.setState({
+        editingKirtan: editKirtan,
+        audioLink: editKirtan ? editKirtan.audio_link : '',
+        createDate: editKirtan ? editKirtan.created_date : '',
+        publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
+        translationRequired: editKirtan ? editKirtan.translation_required : false,
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    this.handleReset()
+  }
+
+  handleUpdateBody = (language, editKirtan) => {
+    const html = editKirtan ? (language ? editKirtan.en.body : editKirtan.ru.body) : ''
+    let editorState = ''
+    if (html && html.length > 0) {
+      const contentBlock = htmlToDraft(html)
+      if (contentBlock) {
+        const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+        editorState = EditorState.createWithContent(contentState)
+      }
+      this.setState({
+        editorState,
+      })
+    }
+  }
+
   handleLanguage = () => {
-    const { language } = this.state
+    const { language, editingKirtan } = this.state
+    if (editingKirtan !== '') {
+      this.handleUpdateBody(!language, editingKirtan)
+    }
     this.setState({
       language: !language,
     })
@@ -75,36 +139,6 @@ class AddKirtan extends React.Component {
         publishDate: dateString,
       })
     }, 0)
-  }
-
-  handleSelectArtist = artist => {
-    this.setState({
-      artist,
-    })
-  }
-
-  handleSelectEvent = event => {
-    this.setState({
-      event,
-    })
-  }
-
-  handleKirtanLanguage = language => {
-    this.setState({
-      kirtanLanguage: language,
-    })
-  }
-
-  handleSelectType = type => {
-    this.setState({
-      type,
-    })
-  }
-
-  handleSelectLocation = location => {
-    this.setState({
-      location,
-    })
   }
 
   onEditorStateChange: Function = editorState => {
@@ -235,27 +269,29 @@ class AddKirtan extends React.Component {
   }
 
   handleSubmitForm = () => {
-    const { form, dispatch } = this.props
+    const { form, dispatch, router } = this.props
+    const uuid = router.location.state
     const {
       language,
       audioLink,
       createDate,
       publishDate,
-      artist,
-      kirtanLanguage,
-      event,
-      location,
-      type,
       translationRequired,
       editorState,
+      editingKirtan,
     } = this.state
     const titlekirtan = form.getFieldValue('title')
     const kirtanBody = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    form.validateFields(['title', 'create_date', 'publish_date', 'translation'], (err, values) => {
+    const locationKirtan = form.getFieldValue('location')
+    const event = form.getFieldValue('event')
+    const type = form.getFieldValue('type')
+    const artist = form.getFieldValue('artist')
+    const kirtanLanguage = form.getFieldValue('language')
+    form.validateFields(['title', 'create_date'], (err, values) => {
       console.info(values)
       if (!err) {
         const body = {
-          uuid: this.uuidv4(),
+          uuid: uuid || this.uuidv4(),
           created_date: createDate,
           published_date: publishDate,
           language: kirtanLanguage,
@@ -264,24 +300,36 @@ class AddKirtan extends React.Component {
           artist,
           type,
           en: {
-            title: language ? titlekirtan : '',
-            event: language ? event : '',
+            title: language ? titlekirtan : editingKirtan ? editingKirtan.en.title : '',
+            event: language ? event : editingKirtan ? editingKirtan.en.event : '',
             topic: '',
-            location: language ? location : '',
-            body: language ? kirtanBody : '',
+            location: language ? locationKirtan : editingKirtan ? editingKirtan.en.location : '',
+            body: language ? kirtanBody : editingKirtan ? editingKirtan.en.body : '',
           },
           ru: {
-            title: language ? '' : titlekirtan,
-            event: language ? '' : event,
+            title: language ? (editingKirtan ? editingKirtan.ru.title : '') : titlekirtan,
+            event: language ? (editingKirtan ? editingKirtan.ru.event : '') : event,
             topic: '',
-            location: language ? '' : location,
-            body: language ? '' : kirtanBody,
+            location: language ? (editingKirtan ? editingKirtan.ru.location : '') : locationKirtan,
+            body: language ? (editingKirtan ? editingKirtan.en.body : '') : kirtanBody,
           },
         }
-        dispatch({
-          type: 'kirtan/CREATE_KIRTAN',
-          payload: body,
-        })
+
+        if (editingKirtan !== '' && uuid) {
+          const payload = {
+            body,
+            uuid,
+          }
+          dispatch({
+            type: 'kirtan/UPDATE_KIRTAN',
+            payload,
+          })
+        } else {
+          dispatch({
+            type: 'kirtan/CREATE_KIRTAN',
+            payload: body,
+          })
+        }
       }
     })
   }
@@ -294,269 +342,332 @@ class AddKirtan extends React.Component {
       audioLink: '',
       createDate: '',
       publishDate: '',
-      artist: '',
-      kirtanLanguage: '',
-      event: '',
-      location: '',
-      type: '',
       translationRequired: false,
       editorState: EditorState.createEmpty(),
     })
   }
 
   render() {
-    const { form } = this.props
-    const { language, audioLink, translationRequired, editorState } = this.state
+    const { form, lecture } = this.props
+    const { events, locations } = lecture
+    const { language, audioLink, translationRequired, editorState, editingKirtan } = this.state
     const dateFormat = 'YYYY/MM/DD'
     return (
       <React.Fragment>
         <div>
           <Helmet title="Add Kirtan" />
-          <section className="card">
-            <div className="card-header mb-2">
-              <div className="utils__title">
-                <strong>Kirtan Add/Edit</strong>
-                <Switch
-                  defaultChecked
-                  checkedChildren={language ? 'en' : 'ru'}
-                  unCheckedChildren={language ? 'en' : 'ru'}
-                  onChange={this.handleLanguage}
-                  className="toggle"
-                  style={{ width: '100px', marginLeft: '10px' }}
-                />
-              </div>
-            </div>
-            <div className="card-body">
-              <div className={styles.addPost}>
-                <Form className="mt-3">
-                  <div className="form-group">
-                    <FormItem label={language ? 'Title' : 'Title'}>
-                      {form.getFieldDecorator('title', {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Title is required',
-                          },
-                        ],
-                        initialValue: '',
-                      })(<Input placeholder="Kirtan Title" />)}
-                    </FormItem>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Kirtan" key="1">
+              <section className="card">
+                <div className="card-header mb-2">
+                  <div className="utils__title">
+                    <strong>Kirtan Add/Edit</strong>
+                    <Switch
+                      defaultChecked
+                      checkedChildren={language ? 'en' : 'ru'}
+                      unCheckedChildren={language ? 'en' : 'ru'}
+                      onChange={this.handleLanguage}
+                      className="toggle"
+                      style={{ width: '100px', marginLeft: '10px' }}
+                    />
                   </div>
-                  <div className="form-group">
-                    <FormItem label="Language">
-                      {form.getFieldDecorator('language')(
-                        <Select
-                          id="product-edit-colors"
-                          showSearch
-                          style={{ width: '100%' }}
-                          placeholder="Select language"
-                          onChange={this.handleKirtanLanguage}
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          <Option value="english">English</Option>
-                          <Option value="russian">Russian</Option>
-                        </Select>,
-                      )}
-                    </FormItem>
+                </div>
+                <div className="card-body">
+                  <div className={styles.addPost}>
+                    <Form className="mt-3">
+                      <div className="form-group">
+                        <FormItem label={language ? 'Title' : 'Title'}>
+                          {form.getFieldDecorator('title', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Title is required',
+                              },
+                            ],
+                            initialValue:
+                              editingKirtan && editingKirtan.en && editingKirtan.ru
+                                ? language
+                                  ? editingKirtan.en.title
+                                  : editingKirtan.ru.title
+                                : '',
+                          })(<Input placeholder="Kirtan Title" />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Language">
+                          {form.getFieldDecorator('language', {
+                            initialValue: editingKirtan ? editingKirtan.language : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select language"
+                              onChange={this.handleKirtanLanguage}
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="english">English</Option>
+                              <Option value="russian">Russian</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Type">
+                          {form.getFieldDecorator('type', {
+                            initialValue: editingKirtan ? editingKirtan.type : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Type"
+                              optionFilterProp="children"
+                              onChange={this.handleSelectType}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="Kirtan">Kirtan</Option>
+                              <Option value="Bhajan">Bhajan</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Artist">
+                          {form.getFieldDecorator('artist', {
+                            initialValue: editingKirtan ? editingKirtan.artist : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Artist"
+                              onChange={this.handleSelectArtist}
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="Aditi Dukhaha Prabhu">Aditi Dukhaha Prabhu</Option>
+                              <Option value="Amala Harinama Dasa"> Amala Harinama Dasa</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Date">
+                          {form.getFieldDecorator('create_date', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Create Date is required',
+                              },
+                            ],
+                            initialValue:
+                              editingKirtan && editingKirtan.created_date
+                                ? moment(editingKirtan.created_date, dateFormat)
+                                : moment(new Date(), dateFormat),
+                          })(<DatePicker onChange={this.handleCreateDate} />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Publish Date">
+                          {form.getFieldDecorator('publish_date', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Publish Date is required',
+                              },
+                            ],
+                            initialValue:
+                              editingKirtan && editingKirtan.published_date
+                                ? moment(editingKirtan.published_date, dateFormat)
+                                : moment(new Date(), dateFormat),
+                          })(<DatePicker onChange={this.handlePublishDate} disabled />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem>
+                          {form.getFieldDecorator('translation', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Need Translation is required',
+                              },
+                            ],
+                            initialValue: editingKirtan ? editingKirtan.translation_required : '',
+                          })(
+                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                              &nbsp; Need Translation ?
+                            </Checkbox>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Location">
+                          {form.getFieldDecorator('location', {
+                            initialValue:
+                              editingKirtan && editingKirtan.en && editingKirtan.ru
+                                ? language
+                                  ? editingKirtan.en.location
+                                  : editingKirtan.ru.location
+                                : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Location"
+                              optionFilterProp="children"
+                              onChange={this.handleSelectLocation}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {locations && locations.length > 0
+                                ? locations.map(item => {
+                                    return (
+                                      <Option key={item._id} value={item.title}>
+                                        {item.title}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Event">
+                          {form.getFieldDecorator('event', {
+                            initialValue:
+                              editingKirtan && editingKirtan.en && editingKirtan.ru
+                                ? language
+                                  ? editingKirtan.en.event
+                                  : editingKirtan.ru.event
+                                : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Event"
+                              optionFilterProp="children"
+                              onChange={this.handleSelectEvent}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {events && events.length > 0
+                                ? events.map(item => {
+                                    return (
+                                      <Option key={item._id} value={item.title}>
+                                        {item.title}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Body">
+                          {form.getFieldDecorator('content', {
+                            initialValue: editorState || '',
+                          })(
+                            <div className={styles.editor}>
+                              <Editor
+                                editorState={editorState}
+                                onEditorStateChange={this.onEditorStateChange}
+                              />
+                            </div>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Attachment">
+                          {audioLink ? (
+                            <ul>
+                              <li className="filesList">
+                                {audioLink}
+                                &nbsp;&nbsp;
+                                <i
+                                  className="fa fa-close closeIcon"
+                                  onClick={() => {
+                                    this.deleteFile(audioLink, 'audio')
+                                  }}
+                                />
+                              </li>
+                            </ul>
+                          ) : (
+                            ''
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem>
+                          {form.getFieldDecorator('Files')(
+                            <Dragger
+                              beforeUpload={this.beforeUploadAudio}
+                              multiple={false}
+                              showUploadList={false}
+                              customRequest={this.dummyRequest}
+                              onChange={this.handleUploading}
+                            >
+                              <p className="ant-upload-drag-icon">
+                                <Icon type="inbox" />
+                              </p>
+                              <p className="ant-upload-text">
+                                Click or drag file to this area to upload
+                              </p>
+                              <p className="ant-upload-hint">
+                                Support for a single or bulk upload. Strictly prohibit from
+                                uploading company data or other band files
+                              </p>
+                            </Dragger>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <FormItem>
+                        <div className={styles.submit}>
+                          <span className="mr-3">
+                            <Button
+                              type="primary"
+                              htmlType="submit"
+                              onClick={this.handleSubmitForm}
+                            >
+                              Save and Post
+                            </Button>
+                          </span>
+                          <Button type="danger" onClick={this.handleReset}>
+                            Discard
+                          </Button>
+                        </div>
+                      </FormItem>
+                    </Form>
                   </div>
-                  <div className="form-group">
-                    <FormItem label="Type">
-                      {form.getFieldDecorator('type')(
-                        <Select
-                          id="product-edit-colors"
-                          showSearch
-                          style={{ width: '100%' }}
-                          placeholder="Select Type"
-                          optionFilterProp="children"
-                          onChange={this.handleSelectType}
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          <Option value="Kirtan">Kirtan</Option>
-                          <Option value="Bhajan">Bhajan</Option>
-                        </Select>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Artist">
-                      {form.getFieldDecorator('artist')(
-                        <Select
-                          id="product-edit-colors"
-                          showSearch
-                          style={{ width: '100%' }}
-                          placeholder="Select Artist"
-                          onChange={this.handleSelectArtist}
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          <Option value="Aditi Dukhaha Prabhu">Aditi Dukhaha Prabhu</Option>
-                          <Option value="Amala Harinama Dasa"> Amala Harinama Dasa</Option>
-                        </Select>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Date">
-                      {form.getFieldDecorator('create_date', {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Create Date is required',
-                          },
-                        ],
-                        initialValue: moment(new Date().toLocaleDateString(), dateFormat),
-                      })(<DatePicker onChange={this.handleCreateDate} />)}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Publish Date">
-                      {form.getFieldDecorator('publish_date', {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Publish Date is required',
-                          },
-                        ],
-                        initialValue: moment(new Date().toLocaleDateString(), dateFormat),
-                      })(<DatePicker onChange={this.handlePublishDate} />)}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem>
-                      {form.getFieldDecorator('translation', {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Need Translation is required',
-                          },
-                        ],
-                        iinitialValue: translationRequired,
-                      })(
-                        <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                          &nbsp; Need Translation ?
-                        </Checkbox>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Location">
-                      {form.getFieldDecorator('location')(
-                        <Select
-                          id="product-edit-colors"
-                          showSearch
-                          style={{ width: '100%' }}
-                          placeholder="Select Location"
-                          optionFilterProp="children"
-                          onChange={this.handleSelectLocation}
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          <Option value="Aditi Dukhaha Prabhu">Bangalore</Option>
-                          <Option value="Amala Harinama Dasa">Pune</Option>
-                        </Select>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Event">
-                      {form.getFieldDecorator('event')(
-                        <Select
-                          id="product-edit-colors"
-                          showSearch
-                          style={{ width: '100%' }}
-                          placeholder="Select Event"
-                          optionFilterProp="children"
-                          onChange={this.handleSelectEvent}
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          <Option value="Aditi Dukhaha Prabhu">Festival</Option>
-                          <Option value="Amala Harinama Dasa">Guru Purinma</Option>
-                        </Select>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Body">
-                      {form.getFieldDecorator('content')(
-                        <div className={styles.editor}>
-                          <Editor
-                            editorState={editorState}
-                            onEditorStateChange={this.onEditorStateChange}
-                          />
-                        </div>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label="Attachment">
-                      {audioLink ? (
-                        <ul>
-                          <li className="filesList">
-                            {audioLink}
-                            &nbsp;&nbsp;
-                            <i
-                              className="fa fa-close closeIcon"
-                              onClick={() => {
-                                this.deleteFile(audioLink, 'audio')
-                              }}
-                            />
-                          </li>
-                        </ul>
-                      ) : (
-                        ''
-                      )}
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem>
-                      {form.getFieldDecorator('Files')(
-                        <Dragger
-                          beforeUpload={this.beforeUploadAudio}
-                          multiple={false}
-                          showUploadList={false}
-                          customRequest={this.dummyRequest}
-                          onChange={this.handleUploading}
-                        >
-                          <p className="ant-upload-drag-icon">
-                            <Icon type="inbox" />
-                          </p>
-                          <p className="ant-upload-text">
-                            Click or drag file to this area to upload
-                          </p>
-                          <p className="ant-upload-hint">
-                            Support for a single or bulk upload. Strictly prohibit from uploading
-                            company data or other band files
-                          </p>
-                        </Dragger>,
-                      )}
-                    </FormItem>
-                  </div>
-                  <FormItem>
-                    <div className={styles.submit}>
-                      <span className="mr-3">
-                        <Button type="primary" htmlType="submit" onClick={this.handleSubmitForm}>
-                          Save and Post
-                        </Button>
-                      </span>
-                      <Button type="danger" onClick={this.handleReset}>
-                        Discard
-                      </Button>
-                    </div>
-                  </FormItem>
-                </Form>
-              </div>
-            </div>
-          </section>
+                </div>
+              </section>
+            </TabPane>
+            <TabPane tab="Audit" key="2">
+              <section className="card">
+                <div className="card-body">
+                  <h1>Audit</h1>
+                </div>
+              </section>
+            </TabPane>
+          </Tabs>
         </div>
       </React.Fragment>
     )

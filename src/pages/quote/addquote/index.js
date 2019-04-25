@@ -10,23 +10,26 @@ import {
   Input,
   Button,
   Checkbox,
+  DatePicker,
   Select,
   Upload,
   Icon,
   message,
   notification,
   Switch,
+  Tabs,
 } from 'antd'
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import $ from 'jquery'
+import moment from 'moment'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import styles from './style.module.scss'
 
 const { Option } = Select
-
+const { TabPane } = Tabs
 const FormItem = Form.Item
 const { Dragger } = Upload
 
@@ -39,6 +42,7 @@ class AddQuote extends React.Component {
     editingQuote: '',
     editedBody: '',
     language: true,
+    translationRequired: true,
   }
 
   componentDidMount() {
@@ -92,6 +96,14 @@ class AddQuote extends React.Component {
     })
   }
 
+  handleCheckbox = event => {
+    setTimeout(() => {
+      this.setState({
+        translationRequired: event.target.checked,
+      })
+    }, 0)
+  }
+
   handleFormBody = event => {
     event.preventDefault()
     const { form, dispatch, router, english } = this.props
@@ -100,6 +112,8 @@ class AddQuote extends React.Component {
     const { files, editorState, editingQuote, translationRequired, topics, language } = this.state
     const titleEn = form.getFieldValue('title')
     const topic = form.getFieldValue('topic')
+    const date = form.getFieldValue('date')
+    const publishDate = form.getFieldValue('publish_date')
     const author = form.getFieldValue('author')
     const languageData = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
@@ -107,6 +121,9 @@ class AddQuote extends React.Component {
       author: 'nirajanana swami',
       uuid: uuid || this.uuidv4(),
       language: languageData,
+      date,
+      published_date: publishDate,
+      needs_translation: translationRequired,
       en: {},
       ru: {},
     }
@@ -168,144 +185,205 @@ class AddQuote extends React.Component {
     const { editingQuote, editedBody, editorState, translationRequired, language } = this.state
     const { files } = this.state
     const { topics } = quote
+    const dateFormat = 'YYYY/MM/DD'
 
     return (
       <div>
         <Helmet title="Create Quote" />
-        <section className="card">
-          <div className="card-header mb-2">
-            <div className="utils__title">
-              <strong>Quote Add/Edit</strong>
-              <Switch
-                defaultChecked
-                checkedChildren={language ? 'en' : 'ru'}
-                unCheckedChildren={language ? 'en' : 'ru'}
-                onChange={this.handleLanguage}
-                className="toggle"
-                style={{ width: '100px', marginLeft: '10px' }}
-              />
-            </div>
-          </div>
-          <div className="card-body">
-            <div className={styles.addPost}>
-              <Form className="mt-3" onSubmit={this.handleFormBody}>
-                <div className="form-group">
-                  <FormItem label={language ? 'Title' : 'Title'}>
-                    {form.getFieldDecorator('title', {
-                      initialValue: editingQuote
-                        ? language
-                          ? editingQuote.en.title
-                          : editingQuote.ru.title
-                        : '',
-                    })(<Input placeholder="Post title" />)}
-                  </FormItem>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Quote" key="1">
+            <section className="card">
+              <div className="card-header mb-2">
+                <div className="utils__title">
+                  <strong>Quote Add/Edit</strong>
+                  <Switch
+                    defaultChecked
+                    checkedChildren={language ? 'en' : 'ru'}
+                    unCheckedChildren={language ? 'en' : 'ru'}
+                    onChange={this.handleLanguage}
+                    className="toggle"
+                    style={{ width: '100px', marginLeft: '10px' }}
+                  />
                 </div>
-                <div className="form-group">
-                  <FormItem label={language ? 'Topic' : 'Topic'}>
-                    {form.getFieldDecorator('topic', {
-                      initialValue:
-                        editingQuote && editingQuote.en && editingQuote.ru
-                          ? language
-                            ? editingQuote.en.topic
-                            : editingQuote.ru.topic
-                          : '',
-                    })(
-                      <Select
-                        id="product-edit-colors"
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Select Topic"
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        {topics && topics.length > 0
-                          ? topics.map(item => {
-                              return (
-                                <Option
-                                  key={item.uuid}
-                                  value={language ? item.name_en : item.name_ru}
-                                >
-                                  {language ? item.name_en : item.name_ru}
-                                </Option>
-                              )
-                            })
-                          : null}
-                      </Select>,
-                    )}
-                  </FormItem>
+              </div>
+              <div className="card-body">
+                <div className={styles.addPost}>
+                  <Form className="mt-3" onSubmit={this.handleFormBody}>
+                    <div className="form-group">
+                      <FormItem label={language ? 'Title' : 'Title'}>
+                        {form.getFieldDecorator('title', {
+                          initialValue: editingQuote
+                            ? language
+                              ? editingQuote.en.title
+                              : editingQuote.ru.title
+                            : '',
+                        })(<Input placeholder="Post title" />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label={language ? 'Topic' : 'Topic'}>
+                        {form.getFieldDecorator('topic', {
+                          initialValue:
+                            editingQuote && editingQuote.en && editingQuote.ru
+                              ? language
+                                ? editingQuote.en.topic
+                                : editingQuote.ru.topic
+                              : '',
+                        })(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Topic"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {topics && topics.length > 0
+                              ? topics.map(item => {
+                                  return (
+                                    <Option
+                                      key={item.uuid}
+                                      value={language ? item.name_en : item.name_ru}
+                                    >
+                                      {language ? item.name_en : item.name_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Author">
+                        {form.getFieldDecorator('author', {
+                          initialValue: editingQuote ? editingQuote.en.author : '',
+                        })(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Author"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            <Option value="Niranjana Swami">Niranjana Swami</Option>
+                            <Option value="Other" />
+                          </Select>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Language">
+                        {form.getFieldDecorator('language', {
+                          initialValue: editingQuote ? editingQuote.language : '',
+                        })(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select a color"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            <Option value="english">English</Option>
+                            <Option value="russian">Russian</Option>
+                          </Select>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Date">
+                        {form.getFieldDecorator('date', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Date is required',
+                            },
+                          ],
+                          initialValue:
+                            editingQuote && editingQuote.date
+                              ? moment(editingQuote.date, dateFormat)
+                              : moment(new Date(), dateFormat),
+                        })(<DatePicker onChange={this.handleDate} />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label="Publish Date">
+                        {form.getFieldDecorator('publish_date', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Publish Date is required',
+                            },
+                          ],
+                          initialValue:
+                            editingQuote && editingQuote.published_date
+                              ? moment(editingQuote.published_date, dateFormat)
+                              : moment(new Date(), dateFormat),
+                        })(<DatePicker disabled />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem>
+                        {form.getFieldDecorator('translation', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Need Translation is required',
+                            },
+                          ],
+                          initialValue: editingQuote ? editingQuote.needs_translation : '',
+                        })(
+                          <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                            &nbsp; Need Translation ?
+                          </Checkbox>,
+                        )}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label={english ? 'Body' : 'Body'}>
+                        {form.getFieldDecorator('content', {
+                          initialValue: editorState || '',
+                        })(
+                          <div className={styles.editor}>
+                            <Editor
+                              editorState={editorState}
+                              onEditorStateChange={this.onEditorStateChange}
+                            />
+                          </div>,
+                        )}
+                      </FormItem>
+                    </div>
+                  </Form>
                 </div>
-                <div className="form-group">
-                  <FormItem label="Author">
-                    {form.getFieldDecorator('author', {
-                      initialValue: editingQuote ? editingQuote.en.author : '',
-                    })(
-                      <Select
-                        id="product-edit-colors"
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Select Author"
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        <Option value="Niranjana Swami">Niranjana Swami</Option>
-                        <Option value="Other" />
-                      </Select>,
-                    )}
-                  </FormItem>
+                <div className={styles.submit}>
+                  <span className="mr-3">
+                    <Button type="primary" onClick={this.handleFormBody}>
+                      Save and Post
+                    </Button>
+                  </span>
+                  <Button type="danger" onClick={this.handleReset}>
+                    Discard
+                  </Button>
                 </div>
-                <div className="form-group">
-                  <FormItem label="Language">
-                    {form.getFieldDecorator('language', {
-                      initialValue: editingQuote ? editingQuote.language : '',
-                    })(
-                      <Select
-                        id="product-edit-colors"
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Select a color"
-                        optionFilterProp="children"
-                        filterOption={(input, option) =>
-                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                      >
-                        <Option value="english">English</Option>
-                        <Option value="russian">Russian</Option>
-                      </Select>,
-                    )}
-                  </FormItem>
-                </div>
-                <div className="form-group">
-                  <FormItem label={english ? 'Body' : 'Body'}>
-                    {form.getFieldDecorator('content', {
-                      initialValue: editorState || '',
-                    })(
-                      <div className={styles.editor}>
-                        <Editor
-                          editorState={editorState}
-                          onEditorStateChange={this.onEditorStateChange}
-                        />
-                      </div>,
-                    )}
-                  </FormItem>
-                </div>
-              </Form>
-            </div>
-            <div className={styles.submit}>
-              <span className="mr-3">
-                <Button type="primary" onClick={this.handleFormBody}>
-                  Save and Post
-                </Button>
-              </span>
-              <Button type="danger" onClick={this.handleReset}>
-                Discard
-              </Button>
-            </div>
-          </div>
-        </section>
+              </div>
+            </section>
+          </TabPane>
+          <TabPane tab="Audit" key="2">
+            <section className="card">
+              <div className="card-body">
+                <h1>Audit</h1>
+              </div>
+            </section>
+          </TabPane>
+        </Tabs>
       </div>
     )
   }

@@ -5,16 +5,28 @@
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { Form, Input, Button, Checkbox, Select, Upload, Icon, message, notification } from 'antd'
+import {
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  Select,
+  Upload,
+  Icon,
+  message,
+  notification,
+  DatePicker,
+  Tabs,
+} from 'antd'
 import { connect } from 'react-redux'
 import $ from 'jquery'
+import moment from 'moment'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import styles from '../style.module.scss'
 
 const { Option } = Select
-
 const FormItem = Form.Item
 const { Dragger } = Upload
 
@@ -28,6 +40,8 @@ class AddForm extends React.Component {
     editedBody: '',
     translationRequired: false,
     upoading: true,
+    date: new Date(),
+    publishDate: new Date(),
   }
 
   componentDidMount() {
@@ -66,13 +80,31 @@ class AddForm extends React.Component {
         })
       }
     }
-    if (nextProps.blog.isBlogCreated || nextProps.blog.isUpdated) {
+    if (nextProps.blog.isBlogCreated) {
       const { files } = this.state
       this.setState({
         files,
       })
       this.handleReset()
     }
+  }
+
+  handleCreateDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        date: dateString,
+      })
+    }, 0)
+  }
+
+  handlePublishDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        publishDate: dateString,
+      })
+    }, 0)
   }
 
   uuidv4 = () => {
@@ -92,7 +124,7 @@ class AddForm extends React.Component {
     const { form, dispatch, router, english } = this.props
     const { location } = router
     const uuid = location.state
-    const { files, editorState, editingBlog, translationRequired } = this.state
+    const { files, editorState, editingBlog, translationRequired, publishDate, date } = this.state
     const titleEn = form.getFieldValue('title')
     const tag = form.getFieldValue('tag')
     const language = form.getFieldValue('language')
@@ -103,6 +135,8 @@ class AddForm extends React.Component {
       language,
       files,
       needs_translation: translationRequired,
+      date,
+      publish_date: publishDate,
     }
     if (english) {
       body.title_en = titleEn
@@ -242,13 +276,13 @@ class AddForm extends React.Component {
   }
 
   handleReset = () => {
-    // const { form } = this.props
-    // form.resetFields()
-    // this.setState({
-    //   editorState: '',
-    //   editingBlog: {},
-    //   files: [],
-    // })
+    const { form } = this.props
+    form.resetFields()
+    this.setState({
+      editorState: '',
+      editingBlog: {},
+      files: [],
+    })
   }
 
   handleCheckbox = event => {
@@ -263,6 +297,7 @@ class AddForm extends React.Component {
     const { form, english } = this.props
     const { editingBlog, editedBody, editorState, translationRequired } = this.state
     const { files } = this.state
+    const dateFormat = 'YYYY/MM/DD'
 
     return (
       <Form className="mt-3" onSubmit={this.handleFormBody}>
@@ -318,6 +353,38 @@ class AddForm extends React.Component {
                 Need Translation ?
               </Checkbox>,
             )}
+          </FormItem>
+        </div>
+        <div className="form-group">
+          <FormItem label="Date">
+            {form.getFieldDecorator('date', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Create Date is required',
+                },
+              ],
+              initialValue:
+                editingBlog && editingBlog.date
+                  ? moment(editingBlog.date, dateFormat)
+                  : moment(new Date(), dateFormat),
+            })(<DatePicker onChange={this.handleCreateDate} />)}
+          </FormItem>
+        </div>
+        <div className="form-group">
+          <FormItem label="Publish Date">
+            {form.getFieldDecorator('publish_date', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Publish Date is required',
+                },
+              ],
+              initialValue:
+                editingBlog && editingBlog.published_date
+                  ? moment(editingBlog.published_date, dateFormat)
+                  : moment(new Date(), dateFormat),
+            })(<DatePicker onChange={this.handlePublishDate} disabled />)}
           </FormItem>
         </div>
         <div className="form-group">

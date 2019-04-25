@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
-import { Table, Button } from 'antd'
+import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -7,7 +9,9 @@ import { Link } from 'react-router-dom'
 
 @connect(({ blog }) => ({ blog }))
 class BlogList extends React.Component {
-  state = {}
+  state = {
+    language: true,
+  }
 
   componentDidMount() {
     const { dispatch } = this.props
@@ -56,7 +60,15 @@ class BlogList extends React.Component {
     })
   }
 
+  handleLanguage = () => {
+    const { language } = this.state
+    this.setState({
+      language: !language,
+    })
+  }
+
   render() {
+    const { language } = this.state
     const { blog } = this.props
     const { blogs, totalBlogs } = blog
     const data = blogs
@@ -64,9 +76,8 @@ class BlogList extends React.Component {
     const columns = [
       {
         title: 'Title',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'title_ru' : 'title_en',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'title_ru' : 'title_en',
+        dataIndex: language ? 'title_en' : 'title_ru',
+        key: language ? 'title_en' : 'title_ru',
         render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
       },
       {
@@ -75,10 +86,10 @@ class BlogList extends React.Component {
         key: 'author',
       },
       {
-        title: 'Needs Translation',
-        dataIndex: 'needs_translation',
-        key: 'needs_translation',
-        render: type => <span>{`${type}`}</span>,
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
         title: 'Action',
@@ -86,19 +97,14 @@ class BlogList extends React.Component {
         render: record => (
           <span>
             <Link to={{ pathname: '/blog/add-blog-post', state: record.uuid }}>
-              <Button icon="edit" className="mr-1" size="small">
-                Edit
-              </Button>
+              <i className="fa fa-edit mr-2 editIcon" />
             </Link>
-            <Button
-              icon="cross"
-              size="small"
+            <i
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
                 this.deleteBlog(record.uuid)
               }}
-            >
-              Remove
-            </Button>
+            />
           </span>
         ),
       },
@@ -111,6 +117,14 @@ class BlogList extends React.Component {
           <div className="card-header">
             <div className="utils__title">
               <strong>Blog List</strong>
+              <Switch
+                defaultChecked
+                checkedChildren={language ? 'en' : 'ru'}
+                unCheckedChildren={language ? 'en' : 'ru'}
+                onChange={this.handleLanguage}
+                className="toggle"
+                style={{ width: '100px', marginLeft: '10px' }}
+              />
             </div>
           </div>
           <div className="card-body">

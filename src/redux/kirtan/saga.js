@@ -47,8 +47,8 @@ export function* getKirtanListSaga(payload) {
         type: 'kirtan/SET_STATE',
         payload: {
           kirtans: kirtan.results,
-          totalKirtans: kirtan.length,
-          isKirtanCreated: true,
+          totalKirtans: kirtan.total,
+          isKirtanCreated: false,
           isDeleted: false,
           isUpdated: false,
         },
@@ -66,13 +66,13 @@ export function* getKirtanByUuidSaga(body) {
   try {
     const result = yield call(getLectureByUuid, body)
     const { data } = result
-    console.log('result =====>>>', result)
+    console.log('result uuid =====>>>', result)
     if (result.status === 200) {
       yield put({
         type: 'kirtan/SET_STATE',
         payload: {
-          editBlog: data.kirtan,
-          isKirtanCreated: true,
+          editKirtan: data.kirtan,
+          isKirtanCreated: false,
           isDeleted: false,
           isUpdated: false,
         },
@@ -121,7 +121,7 @@ export function* updateKirtanSaga(payload) {
         type: 'kirtan/SET_STATE',
         payload: {
           isKirtanCreated: false,
-          isDeleted: true,
+          isDeleted: false,
           isUpdated: false,
         },
       })

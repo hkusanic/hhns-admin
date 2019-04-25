@@ -1,14 +1,16 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
-import { Table } from 'antd'
+import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
-  state = {}
+  state = {
+    language: true,
+  }
 
   componentDidMount() {
     const { dispatch } = this.props
@@ -16,6 +18,16 @@ class KirtanList extends React.Component {
       type: 'kirtan/GET_KIRTAN',
       page: 1,
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.kirtan.isDeleted) {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'kirtan/GET_KIRTAN',
+        page: 1,
+      })
+    }
   }
 
   handlePageChnage = page => {
@@ -27,36 +39,38 @@ class KirtanList extends React.Component {
     })
   }
 
-  deleteLecture = uuid => {
+  deleteKirtan = uuid => {
     const { dispatch } = this.props
     console.log('uuid====????', uuid)
     dispatch({
-      type: 'kirtan/DELETE_KIRTAN',
+      type: 'kirtan/DELETE_KIRTAN_BY_ID',
       uuid,
+    })
+  }
+
+  handleLanguage = () => {
+    const { language } = this.state
+    this.setState({
+      language: !language,
     })
   }
 
   render() {
     const { kirtan } = this.props
+    const { language } = this.state
     const { kirtans, totalKirtans } = kirtan
     const data = kirtans
 
     const columns = [
       {
         title: 'Title',
-        dataIndex: 'en.title',
+        dataIndex: language ? 'en.title' : 'ru.title',
         key: 'en.title',
         render: title => <span>{title}</span>,
       },
       {
-        title: 'Need Translation',
-        dataIndex: 'translation_required',
-        key: 'translation_required',
-        render: type => <span>{`${type}`}</span>,
-      },
-      {
         title: 'Event',
-        dataIndex: 'en.event',
+        dataIndex: language ? 'en.event' : 'ru.event',
         key: 'en.event',
       },
       {
@@ -71,23 +85,17 @@ class KirtanList extends React.Component {
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
-        title: 'Publish Date',
-        dataIndex: 'published_date',
-        key: 'published_date',
-        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
-      },
-      {
         title: 'Action',
         key: 'action',
         render: record => (
           <span>
             <Link to={{ pathname: '/kirtan/create', state: record.uuid }}>
-              <i className="fa fa-edit mr-2" />
+              <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
-              className="fa fa-trash mr-2"
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
-                this.deleteLecture(record.uuid)
+                this.deleteKirtan(record.uuid)
               }}
             />
           </span>
@@ -102,6 +110,14 @@ class KirtanList extends React.Component {
           <div className="card-header">
             <div className="utils__title">
               <strong>Kirtan List</strong>
+              <Switch
+                defaultChecked
+                checkedChildren={language ? 'en' : 'ru'}
+                unCheckedChildren={language ? 'en' : 'ru'}
+                onChange={this.handleLanguage}
+                className="toggle"
+                style={{ width: '100px', marginLeft: '10px' }}
+              />
             </div>
             <div className="card-body">
               <Table

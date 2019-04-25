@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable */
 import React from 'react'
-import { Table, DatePicker, Select } from 'antd'
+import { Table, DatePicker, Select, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -12,7 +12,9 @@ const { Option } = Select
 
 @connect(({ quote }) => ({ quote }))
 class QuotesList extends React.Component {
-  state = {}
+  state = {
+    language: true,
+  }
 
   componentDidMount() {
     const { dispatch } = this.props
@@ -82,24 +84,30 @@ class QuotesList extends React.Component {
     })
   }
 
+  handleLanguage = () => {
+    const { language } = this.state
+    this.setState({
+      language: !language,
+    })
+  }
+
   render() {
+    const { language } = this.state
     const { quote } = this.props
     const { quotes, totalQuotes } = quote
     const data = quotes
     const columns = [
       {
         title: 'Title',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
+        dataIndex: language ? 'en.title' : 'ru.title',
+        key: language ? 'en.title' : 'ru.title',
         render: title =>
           title ? renderHTML(this.showing100Characters(title)) : 'Translation missing',
       },
       {
         title: 'Topic',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.topic' : 'en.topic',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.topic' : 'en.topic',
+        dataIndex: language ? 'en.topic' : 'ru.topic',
+        key: language ? 'en.topic' : 'ru.topic',
         render: topic =>
           topic ? renderHTML(this.showing100Characters(topic)) : 'Translation missing',
       },
@@ -117,10 +125,10 @@ class QuotesList extends React.Component {
         render: record => (
           <span>
             <Link to={{ pathname: '/quote/create', state: record.uuid }}>
-              <i className="fa fa-edit mr-2" />
+              <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
-              className="fa fa-trash mr-2"
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
                 this.deleteQuote(record.uuid)
               }}
@@ -137,6 +145,14 @@ class QuotesList extends React.Component {
           <div className="card-header">
             <div className="utils__title">
               <strong>Quote List</strong>
+              <Switch
+                defaultChecked
+                checkedChildren={language ? 'en' : 'ru'}
+                unCheckedChildren={language ? 'en' : 'ru'}
+                onChange={this.handleLanguage}
+                className="toggle"
+                style={{ width: '100px', marginLeft: '10px' }}
+              />
             </div>
           </div>
           <div className="card-body">
