@@ -64,3 +64,47 @@ export async function getVideoList(page, date, createdDateSort) {
       return error
     })
 }
+export async function deleteVideoByUuid(uuid) {
+  const url = `${serverAddress}/api/video/${uuid}/remove`
+  return axios
+    .post(url)
+    .then(response => {
+      if (response.status === 200) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
+export async function getVideoByUuid(request) {
+  const body = request.payload
+  const url = `${serverAddress}/api/video/getquotebyid/`
+  return axios
+    .post(url, body)
+    .then(response => {
+      if (response.status === 200) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
+export async function updateVideo(uuid, body) {
+  console.log('value in api ====>>>', body, uuid)
+  const url = `${serverAddress}/api/video/${uuid}/update`
+  return axios
+    .post(url, body)
+    .then(response => {
+      if (response.status === 200) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
