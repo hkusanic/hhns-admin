@@ -20,15 +20,15 @@ class VideoList extends React.Component {
     })
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   const { dispatch } = this.props
-  //   if (nextProps.video.isDeleted) {
-  //     dispatch({
-  //       type: 'video/GET_VIDEOS',
-  //       page: 1,
-  //     })
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    const { dispatch } = this.props
+    if (nextProps.video.isDeleted) {
+      dispatch({
+        type: 'video/GET_VIDEOS',
+        page: 1,
+      })
+    }
+  }
 
   showing100Characters = sentence => {
     let result = sentence
@@ -40,41 +40,41 @@ class VideoList extends React.Component {
     return result
   }
 
-  // handlePageChnage = page => {
-  //   const { dispatch } = this.props
+  handlePageChnage = page => {
+    const { dispatch } = this.props
 
-  //   dispatch({
-  //     type: 'video/GET_VIDEOS',
-  //     page,
-  //   })
-  // }
+    dispatch({
+      type: 'video/GET_VIDEOS',
+      page,
+    })
+  }
 
-  // deleteVideo = uuid => {
-  //   const { dispatch } = this.props
-  //   console.log('uuid====????', uuid)
-  //   dispatch({
-  //     type: 'video/DELETE_VIDEOS',
-  //     uuid,
-  //   })
-  // }
+  deleteVideo = uuid => {
+    const { dispatch } = this.props
+    console.log('uuid====????', uuid)
+    dispatch({
+      type: 'video/DELETE_VIDEOS',
+      uuid,
+    })
+  }
 
-  // onChangeDate = date => {
-  //   const { dispatch } = this.props
-  //   dispatch({
-  //     type: 'video/GET_VIDEOS',
-  //     page: 1,
-  //     date: date ? date.format('YYYY-MM-DD') : null,
-  //   })
-  // }
+  onChangeDate = date => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'video/GET_VIDEOS',
+      page: 1,
+      date: date ? date.format('YYYY-MM-DD') : null,
+    })
+  }
 
-  // onChangeDateSort = order => {
-  //   const { dispatch } = this.props
-  //   dispatch({
-  //     type: 'video/GET_VIDEOS',
-  //     page: 1,
-  //     createdDateSort: order,
-  //   })
-  // }
+  onChangeDateSort = order => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'video/GET_VIDEOS',
+      page: 1,
+      createdDateSort: order,
+    })
+  }
 
   render() {
     

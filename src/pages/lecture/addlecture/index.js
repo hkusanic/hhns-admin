@@ -60,6 +60,7 @@ class AddLecture extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     const { router, dispatch } = this.props
     const { location } = router
     const uuid = location.state

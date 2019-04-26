@@ -36,13 +36,53 @@ class AddVideo extends React.Component {
     videoUrl: [],
     showReference: false,
     tempUrl: '',
+    editingvideo: '',
   }
-  handleLanguage = () => {
-    const { language } = this.state
-    this.setState({
-      language: !language,
-    })
+  componentDidMount() {
+    const { location, dispatch } = this.props
+    const uuid = location.state
+    if (uuid !== undefined) {
+      const body = {
+        uuid,
+      }
+      dispatch({
+        type: 'video/GET_VIDEO_BY_ID',
+        payload: body,
+      })
+    }
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.video.editVideo !== '') {
+      const { video } = nextProps
+      const { language } = this.state
+      let ar = [];
+      if(video.editVideo.urls && video.editVideo.urls.length>0){
+        for(let i = 1; i< video.editVideo.urls.length; i++){
+        ar.push(
+          <Input key={i} onChange={e => this.handleUrlValueChange(e)} placeholder="Youtube Url" value={video.editVideo.urls[i]} />,
+        )
+        }
+      }
+      this.setState({
+        editingvideo: video.editVideo,
+        language:video.editVideo.language,
+      createDate: video.editVideo.date,
+      event: video.editVideo.en.event ? video.editVideo.en.event: video.editVideo.ru.event,
+      location: video.editVideo.en.location ? video.editVideo.en.location: video.editVideo.ru.location,
+      type:video.editVideo.type,
+      videoUrl: video.editVideo.urls || [],
+      videoUrlFields: ar,
+      showReference: video.editVideo.type !== 'other' ? true : false
+      })
+      
+  }
+}
+  // handleLanguage = () => {
+  //   const { language } = this.state
+  //   this.setState({
+  //     language: !language,
+  //   })
+  // }
   handlePublishDate = (date, dateString) => {
     console.info(date, dateString)
     setTimeout(() => {
@@ -122,7 +162,7 @@ class AddVideo extends React.Component {
     ar.push(
       <Input key={++len} onChange={e => this.handleUrlValueChange(e)} placeholder="Youtube Url" />,
     )
-    this.setState({ videoUrlFields: ar, videoUrl: arUrls })
+    this.setState({ videoUrlFields: ar, videoUrl: arUrls, tempUrl: '' })
   }
   handleUrlValueChange = e => {
     this.setState({ tempUrl: e.target.value })
@@ -140,6 +180,7 @@ class AddVideo extends React.Component {
   }
   handleSubmitForm = () => {
     const { form, dispatch, english } = this.props
+    const uuid = this.props.location.state;
     const {
       language,
       createDate,
@@ -149,22 +190,25 @@ class AddVideo extends React.Component {
       type,
       videoReference,
       videoUrl,
+      editingvideo,
     } = this.state
     const titleVideo = form.getFieldValue('title');
     const author = form.getFieldValue('author');
     const videoLanguage = form.getFieldValue('language');
     form.validateFields(['title', 'create_date', 'youtube'], (err, values) => {
+      if(editingvideo !== ''){
+        videoUrl.splice(0,1);
+      }
       videoUrl.push(form.getFieldValue('youtube'))
-      console.info(values)
+      if(this.state.tempUrl !== '')
+        videoUrl.push(this.state.tempUrl)
       if (!err) {
         const body = {
-          uuid: this.uuidv4(),
+          uuid: uuid || this.uuidv4(),
           published_date: createDate,
           language: videoLanguage,
           reference: videoReference,
           type,
-          location: location,
-          event: event,
           urls: videoUrl,
           en: {},
           ru: {},
@@ -180,13 +224,29 @@ class AddVideo extends React.Component {
           body.ru.location = location
           body.ru.author = author
         }
-        
-        dispatch({
-          type: 'video/CREATE_VIDEO',
-          payload: body,
-        })
+        console.log(body);
+        if (editingvideo !== '') {
+          const payload = {
+            body,
+            uuid,
+          }
+          dispatch({
+            type: 'video/UPDATE_VIDEO',
+            payload,
+          })
+        } else {
+          dispatch({
+            type: 'video/CREATE_VIDEO',
+            payload: body,
+          })
+        }
+        // dispatch({
+        //   type: 'video/CREATE_VIDEO',
+        //   payload: body,
+        // })
       }
     })
+    this.props.history.push('/video/list');
     this.handleReset();
   }
   handleReset = () => {
@@ -205,12 +265,17 @@ class AddVideo extends React.Component {
       videoUrlFields: [],
       tempUrl: [],
       showReference: false,
+      editingvideo: ''
     })
   }
   render() {
-    const { form } = this.props
+    const { form, video } = this.props
     const { language, audioLink, editorState } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    const {
+      editingvideo,
+      } = this.state
     return (
       <React.Fragment>
         <div>
@@ -240,13 +305,24 @@ class AddVideo extends React.Component {
                               message: 'Title is required',
                             },
                           ],
-                          initialValue: '',
+                          initialValue:
+                          editingvideo && (editingvideo.en || editingvideo.ru)
+                                ? language
+                                  ? editingvideo.en.title
+                                  : editingvideo.ru.title
+                                : '',
                         })(<Input placeholder="Video Title" />)}
                       </FormItem>
                     </div>
                     <div className="form-group">
                       <FormItem label="Author">
-                        {form.getFieldDecorator('author')(
+                        {form.getFieldDecorator('author', {
+                            initialValue: editingvideo && (editingvideo.en || editingvideo.ru)
+                            ? language
+                              ? editingvideo.en.author
+                              : editingvideo.ru.author
+                            : '',
+                          })(
                           <Select
                             id="product-edit-colors"
                             showSearch
@@ -265,7 +341,9 @@ class AddVideo extends React.Component {
                 </div>
                     <div className="form-group">
                       <FormItem label="Language">
-                        {form.getFieldDecorator('language')(
+                        {form.getFieldDecorator('language', {
+                            initialValue: editingvideo ? editingvideo.language : '',
+                          })(
                           <Select
                             id="product-edit-colors"
                             showSearch
@@ -284,7 +362,9 @@ class AddVideo extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem label="Type">
-                        {form.getFieldDecorator('type')(
+                        {form.getFieldDecorator('type', {
+                            initialValue: editingvideo ? editingvideo.type : '',
+                          })(
                           <Select
                             id="product-edit-colors"
                             showSearch
@@ -324,33 +404,30 @@ class AddVideo extends React.Component {
                     )}
                     <div className="form-group">
                       <FormItem label="Date">
-                        {form.getFieldDecorator('create_date', {
-                          rules: [
-                            {
-                              required: true,
-                              message: 'Create Date is required',
-                            },
-                          ],
-                          initialValue: moment(new Date().toLocaleDateString(), dateFormat),
-                        })(<DatePicker onChange={this.handleCreateDate} />)}
+                        {form.getFieldDecorator('date', {
+                            initialValue: editingvideo
+                              ? moment(editingvideo.date, dateFormat)
+                              : '',
+                          })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>
                     </div>
                     <div className="form-group">
                       <FormItem label="Publish Date">
                         {form.getFieldDecorator('publish_date', {
-                          rules: [
-                            {
-                              required: true,
-                              message: 'Create Date is required',
-                            },
-                          ],
                           initialValue: moment(new Date().toLocaleDateString(), dateFormat),
                         })(<DatePicker onChange={this.handlePublishDate} disabled/>)}
                       </FormItem>
                     </div>
                     <div className="form-group">
                       <FormItem label="Event">
-                        {form.getFieldDecorator('event')(
+                        {form.getFieldDecorator('event', {
+                            initialValue:
+                              editingvideo && (editingvideo.en || editingvideo.ru)
+                                ? language
+                                  ? editingvideo.en.event
+                                  : editingvideo.ru.event
+                                : '',
+                          })(
                           <Select
                             id="product-edit-colors"
                             showSearch
@@ -370,7 +447,14 @@ class AddVideo extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem label="Location">
-                        {form.getFieldDecorator('location')(
+                        {form.getFieldDecorator('location', {
+                            initialValue:
+                              editingvideo && (editingvideo.en || editingvideo.ru)
+                                ? language
+                                  ? editingvideo.en.location
+                                  : editingvideo.ru.location
+                                : '',
+                          })(
                           <Select
                             id="product-edit-colors"
                             showSearch
@@ -397,7 +481,8 @@ class AddVideo extends React.Component {
                               message: 'Url is required',
                             },
                           ],
-                          initialValue: '',
+                          initialValue: editingvideo && editingvideo.urls
+                          ? editingvideo.urls[0] : '',
                         })(<Input placeholder="Youtube Url" />)}
                       </FormItem>
                       {this.state.videoUrlFields.map(input => {
