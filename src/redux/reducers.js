@@ -9,6 +9,7 @@ import gallery from './gallery/reducer'
 import quote from './quote/reducer'
 import galleryList from './galleryListing/reducer'
 import kirtan from './kirtan/reducer'
+import video from './video/reducer'
 
 export default history =>
   combineReducers({
@@ -22,4 +23,5 @@ export default history =>
     quote,
     galleryList,
     kirtan,
+    video,
   })

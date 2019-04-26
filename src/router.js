@@ -290,6 +290,20 @@ const routes = [
     exact: true,
   },
 
+  // video
+
+  {
+    path: '/video/list',
+    component: loadable(() => import('pages/Videos/list')),
+    exact: true,
+  },
+
+  {
+    path: '/video/create',
+    component: loadable(() => import('pages/Videos/add-video')),
+    exact: true,
+  },
+
   // YouTube
   // {
   //   path: '/youtube/feed',

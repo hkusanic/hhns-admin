@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 import {
@@ -10,8 +11,25 @@ import {
 import actions from './action'
 
 export function* createBlogSaga({ payload }) {
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let audit = []
+  audit.push(JSON.stringify(obj))
+  payload.audit = audit
+
+  // console.log('blog payload', payload)
+
   try {
     const result = yield call(createBlogApi, payload)
+    // console.log('from blog saga', result)
     if (result.status === 200) {
       notification.success({
         message: 'Success',
@@ -24,6 +42,7 @@ export function* createBlogSaga({ payload }) {
           isDeleted: false,
           isUpdated: false,
           blogs: [],
+          blogAudit: result.data.Blog.audit,
         },
       })
     }
@@ -72,6 +91,7 @@ export function* getBlogByUuidSaga(body) {
   try {
     const result = yield call(getBlogByUuid, body)
     const { data } = result
+    console.log('blog uuid', data)
     if (result.status === 200) {
       yield put({
         type: 'blog/SET_STATE',
@@ -118,13 +138,33 @@ export function* deleteBlogByUuidSaga(payload) {
 }
 
 export function* updateBlogSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let auditData = JSON.parse('[' + body.audit + ']')
+  let auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
+
   try {
-    const { body, uuid } = payload.payload
+    // const { body, uuid } = payload.payload
     const result = yield call(updateBlog, uuid, body)
     if (result.status === 200) {
       yield put({
         type: 'blog/SET_STATE',
         payload: {
+          editBlog: result.data.Blog,
           isUpdated: true,
           isBlogCreated: false,
           isDeleted: false,

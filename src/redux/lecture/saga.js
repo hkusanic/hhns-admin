@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 import {
@@ -41,9 +42,25 @@ export function* getLectureListSaga(payload) {
 }
 
 export function* createLectureSaga(payload) {
+  const { body } = payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let audit = []
+  audit.push(JSON.stringify(obj))
+  body.audit = audit
+
   try {
-    const { body } = payload
     const result = yield call(createLecture, body)
+    // console.log('lecture result',result)
     if (result.status === 200) {
       notification.success({
         message: 'Success',
@@ -57,6 +74,7 @@ export function* createLectureSaga(payload) {
           isDeleted: false,
           isUpdated: false,
           lectures: [],
+          lectureAudit: result.data.Lecture.audit,
         },
       })
     }
@@ -96,15 +114,35 @@ export function* deleteBlogByUuidSaga(payload) {
 }
 
 export function* updateLectureSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let auditData = JSON.parse('[' + body.audit + ']')
+  let auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
+
   try {
-    const { body, uuid } = payload.payload
-    console.log('payload ====>>>>', body, uuid)
+    // const { body, uuid } = payload.payload
+    // console.log('payload ====>>>>', body, uuid)
     const result = yield call(updateLecture, uuid, body)
+    console.log('******* result from lecture', result)
     if (result.status === 200) {
       yield put({
         type: 'lecture/SET_STATE',
         payload: {
-          editLecture: '',
+          editLecture: result.data.Lecture,
           isUpdated: true,
           isLectureCreated: false,
           isDeleted: false,

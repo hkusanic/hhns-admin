@@ -19,12 +19,15 @@ import {
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Editor } from 'react-draft-wysiwyg'
+
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import $ from 'jquery'
 import moment from 'moment'
+
+import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 
@@ -317,6 +320,7 @@ class AddKirtan extends React.Component {
         }
 
         if (editingKirtan !== '' && uuid) {
+          body.audit = editingKirtan.audit
           const payload = {
             body,
             uuid,
@@ -349,7 +353,7 @@ class AddKirtan extends React.Component {
   }
 
   render() {
-    const { form, lecture } = this.props
+    const { form, lecture, kirtan } = this.props
     const { events, locations } = lecture
     const { language, audioLink, translationRequired, editorState, editingKirtan } = this.state
     const dateFormat = 'YYYY/MM/DD'
@@ -674,7 +678,9 @@ class AddKirtan extends React.Component {
             <TabPane tab="Audit" key="2">
               <section className="card">
                 <div className="card-body">
-                  <h1>Audit</h1>
+                  <AuditTimeline
+                    audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                  />
                 </div>
               </section>
             </TabPane>
