@@ -28,6 +28,7 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
+import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 
 const { TabPane } = Tabs
@@ -197,7 +198,6 @@ class AddLecture extends React.Component {
       chapter,
       author,
       tags: tag,
-      translation,
       created_date: date,
       published_date: publishDate,
       audio_link: audioLink,
@@ -216,7 +216,8 @@ class AddLecture extends React.Component {
         location: locationlecture,
         topic,
         event,
-        title: language ? title : editinglecture.en.title,
+        title: language ? title : editinglecture ? editinglecture.en.title : '',
+        translation: language ? translation : editinglecture ? editinglecture.en.translation : '',
         summary: {
           attachment_link: '',
           attachment_name: '',
@@ -232,7 +233,8 @@ class AddLecture extends React.Component {
         location: locationlecture,
         topic,
         event,
-        title: language ? editinglecture.ru.title : title,
+        title: language ? (editinglecture ? editinglecture.ru.title : '') : title,
+        translation: language ? (editinglecture ? editinglecture.ru.translation : '') : translation,
         summary: {
           attachment_link: summaryFiles,
           attachment_name: '',
@@ -553,8 +555,9 @@ class AddLecture extends React.Component {
     const dateFormat = 'YYYY/MM/DD'
     return (
       <React.Fragment>
+        <BackNavigation link="/lecture/list" title="Lecture List" />
         {editinglecture && editinglecture.en && editinglecture.ru ? (
-          <div>
+          <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
@@ -592,7 +595,7 @@ class AddLecture extends React.Component {
                                   ? editinglecture.en.title
                                   : editinglecture.ru.title
                                 : '',
-                          })(<Input placeholder="Post title" />)}
+                          })(<Input placeholder="lecture title" />)}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -672,11 +675,17 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem>
-                          {form.getFieldDecorator('translation', {
+                          {form.getFieldDecorator('translationRequired', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Need Translation is required',
+                              },
+                            ],
                             initialValue: editinglecture ? editinglecture.translation_required : '',
                           })(
                             <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                              Need Translation ?
+                              &nbsp; Need Translation ?
                             </Checkbox>,
                           )}
                         </FormItem>
@@ -806,7 +815,14 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label="Translation">
-                          {form.getFieldDecorator('translation')(
+                          {form.getFieldDecorator('translation', {
+                            initialValue:
+                              editinglecture && editinglecture.en && editinglecture.ru
+                                ? language
+                                  ? editinglecture.en.translation
+                                  : editinglecture.ru.translation
+                                : '',
+                          })(
                             <Select
                               id="product-edit-colors"
                               showSearch
@@ -819,18 +835,42 @@ class AddLecture extends React.Component {
                                 0
                               }
                             >
-                              <Option value="Moldovan">Moldovan</Option>
-                              <Option value="No translation">No translation</Option>
-                              <Option value="Balinese">Balinese</Option>
-                              <Option value="Hungarian">Hungarian</Option>
-                              <Option value="Hindi">Hindi</Option>
-                              <Option value="Italian">Italian</Option>
-                              <Option value="Lithuanian">Lithuanian</Option>
-                              <Option value="Latvian">Latvian</Option>
-                              <Option value="Mandarian Chinese">Mandarian Chinese</Option>
-                              <Option value="Russain">Russain</Option>
-                              <Option value="Russain dubbed">Russain dubbed</Option>
-                              <Option value="German">German</Option>
+                              <Option key={1} value="Moldovan">
+                                Moldovan
+                              </Option>
+                              <Option key={12} value="No translation">
+                                No translation
+                              </Option>
+                              <Option key={13} value="Balinese">
+                                Balinese
+                              </Option>
+                              <Option key={14} value="Hungarian">
+                                Hungarian
+                              </Option>
+                              <Option key={15} value="Hindi">
+                                Hindi
+                              </Option>
+                              <Option key={16} value="Italian">
+                                Italian
+                              </Option>
+                              <Option key={17} value="Lithuanian">
+                                Lithuanian
+                              </Option>
+                              <Option key={18} value="Latvian">
+                                Latvian
+                              </Option>
+                              <Option key={19} value="Mandarian Chinese">
+                                Mandarian Chinese
+                              </Option>
+                              <Option key={10} value="Russain">
+                                Russain
+                              </Option>
+                              <Option key={20} value="Russain dubbed">
+                                Russain dubbed
+                              </Option>
+                              <Option key={21} value="German">
+                                German
+                              </Option>
                             </Select>,
                           )}
                         </FormItem>

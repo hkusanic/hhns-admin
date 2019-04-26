@@ -120,6 +120,12 @@ class QuotesList extends React.Component {
           author ? renderHTML(this.showing100Characters(author)) : 'Translation missing',
       },
       {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
+      },
+      {
         title: 'Action',
         key: 'action',
         render: record => (

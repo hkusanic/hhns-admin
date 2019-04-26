@@ -26,6 +26,7 @@ import { EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import $ from 'jquery'
 import moment from 'moment'
+import BackNavigation from '../../../common/BackNavigation/index'
 
 import styles from './style.module.scss'
 
@@ -380,6 +381,16 @@ class CreateGallery extends React.Component {
     const { galleryBody, photoFiles, editGallery, language, translationRequired } = this.state
     return (
       <div>
+        <BackNavigation link="/gallery/list" title="Gallery List" />
+        {editGallery ? (
+          <div style={{ paddingTop: '10px' }}>
+            <div>
+              <strong>Title :</strong>
+              &nbsp;&nbsp;
+              <span>{language ? editGallery.title_en : editGallery.title_ru}</span>
+            </div>
+          </div>
+        ) : null}
         <Helmet title="Create Gallery" />
         <Tabs defaultActiveKey="1">
           <TabPane tab="Gallery" key="1">

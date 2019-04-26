@@ -40,7 +40,7 @@ class FontAwesomeIcons extends React.Component {
                 <h5 className="text-black">
                   <strong>The iconic font</strong>
                 </h5>
-                <p className="text-muted">
+                <p className="">
                   The complete set of 634 icons in Font Awesome 4.6.3
                   <br />
                   License: MIT License. You can use it for commercial projects, open source

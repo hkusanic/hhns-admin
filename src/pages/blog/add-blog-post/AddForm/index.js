@@ -300,158 +300,172 @@ class AddForm extends React.Component {
     const dateFormat = 'YYYY/MM/DD'
 
     return (
-      <Form className="mt-3" onSubmit={this.handleFormBody}>
-        <div className="form-group">
-          <FormItem label={english ? 'Title_En' : 'Title_Ru'}>
-            {form.getFieldDecorator('title', {
-              initialValue: editingBlog
-                ? english
-                  ? editingBlog.title_en
-                  : editingBlog.title_ru
-                : '',
-            })(<Input placeholder="Post title" />)}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label={english ? 'Tags_En' : 'Tags_Ru'}>
-            {form.getFieldDecorator('tag', {
-              initialValue: editingBlog
-                ? english
-                  ? editingBlog.tags_en
-                  : editingBlog.tags_ru
-                : '',
-            })(<Input placeholder="Tags" />)}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label="Language">
-            {form.getFieldDecorator('language', {
-              initialValue: editingBlog ? editingBlog.language : '',
-            })(
-              <Select
-                id="product-edit-colors"
-                showSearch
-                style={{ width: '100%' }}
-                placeholder="Select a color"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                <Option value="english">English</Option>
-                <Option value="russian">Russian</Option>
-              </Select>,
-            )}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem>
-            {form.getFieldDecorator('translation', {
-              initialValue: translationRequired,
-            })(
-              <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                Need Translation ?
-              </Checkbox>,
-            )}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label="Date">
-            {form.getFieldDecorator('date', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Create Date is required',
-                },
-              ],
-              initialValue:
-                editingBlog && editingBlog.date
-                  ? moment(editingBlog.date, dateFormat)
-                  : moment(new Date(), dateFormat),
-            })(<DatePicker onChange={this.handleCreateDate} />)}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label="Publish Date">
-            {form.getFieldDecorator('publish_date', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Publish Date is required',
-                },
-              ],
-              initialValue:
-                editingBlog && editingBlog.published_date
-                  ? moment(editingBlog.published_date, dateFormat)
-                  : moment(new Date(), dateFormat),
-            })(<DatePicker onChange={this.handlePublishDate} disabled />)}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label={english ? 'Body_En' : 'Body_Ru'}>
-            {form.getFieldDecorator('content', {
-              initialValue: editorState || '',
-            })(
-              <div className={styles.editor}>
-                <Editor editorState={editorState} onEditorStateChange={this.onEditorStateChange} />
-              </div>,
-            )}
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem label="Attachment">
-            <ul>
-              {files && files.length > 0
-                ? files.map(item => {
-                    return (
-                      <li className="filesList">
-                        {item}{' '}
-                        <i
-                          className="fa fa-close closeIcon"
-                          onClick={() => {
-                            this.delereFile(item)
-                          }}
-                        />
-                      </li>
-                    )
-                  })
-                : null}
-            </ul>
-          </FormItem>
-        </div>
-        <div className="form-group">
-          <FormItem>
-            {form.getFieldDecorator('Files')(
-              <Dragger
-                showUploadList={false}
-                customRequest={this.dummyRequest}
-                onChange={this.handleFileChange}
-              >
-                <p className="ant-upload-drag-icon">
-                  <Icon type="inbox" />
-                </p>
-                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">
-                  Support for a single or bulk upload. Strictly prohibit from uploading company data
-                  or other band files
-                </p>
-              </Dragger>,
-            )}
-          </FormItem>
-        </div>
-        <FormItem>
-          <div className={styles.submit}>
-            <span className="mr-3">
-              <Button type="primary" htmlType="submit">
-                Save and Post
-              </Button>
-            </span>
-            <Button type="danger" onClick={this.handleReset}>
-              Discard
-            </Button>
+      <>
+        {editingBlog && editingBlog.title_en && editingBlog.title_ru ? (
+          <div style={{ paddingTop: '10px' }}>
+            <div>
+              <strong>Title :</strong>
+              &nbsp;&nbsp;
+              <span>{english ? editingBlog.title_en : editingBlog.title_ru}</span>
+            </div>
           </div>
-        </FormItem>
-      </Form>
+        ) : null}
+        <Form className="mt-3" onSubmit={this.handleFormBody}>
+          <div className="form-group">
+            <FormItem label={english ? 'Title_En' : 'Title_Ru'}>
+              {form.getFieldDecorator('title', {
+                initialValue: editingBlog
+                  ? english
+                    ? editingBlog.title_en
+                    : editingBlog.title_ru
+                  : '',
+              })(<Input placeholder="Post title" />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label={english ? 'Tags_En' : 'Tags_Ru'}>
+              {form.getFieldDecorator('tag', {
+                initialValue: editingBlog
+                  ? english
+                    ? editingBlog.tags_en
+                    : editingBlog.tags_ru
+                  : '',
+              })(<Input placeholder="Tags" />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Language">
+              {form.getFieldDecorator('language', {
+                initialValue: editingBlog ? editingBlog.language : '',
+              })(
+                <Select
+                  id="product-edit-colors"
+                  showSearch
+                  style={{ width: '100%' }}
+                  placeholder="Select a color"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  <Option value="english">English</Option>
+                  <Option value="russian">Russian</Option>
+                </Select>,
+              )}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem>
+              {form.getFieldDecorator('translation', {
+                initialValue: translationRequired,
+              })(
+                <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                  Need Translation ?
+                </Checkbox>,
+              )}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Date">
+              {form.getFieldDecorator('date', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Create Date is required',
+                  },
+                ],
+                initialValue:
+                  editingBlog && editingBlog.date
+                    ? moment(editingBlog.date, dateFormat)
+                    : moment(new Date(), dateFormat),
+              })(<DatePicker onChange={this.handleCreateDate} />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Publish Date">
+              {form.getFieldDecorator('publish_date', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Publish Date is required',
+                  },
+                ],
+                initialValue:
+                  editingBlog && editingBlog.published_date
+                    ? moment(editingBlog.published_date, dateFormat)
+                    : moment(new Date(), dateFormat),
+              })(<DatePicker onChange={this.handlePublishDate} disabled />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label={english ? 'Body_En' : 'Body_Ru'}>
+              {form.getFieldDecorator('content', {
+                initialValue: editorState || '',
+              })(
+                <div className={styles.editor}>
+                  <Editor
+                    editorState={editorState}
+                    onEditorStateChange={this.onEditorStateChange}
+                  />
+                </div>,
+              )}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Attachment">
+              <ul>
+                {files && files.length > 0
+                  ? files.map(item => {
+                      return (
+                        <li className="filesList">
+                          {item}
+                          <i
+                            className="fa fa-close closeIcon"
+                            onClick={() => {
+                              this.delereFile(item)
+                            }}
+                          />
+                        </li>
+                      )
+                    })
+                  : null}
+              </ul>
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem>
+              {form.getFieldDecorator('Files')(
+                <Dragger
+                  showUploadList={false}
+                  customRequest={this.dummyRequest}
+                  onChange={this.handleFileChange}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <Icon type="inbox" />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">
+                    Support for a single or bulk upload. Strictly prohibit from uploading company
+                    data or other band files
+                  </p>
+                </Dragger>,
+              )}
+            </FormItem>
+          </div>
+          <FormItem>
+            <div className={styles.submit}>
+              <span className="mr-3">
+                <Button type="primary" htmlType="submit">
+                  Save and Post
+                </Button>
+              </span>
+              <Button type="danger" onClick={this.handleReset}>
+                Discard
+              </Button>
+            </div>
+          </FormItem>
+        </Form>
+      </>
     )
   }
 }
