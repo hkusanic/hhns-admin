@@ -7,6 +7,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
+
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import {
   Form,
@@ -28,6 +29,7 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
+import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 
@@ -248,6 +250,7 @@ class AddLecture extends React.Component {
       },
     }
     if (editinglecture !== '') {
+      body.audit = editinglecture.audit
       const payload = {
         body,
         uuid,
@@ -1075,7 +1078,9 @@ class AddLecture extends React.Component {
           <TabPane tab="Audit" key="4">
             <section className="card">
               <div className="card-body">
-                <h1>Audit</h1>
+                <AuditTimeline
+                  audit={editinglecture.audit ? editinglecture.audit : lecture.lectureAudit}
+                />
               </div>
             </section>
           </TabPane>

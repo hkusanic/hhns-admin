@@ -15,6 +15,7 @@ const initialState = {
 export default function quoteReducer(state = initialState, action) {
   switch (action.type) {
     case types.SET_STATE:
+      // console.log('from reducer',action.payload)
       return { ...state, ...action.payload }
     default:
       return state

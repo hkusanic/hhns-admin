@@ -33,8 +33,21 @@ export function* getTopics() {
 }
 
 export function* createQuoteSaga({ payload }) {
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let audit = []
+  audit.push(JSON.stringify(obj))
+  payload.audit = audit
+
   try {
-    console.log('====>', payload)
     const result = yield call(createQuote, payload)
     if (result.status === 200) {
       notification.success({
@@ -49,6 +62,7 @@ export function* createQuoteSaga({ payload }) {
           isDeleted: false,
           isUpdated: false,
           lectures: [],
+          quoteAudit: result.data.quote.audit,
         },
       })
     }
@@ -91,6 +105,7 @@ export function* getQuoteListSaga(payload) {
 export function* getQuoteByUuidSaga(body) {
   try {
     const result = yield call(getQuoteByUuid, body)
+    // localStorage.setItem('auditData', result.data.quote.audit)
     const { data } = result
     if (result.status === 200) {
       yield put({
@@ -100,6 +115,7 @@ export function* getQuoteByUuidSaga(body) {
           isQuoteCreated: false,
           isDeleted: false,
           isUpdated: false,
+          quoteAudit: result.data.quote.audit,
         },
       })
     }
@@ -138,13 +154,35 @@ export function* deleteQuoteByUuidSaga(payload) {
 }
 
 export function* updateQuoteSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  // const ad = localStorage.getItem('auditData')
+  let auditData = JSON.parse('[' + body.audit + ']')
+  let auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
+
   try {
-    const { body, uuid } = payload.payload
+    // const { body, uuid } = payload.payload
     const result = yield call(updateQuote, uuid, body)
+    // console.log('*******qoute', result)
     if (result.status === 200) {
       yield put({
         type: 'quote/SET_STATE',
         payload: {
+          editQuote: result.data.Quote,
           isUpdated: true,
           isQuoteCreated: false,
           isDeleted: false,
