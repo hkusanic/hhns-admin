@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 import {
@@ -10,8 +11,25 @@ import {
 import actions from './action'
 
 export function* createKirtanSaga({ payload }) {
+  // console.log('kirtan payload ==== ', payload)
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let audit = []
+  audit.push(JSON.stringify(obj))
+  payload.audit = audit
+
   try {
     const result = yield call(createKirtan, payload)
+    // console.log('kirtan result === ', result)
     if (result.status === 200) {
       notification.success({
         message: 'Success',
@@ -24,6 +42,7 @@ export function* createKirtanSaga({ payload }) {
           isDeleted: false,
           isUpdated: false,
           kirtans: [],
+          kirtanAudit: result.data.Kirtan.audit,
         },
       })
     }
@@ -113,13 +132,32 @@ export function* deleteKirtanByUuidSaga(payload) {
 }
 
 export function* updateKirtanSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let auditData = JSON.parse('[' + body.audit + ']')
+  let auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
+
   try {
-    const { body, uuid } = payload.payload
     const result = yield call(updateKirtan, uuid, body)
     if (result.status === 200) {
       yield put({
         type: 'kirtan/SET_STATE',
         payload: {
+          editKirtan: result.data.Kirtan,
           isKirtanCreated: false,
           isDeleted: false,
           isUpdated: false,

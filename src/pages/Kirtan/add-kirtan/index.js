@@ -320,6 +320,7 @@ class AddKirtan extends React.Component {
         }
 
         if (editingKirtan !== '' && uuid) {
+          body.audit = editingKirtan.audit
           const payload = {
             body,
             uuid,
@@ -352,7 +353,7 @@ class AddKirtan extends React.Component {
   }
 
   render() {
-    const { form, lecture } = this.props
+    const { form, lecture, kirtan } = this.props
     const { events, locations } = lecture
     const { language, audioLink, translationRequired, editorState, editingKirtan } = this.state
     const dateFormat = 'YYYY/MM/DD'
@@ -677,7 +678,9 @@ class AddKirtan extends React.Component {
             <TabPane tab="Audit" key="2">
               <section className="card">
                 <div className="card-body">
-                  <AuditTimeline />
+                  <AuditTimeline
+                    audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                  />
                 </div>
               </section>
             </TabPane>

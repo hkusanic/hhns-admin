@@ -300,7 +300,7 @@ class AddForm extends React.Component {
     const { files } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
-    console.log('add form: ', editingBlog)
+    // console.log('add form: ', editingBlog)
 
     return (
       <>

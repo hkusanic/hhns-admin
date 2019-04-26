@@ -42,6 +42,8 @@ export function* getLectureListSaga(payload) {
 }
 
 export function* createLectureSaga(payload) {
+  const { body } = payload
+
   const userDetails = JSON.parse(localStorage.getItem('user'))
 
   const today = new Date()
@@ -54,11 +56,11 @@ export function* createLectureSaga(payload) {
   obj.dateTime = dateTime
   let audit = []
   audit.push(JSON.stringify(obj))
-  payload.audit = audit
+  body.audit = audit
 
   try {
-    const { body } = payload
     const result = yield call(createLecture, body)
+    // console.log('lecture result',result)
     if (result.status === 200) {
       notification.success({
         message: 'Success',
@@ -72,6 +74,7 @@ export function* createLectureSaga(payload) {
           isDeleted: false,
           isUpdated: false,
           lectures: [],
+          lectureAudit: result.data.Lecture.audit,
         },
       })
     }
@@ -132,13 +135,14 @@ export function* updateLectureSaga(payload) {
 
   try {
     // const { body, uuid } = payload.payload
-    console.log('payload ====>>>>', body, uuid)
+    // console.log('payload ====>>>>', body, uuid)
     const result = yield call(updateLecture, uuid, body)
+    console.log('******* result from lecture', result)
     if (result.status === 200) {
       yield put({
         type: 'lecture/SET_STATE',
         payload: {
-          editLecture: '',
+          editLecture: result.data.Lecture,
           isUpdated: true,
           isLectureCreated: false,
           isDeleted: false,

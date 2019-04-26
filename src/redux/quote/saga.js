@@ -177,10 +177,12 @@ export function* updateQuoteSaga(payload) {
   try {
     // const { body, uuid } = payload.payload
     const result = yield call(updateQuote, uuid, body)
+    // console.log('*******qoute', result)
     if (result.status === 200) {
       yield put({
         type: 'quote/SET_STATE',
         payload: {
+          editQuote: result.data.Quote,
           isUpdated: true,
           isQuoteCreated: false,
           isDeleted: false,

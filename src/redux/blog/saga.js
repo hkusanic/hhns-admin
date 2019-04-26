@@ -25,6 +25,8 @@ export function* createBlogSaga({ payload }) {
   audit.push(JSON.stringify(obj))
   payload.audit = audit
 
+  // console.log('blog payload', payload)
+
   try {
     const result = yield call(createBlogApi, payload)
     // console.log('from blog saga', result)
@@ -162,6 +164,7 @@ export function* updateBlogSaga(payload) {
       yield put({
         type: 'blog/SET_STATE',
         payload: {
+          editBlog: result.data.Blog,
           isUpdated: true,
           isBlogCreated: false,
           isDeleted: false,
