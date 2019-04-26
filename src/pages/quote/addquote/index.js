@@ -27,6 +27,7 @@ import moment from 'moment'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
@@ -195,6 +196,16 @@ class AddQuote extends React.Component {
 
     return (
       <div>
+        <BackNavigation link="/quote/list" title="Quote List" />
+        {editingQuote && editingQuote.en && editingQuote.ru ? (
+          <div style={{ paddingTop: '10px' }}>
+            <div>
+              <strong>Title :</strong>
+              &nbsp;&nbsp;
+              <span>{language ? editingQuote.en.title : editingQuote.ru.title}</span>
+            </div>
+          </div>
+        ) : null}
         <Helmet title="Create Quote" />
         <Tabs defaultActiveKey="1">
           <TabPane tab="Quote" key="1">

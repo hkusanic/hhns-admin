@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import AddForm from './AddForm'
 import styles from './style.module.scss'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
+import BackNavigation from '../../../common/BackNavigation/index'
 
 const { TabPane } = Tabs
 
@@ -41,6 +42,7 @@ class BlogAddPost extends React.Component {
     const { language, editingBlog } = this.state
     return (
       <div>
+        <BackNavigation link="/blog/blog-list" title="Blog List" />
         <Helmet title="Add Blog Post" />
         <Tabs defaultActiveKey="1">
           <TabPane tab="Blog" key="1">

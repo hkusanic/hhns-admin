@@ -28,6 +28,7 @@ import $ from 'jquery'
 import moment from 'moment'
 
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
+import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
@@ -358,6 +359,16 @@ class AddKirtan extends React.Component {
     return (
       <React.Fragment>
         <div>
+          <BackNavigation link="/kirtan/list" title="Kirtan List" />
+          {editingKirtan && editingKirtan.en && editingKirtan.ru ? (
+            <div style={{ paddingTop: '10px' }}>
+              <div>
+                <strong>Title :</strong>
+                &nbsp;&nbsp;
+                <span>{language ? editingKirtan.en.title : editingKirtan.ru.title}</span>
+              </div>
+            </div>
+          ) : null}
           <Helmet title="Add Kirtan" />
           <Tabs defaultActiveKey="1">
             <TabPane tab="Kirtan" key="1">
