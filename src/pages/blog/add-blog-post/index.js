@@ -1,17 +1,31 @@
+/* eslint-disable */
 import React from 'react'
 import { Switch, Tabs } from 'antd'
 import { Helmet } from 'react-helmet'
+import { connect } from 'react-redux'
 import AddForm from './AddForm'
 import styles from './style.module.scss'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 
 const { TabPane } = Tabs
 
+@connect(({ blog, router }) => ({ blog, router }))
 class BlogAddPost extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       language: true,
+      editingBlog: '',
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.blog.editBlog) {
+      const { blog } = nextProps
+
+      this.setState({
+        editingBlog: blog.editBlog,
+      })
     }
   }
 
@@ -22,7 +36,9 @@ class BlogAddPost extends React.Component {
   }
 
   render() {
-    const { language } = this.state
+    const { blog } = this.props
+
+    const { language, editingBlog } = this.state
     return (
       <div>
         <Helmet title="Add Blog Post" />
@@ -52,8 +68,7 @@ class BlogAddPost extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                {/* <h1>Audit</h1> */}
-                <AuditTimeline />
+                <AuditTimeline audit={editingBlog.audit ? editingBlog.audit : blog.blogAudit} />
               </div>
             </section>
           </TabPane>

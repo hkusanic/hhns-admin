@@ -248,6 +248,7 @@ class AddLecture extends React.Component {
       },
     }
     if (editinglecture !== '') {
+      body.audit = editinglecture.audit
       const payload = {
         body,
         uuid,
@@ -1037,7 +1038,7 @@ class AddLecture extends React.Component {
           <TabPane tab="Audit" key="4">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline />
+                <AuditTimeline audit={editinglecture.audit && editinglecture.audit} />
               </div>
             </section>
           </TabPane>

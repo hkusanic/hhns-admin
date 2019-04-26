@@ -150,6 +150,7 @@ class AddForm extends React.Component {
       body.needs_translation = translationRequired
     }
     if (editingBlog) {
+      body.audit = editingBlog.audit
       const payload = {
         body,
         uuid,
@@ -298,6 +299,8 @@ class AddForm extends React.Component {
     const { editingBlog, editedBody, editorState, translationRequired } = this.state
     const { files } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    console.log('add form: ', editingBlog)
 
     return (
       <Form className="mt-3" onSubmit={this.handleFormBody}>

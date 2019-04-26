@@ -1,14 +1,22 @@
+/* eslint-disable */
 import React from 'react'
 import { Timeline } from 'antd'
 
-const AuditTimeline = () => {
+const AuditTimeline = ({ audit }) => {
+  // console.log(audit)
+
   return (
     <div>
       <Timeline>
-        <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-        <Timeline.Item>Solve initial network problems 2015-09-01</Timeline.Item>
-        <Timeline.Item>Technical testing 2015-09-01</Timeline.Item>
-        <Timeline.Item>Network problems being solved 2015-09-01</Timeline.Item>
+        {audit &&
+          audit.map((item, index) => {
+            item = JSON.parse(item)
+            return (
+              <Timeline.Item key={index}>
+                {item.fullName} {item.dateTime}
+              </Timeline.Item>
+            )
+          })}
       </Timeline>
     </div>
   )

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 import {
@@ -41,6 +42,20 @@ export function* getLectureListSaga(payload) {
 }
 
 export function* createLectureSaga(payload) {
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let audit = []
+  audit.push(JSON.stringify(obj))
+  payload.audit = audit
+
   try {
     const { body } = payload
     const result = yield call(createLecture, body)
@@ -96,8 +111,27 @@ export function* deleteBlogByUuidSaga(payload) {
 }
 
 export function* updateLectureSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  let obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  let auditData = JSON.parse('[' + body.audit + ']')
+  let auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
+
   try {
-    const { body, uuid } = payload.payload
+    // const { body, uuid } = payload.payload
     console.log('payload ====>>>>', body, uuid)
     const result = yield call(updateLecture, uuid, body)
     if (result.status === 200) {

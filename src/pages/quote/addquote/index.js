@@ -50,6 +50,7 @@ class AddQuote extends React.Component {
 
   componentDidMount() {
     const { router, dispatch } = this.props
+
     const { location } = router
     const uuid = location.state
     if (uuid !== undefined) {
@@ -142,6 +143,7 @@ class AddQuote extends React.Component {
       body.ru.author = author
     }
     if (editingQuote) {
+      body.audit = editingQuote.audit
       const payload = {
         body,
         uuid,
@@ -185,6 +187,7 @@ class AddQuote extends React.Component {
 
   render() {
     const { form, english, quote } = this.props
+
     const { editingQuote, editedBody, editorState, translationRequired, language } = this.state
     const { files } = this.state
     const { topics } = quote
@@ -382,7 +385,7 @@ class AddQuote extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline />
+                <AuditTimeline audit={editingQuote.audit ? editingQuote.audit : quote.quoteAudit} />
               </div>
             </section>
           </TabPane>
