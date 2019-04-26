@@ -321,6 +321,22 @@ export async function getLeftMenuData() {
         },
       ],
     },
+    {
+      title: 'Video',
+      key: 'video',
+      children: [
+        {
+          title: 'LIST',
+          key: 'VideoList',
+          url: '/video/list',
+        },
+        {
+          title: 'Create Video',
+          key: 'createVideo',
+          url: '/video/create',
+        },
+      ],
+    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
