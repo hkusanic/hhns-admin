@@ -1,4 +1,5 @@
 // import firebase from 'firebase/app'
+/* eslint-disable */
 import { notification } from 'antd'
 import axios from 'axios'
 import serverAddress from './config'
@@ -31,22 +32,37 @@ import serverAddress from './config'
 //     })
 // }
 
-export async function currentAccount() {
-  let userLoaded = false
-  function getCurrentUser(auth) {
-    return new Promise((resolve, reject) => {
-      if (userLoaded) {
-        resolve()
-      }
-
-      resolve()
-    })
+export function currentAccount() {
+  let userLoaded = localStorage.getItem('user')
+  console.log('user=====>', userLoaded)
+  if (userLoaded) {
+    return true
   }
-  return true
+  return false
 }
 
 export async function logout() {
-  return true
+  let url = serverAddress + '/api/signout/'
+  return axios
+    .post(url)
+    .then(data => {
+      if (data && data.data && data.data.signedout) {
+        localStorage.removeItem('user')
+        return true
+      } else {
+        notification.warning({
+          message: 'Failed to signout',
+          description: 'User',
+        })
+        return false
+      }
+    })
+    .catch(error => {
+      notification.warning({
+        message: error.code,
+        description: error.message,
+      })
+    })
 }
 
 export async function login(email, password) {
@@ -57,6 +73,7 @@ export async function login(email, password) {
     .then(data => {
       console.log('------>', data)
       if (data && data.data && data.data.success) {
+        localStorage.setItem('user', JSON.stringify(data.data.loginUser))
         return true
       } else {
         notification.warning({

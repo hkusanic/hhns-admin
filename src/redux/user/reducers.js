@@ -1,11 +1,7 @@
 import actions from './actions'
 
 const initialState = {
-  id: '',
-  name: '',
   role: '',
-  email: '',
-  avatar: '',
   authorized: false,
   loading: false,
 }
