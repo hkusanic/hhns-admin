@@ -24,6 +24,7 @@ import moment from 'moment'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import { uuidv4 } from '../../../../services/custom'
 import styles from '../style.module.scss'
 
 const { Option } = Select
@@ -107,18 +108,6 @@ class AddForm extends React.Component {
     }, 0)
   }
 
-  uuidv4 = () => {
-    // eslint-disable-next-line func-names
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      // eslint-disable-next-line no-bitwise
-      const r = (Math.random() * 16) | 0
-
-      // eslint-disable-next-line no-bitwise
-      const v = c === 'x' ? r : (r & 0x3) | 0x8
-      return v.toString(16)
-    })
-  }
-
   handleFormBody = event => {
     event.preventDefault()
     const { form, dispatch, router, english } = this.props
@@ -131,7 +120,7 @@ class AddForm extends React.Component {
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     const body = {
       author: 'nirajanana swami',
-      uuid: uuid || this.uuidv4(),
+      uuid: uuid || uuidv4(),
       language,
       files,
       needs_translation: translationRequired,

@@ -29,7 +29,7 @@ import $ from 'jquery'
 import moment from 'moment'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import BackNavigation from '../../../common/BackNavigation/index'
-
+import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
@@ -171,18 +171,6 @@ class CreateGallery extends React.Component {
     }
   }
 
-  uuidv4 = () => {
-    // eslint-disable-next-line func-names
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      // eslint-disable-next-line no-bitwise
-      const r = (Math.random() * 16) | 0
-
-      // eslint-disable-next-line no-bitwise
-      const v = c === 'x' ? r : (r & 0x3) | 0x8
-      return v.toString(16)
-    })
-  }
-
   getBase64 = (img, callback) => {
     const reader = new FileReader()
     reader.addEventListener('load', () => callback(reader.result))
@@ -292,7 +280,7 @@ class CreateGallery extends React.Component {
       console.info(values)
       if (!err) {
         const body = {
-          uuid: uuid || this.uuidv4(),
+          uuid: uuid || uuidv4(),
           gallery,
           date: createDate,
           publish_date: publishDate,

@@ -31,6 +31,7 @@ import { Helmet } from 'react-helmet'
 import moment from 'moment'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import BackNavigation from '../../../common/BackNavigation/index'
+import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 
 const { TabPane } = Tabs
@@ -65,7 +66,7 @@ class AddLecture extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
+    console.log(this.props)
     const { router, dispatch } = this.props
     const { location } = router
     const uuid = location.state
@@ -141,18 +142,6 @@ class AddLecture extends React.Component {
     })
   }
 
-  uuidv4 = () => {
-    // eslint-disable-next-line func-names
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      // eslint-disable-next-line no-bitwise
-      const r = (Math.random() * 16) | 0
-
-      // eslint-disable-next-line no-bitwise
-      const v = c === 'x' ? r : (r & 0x3) | 0x8
-      return v.toString(16)
-    })
-  }
-
   handleLanguage = checked => {
     this.setState({
       language: checked,
@@ -195,7 +184,7 @@ class AddLecture extends React.Component {
     )
 
     const body = {
-      uuid: uuid || this.uuidv4(),
+      uuid: uuid || uuidv4(),
       parts,
       verse,
       chapter,

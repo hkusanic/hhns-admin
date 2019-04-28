@@ -331,7 +331,7 @@ export async function getLeftMenuData() {
           url: '/video/list',
         },
         {
-          title: 'Create Video',
+          title: 'CREATE VIDEO',
           key: 'createVideo',
           url: '/video/create',
         },
@@ -709,6 +709,22 @@ export async function getTopMenuData() {
           title: 'CREATE KIRTAN',
           key: 'createKirtan',
           url: '/kirtan/create',
+        },
+      ],
+    },
+    {
+      title: 'Video',
+      key: 'video',
+      children: [
+        {
+          title: 'LIST',
+          key: 'VideoList',
+          url: '/video/list',
+        },
+        {
+          title: 'CREATE VIDEO',
+          key: 'createVideo',
+          url: '/video/create',
         },
       ],
     },
