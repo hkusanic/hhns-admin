@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
-import { Table, DatePicker, Select } from 'antd'
+import { Table, DatePicker, Select, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -11,9 +11,12 @@ const { Option } = Select
 
 @connect(({ video }) => ({ video }))
 class VideoList extends React.Component {
-  state = {}
+  state = {
+    language: true,
+  }
+
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch } = this.props
     dispatch({
       type: 'video/GET_VIDEOS',
       page: 1,
@@ -40,6 +43,13 @@ class VideoList extends React.Component {
     return result
   }
 
+  handleLanguage = () => {
+    const { language } = this.state
+    this.setState({
+      language: !language,
+    })
+  }
+
   handlePageChnage = page => {
     const { dispatch } = this.props
 
@@ -51,7 +61,6 @@ class VideoList extends React.Component {
 
   deleteVideo = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'video/DELETE_VIDEOS',
       uuid,
@@ -77,33 +86,31 @@ class VideoList extends React.Component {
   }
 
   render() {
-    
     const { video } = this.props
     const { videos, totalVideos } = video
+    const { language } = this.state
     const data = videos
     const columns = [
       {
         title: 'Title',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.title' : 'en.title',
+        dataIndex: language ? 'en.title' : 'ru.title',
+        key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
       },
       {
         title: 'Event',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.event' : 'en.event',
+        dataIndex: language ? 'en.event' : 'ru.event',
+        key: language ? 'en.event' : 'ru.event',
       },
       {
-        title: 'Author',
-        dataIndex: 'author',
-        key: 'author',
+        title: 'Type',
+        dataIndex: 'type',
+        key: 'type',
       },
       {
         title: 'Date',
-        dataIndex: 'created_date',
-        key: 'created_date',
+        dataIndex: 'date',
+        key: 'date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
@@ -112,10 +119,10 @@ class VideoList extends React.Component {
         render: record => (
           <span>
             <Link to={{ pathname: '/video/create', state: record.uuid }}>
-              <i className="fa fa-edit mr-2" />
+              <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
-              className="fa fa-trash mr-2"
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
                 this.deleteVideo(record.uuid)
               }}
@@ -130,8 +137,16 @@ class VideoList extends React.Component {
         <Helmet title="Video List" />
         <div className="card">
           <div className="card-header">
-            <div className="utils__title">
+            <div className="utils__title" style={{ paddingBottom: '10px' }}>
               <strong>Video List</strong>
+              <Switch
+                defaultChecked
+                checkedChildren={language ? 'en' : 'ru'}
+                unCheckedChildren={language ? 'en' : 'ru'}
+                onChange={this.handleLanguage}
+                className="toggle"
+                style={{ width: '100px', marginLeft: '10px' }}
+              />
             </div>
             <DatePicker onChange={this.onChangeDate} />
             <Select
