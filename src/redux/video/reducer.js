@@ -22,6 +22,8 @@ export default function videoReducer(state = initialState, action) {
       return Object.assign({}, state, action.payload)
     case types.SET_STATE:
       return { ...state, ...action.payload }
+    case types.SET_STATE_:
+      return { ...state, ...action.payload }
     default:
       return state
   }

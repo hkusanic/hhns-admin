@@ -41,7 +41,6 @@ export async function getSuggestions(body) {
 }
 
 export async function getVideoList(page, date, createdDateSort) {
-  console.log('service');
   const pageNumber = page || 1
   const dateNow = date || null
   const createdDateSorting = createdDateSort || null
@@ -51,7 +50,7 @@ export async function getVideoList(page, date, createdDateSort) {
     pageNumber +
     (dateNow ? '&date=' + date : '') +
     (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '')
-    
+    console.log(url);
   return axios
     .get(url)
     .then(response => {

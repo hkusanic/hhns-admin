@@ -88,7 +88,6 @@ export function* getVideoListSaga(payload) {
 export function* getSuggestionSaga(payload) {
   try {
     const result = yield call(getSuggestions, payload)
-    console.log(result);
     if (result.status === 200) {
       if (payload.payload.type === 'kirtan') {
         yield put({
@@ -97,7 +96,8 @@ export function* getSuggestionSaga(payload) {
             suggestions: result.data.kirtan.results,
           },
         })
-      } else if (payload.payload.type === 'video') {
+      } else if (payload.payload.type === 'lecture') {
+        console.log(result.data.lecture.results)
         yield put({
           type: 'video/GET_SUGGESTIONS',
           payload: {
@@ -165,7 +165,7 @@ export function* updateVideoSaga(payload) {
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.CREATE_VIDEO, createVideoSaga),
-    takeEvery(actions.GET_SUGGESTIONS, getSuggestionSaga),
+    takeEvery(actions.GET_SUGGESTION, getSuggestionSaga),
     takeEvery(actions.GET_VIDEOS, getVideoListSaga),
     takeEvery(actions.DELETE_VIDEOS, deleteVideoByUuidSaga),
     takeEvery(actions.GET_VIDEO_BY_ID, getVideoByUuidSaga),

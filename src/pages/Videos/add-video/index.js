@@ -105,6 +105,7 @@ class AddVideo extends React.Component {
   }
 
   handleSelectType = type => {
+    // this.setState({autoCompleteDataSource: []});
     if (type !== 'other') {
       this.setState({ showReference: true, type })
     } else {
@@ -126,7 +127,7 @@ class AddVideo extends React.Component {
       parameter: reference,
     }
     dispatch({
-      type: 'video/GET_SUGGESTIONS',
+      type: 'video/GET_SUGGESTION',
       payload: body,
     })
     const ar = []
