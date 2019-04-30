@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -5,6 +6,7 @@ import { Table, Select, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { handleFilterGallery } from '../../../services/custom'
 
 const { Option } = Select
 
@@ -76,7 +78,7 @@ class GalleryList extends React.Component {
     const { gallery } = this.props
     const { mainGallery, subGallery, totalSubGallery } = gallery
     const { language } = this.state
-
+    const mainGalleryFiltered = handleFilterGallery(mainGallery)
     const columns = [
       {
         title: 'Title',
@@ -138,8 +140,8 @@ class GalleryList extends React.Component {
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                {mainGallery && mainGallery.length > 0
-                  ? mainGallery.map(item => {
+                {mainGalleryFiltered && mainGalleryFiltered.length > 0
+                  ? mainGalleryFiltered.map(item => {
                       return (
                         <Option value={item.name_en}>
                           {language ? item.name_en : item.name_ru}

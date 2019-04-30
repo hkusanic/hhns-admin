@@ -44,6 +44,17 @@ class BlogAddPost extends React.Component {
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" />
         <Helmet title="Add Blog Post" />
+        {editingBlog && editingBlog.title_en ? (
+          <div style={{ paddingTop: '10px' }}>
+            <div>
+              <strong>Title :</strong>
+              &nbsp;&nbsp;
+              <span>
+                {language ? editingBlog.title_en : editingBlog.title_ru ? editingBlog.title_ru : ''}
+              </span>
+            </div>
+          </div>
+        ) : null}
         <Tabs defaultActiveKey="1">
           <TabPane tab="Blog" key="1">
             <section className="card">

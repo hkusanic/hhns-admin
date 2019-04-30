@@ -1,13 +1,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
-import { Table, DatePicker, Select, Switch } from 'antd'
+import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
-
-const { Option } = Select
 
 @connect(({ video }) => ({ video }))
 class VideoList extends React.Component {
@@ -148,7 +146,7 @@ class VideoList extends React.Component {
                 style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
-            <DatePicker onChange={this.onChangeDate} />
+            {/* <DatePicker onChange={this.onChangeDate} />
             <Select
               id="product-edit-colors"
               showSearch
@@ -162,8 +160,7 @@ class VideoList extends React.Component {
             >
               <Option value="asc">Ascending</Option>
               <Option value="desc">Descending</Option>
-            </Select>
-            ,
+            </Select> */}
           </div>
           <div className="card-body">
             <Table

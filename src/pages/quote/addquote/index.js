@@ -73,7 +73,13 @@ class AddQuote extends React.Component {
       const { quote } = nextProps
       const { editQuote } = quote
       const { language } = this.state
-      const html = editQuote ? (language ? editQuote.en.body : editQuote.ru.body) : ''
+      const html = editQuote
+        ? language
+          ? editQuote.en.body
+          : editQuote.ru
+          ? editQuote.ru.body
+          : ''
+        : ''
       let editorState = ''
       if (html.length > 0) {
         const contentBlock = htmlToDraft(html)
@@ -117,19 +123,18 @@ class AddQuote extends React.Component {
       date,
       published_date: publishDate,
       needs_translation: translationRequired,
-      en: {},
-      ru: {},
-    }
-    if (language) {
-      body.en.title = titleEn
-      body.en.body = bodyEn
-      body.en.topic = topic
-      body.en.author = author
-    } else {
-      body.ru.title = titleEn
-      body.ru.body = bodyEn
-      body.ru.topic = topic
-      body.ru.author = author
+      en: {
+        title: language ? titleEn : editingQuote ? editingQuote.en.title : '',
+        topic: language ? topic : editingQuote ? editingQuote.en.topic : '',
+        body: language ? bodyEn : editingQuote ? editingQuote.en.body : '',
+        author,
+      },
+      ru: {
+        title: language ? (editingQuote ? editingQuote.ru.title : '') : titleEn,
+        topic: language ? (editingQuote ? editingQuote.ru.topic : '') : topic,
+        body: language ? (editingQuote ? editingQuote.ru.body : '') : bodyEn,
+        author,
+      },
     }
     if (editingQuote) {
       body.audit = editingQuote.audit
@@ -160,7 +165,13 @@ class AddQuote extends React.Component {
       language: checked,
     })
     const { editingQuote, language } = this.state
-    const html = editingQuote ? (language ? editingQuote.en.body : editingQuote.ru.body) : ''
+    const html = editingQuote
+      ? language
+        ? editingQuote.en.body
+        : editingQuote.ru
+        ? editingQuote.ru.body
+        : ''
+      : ''
     let editorState = ''
     if (html.length > 0) {
       const contentBlock = htmlToDraft(html)
@@ -190,7 +201,9 @@ class AddQuote extends React.Component {
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
-              <span>{language ? editingQuote.en.title : editingQuote.ru.title}</span>
+              <span>
+                {language ? editingQuote.en.title : editingQuote.ru ? editingQuote.ru.title : ''}
+              </span>
             </div>
           </div>
         ) : null}
@@ -220,7 +233,9 @@ class AddQuote extends React.Component {
                           initialValue: editingQuote
                             ? language
                               ? editingQuote.en.title
-                              : editingQuote.ru.title
+                              : editingQuote.ru
+                              ? editingQuote.ru.title
+                              : ''
                             : '',
                         })(<Input placeholder="Post title" />)}
                       </FormItem>
