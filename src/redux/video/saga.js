@@ -1,12 +1,33 @@
 import { notification } from 'antd'
-import { all, takeEvery,  put, call } from 'redux-saga/effects'
-import { createVideo, getSuggestions, getVideoList, deleteVideoByUuid, getVideoByUuid, updateVideo } from 'services/video'
+import { all, takeEvery, put, call } from 'redux-saga/effects'
+import {
+  createVideo,
+  getSuggestions,
+  getVideoList,
+  deleteVideoByUuid,
+  getVideoByUuid,
+  updateVideo,
+} from 'services/video'
 import actions from './action'
 
+export function* createVideoSaga(payload) {
+  const { body } = payload
+  const userDetails = JSON.parse(localStorage.getItem('user'))
 
-export function* createVideoSaga({ payload }) {
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  const obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  const audit = []
+  audit.push(JSON.stringify(obj))
+  body.audit = audit
   try {
-    const result = yield call(createVideo, payload)
+    const result = yield call(createVideo, body)
+    console.log('result ====>>>>', result)
     if (result.status === 200) {
       notification.success({
         message: 'Success',
@@ -19,6 +40,7 @@ export function* createVideoSaga({ payload }) {
           isDeleted: false,
           isUpdated: false,
           videos: [],
+          videoAudit: result.data.Video.audit,
         },
       })
     }
@@ -136,14 +158,31 @@ export function* getVideoByUuidSaga(body) {
   }
 }
 export function* updateVideoSaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  const obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  const auditData = JSON.parse(`[${body.audit}]`)
+  const auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
   try {
-    const { body, uuid } = payload.payload
     const result = yield call(updateVideo, uuid, body)
     if (result.status === 200) {
       yield put({
         type: 'video/SET_STATE_',
         payload: {
-          editVideo: '',
+          editVideo: result.data.video,
           isUpdated: true,
           isVideoCreated: false,
           isDeleted: false,

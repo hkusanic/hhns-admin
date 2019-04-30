@@ -299,6 +299,7 @@ class CreateGallery extends React.Component {
             : title,
         }
         if (editGallery !== '' && uuid) {
+          body.audit = editGallery.audit
           const payload = {
             body,
             uuid,
@@ -566,7 +567,9 @@ class CreateGallery extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline />
+                <AuditTimeline
+                  audit={editGallery.audit ? editGallery.audit : gallery.galleryAudit}
+                />
               </div>
             </section>
           </TabPane>

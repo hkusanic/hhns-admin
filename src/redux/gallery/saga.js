@@ -66,8 +66,22 @@ export function* getSubGalleryByGallerySaga(payload) {
 }
 
 export function* createGallerySaga(payload) {
+  const { body } = payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  const obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  const audit = []
+  audit.push(JSON.stringify(obj))
+  body.audit = audit
   try {
-    const { body } = payload
     const result = yield call(createGallery, body)
     console.log('result ====>>>>>', result)
     if (result.status === 200) {
@@ -78,6 +92,7 @@ export function* createGallerySaga(payload) {
           isDeleted: false,
           isUpdated: false,
           loading: true,
+          galleryAudit: result.data.Gallery.audit,
         },
       })
       notification.success({
@@ -147,15 +162,32 @@ export function* getGalleyByUuidSaga(body) {
 }
 
 export function* updateGallerySaga(payload) {
+  const { body, uuid } = payload.payload
+
+  const userDetails = JSON.parse(localStorage.getItem('user'))
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+  const dateTime = `${date} ${time}`
+  const obj = {}
+  obj.fullName = `${userDetails.firstName} ${userDetails.last}`
+  obj.email = userDetails.email
+  obj.dateTime = dateTime
+  const auditData = JSON.parse(`[${body.audit}]`)
+  const auditArray = []
+  auditData.forEach(e => {
+    auditArray.push(JSON.stringify(e))
+  })
+  auditArray.push(JSON.stringify(obj))
+  body.audit = auditArray
   try {
-    const { body, uuid } = payload.payload
     console.log('payload ====>>>>', body, uuid)
     const result = yield call(updateGallery, uuid, body)
     if (result.status === 200) {
       yield put({
         type: 'gallery/SET_STATE',
         payload: {
-          editGallery: '',
+          editGallery: result.data.Gallery,
           isGalleryCreated: false,
           isDeleted: false,
           isUpdated: false,
