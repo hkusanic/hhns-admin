@@ -29,7 +29,7 @@ import $ from 'jquery'
 import moment from 'moment'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import BackNavigation from '../../../common/BackNavigation/index'
-import { uuidv4 } from '../../../services/custom'
+import { uuidv4, handleFilterGallery } from '../../../services/custom'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
@@ -45,8 +45,8 @@ class CreateGallery extends React.Component {
     this.state = {
       photoFiles: [],
       galleryBody: EditorState.createEmpty(),
-      createDate: '',
-      publishDate: '',
+      createDate: new Date(),
+      publishDate: new Date(),
       gallery: '2019',
       editGallery: '',
       uploading: true,
@@ -365,7 +365,8 @@ class CreateGallery extends React.Component {
 
   render() {
     const { form, gallery } = this.props
-    const { mainGallery } = gallery
+    let { mainGallery } = gallery
+    mainGallery = handleFilterGallery(mainGallery)
     const dateFormat = 'YYYY/MM/DD'
 
     const { galleryBody, photoFiles, editGallery, language, translationRequired } = this.state
@@ -480,7 +481,7 @@ class CreateGallery extends React.Component {
                           initialValue:
                             editGallery && editGallery.date
                               ? moment(editGallery.date, dateFormat)
-                              : '',
+                              : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>
                     </div>
@@ -496,8 +497,8 @@ class CreateGallery extends React.Component {
                           initialValue:
                             editGallery && editGallery.publish_date
                               ? moment(editGallery.publish_date, dateFormat)
-                              : '',
-                        })(<DatePicker onChange={this.handlePublishDate} />)}
+                              : moment(new Date(), dateFormat),
+                        })(<DatePicker disabled onChange={this.handlePublishDate} />)}
                       </FormItem>
                     </div>
                     <div className="form-group">

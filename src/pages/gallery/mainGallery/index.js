@@ -4,6 +4,7 @@ import React from 'react'
 import { Form, Input, Button, Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
+import { handleFilterGallery } from '../../../services/custom'
 import styles from './style.module.scss'
 
 const FormItem = Form.Item
@@ -60,7 +61,6 @@ class MainGallery extends React.Component {
   handleFormBody = event => {
     event.preventDefault()
     const { form, dispatch } = this.props
-    const { language } = this.state
     const name = form.getFieldValue('title')
     form.validateFields(['title'], (err, values) => {
       console.info(values)
@@ -68,8 +68,8 @@ class MainGallery extends React.Component {
         const body = {
           uuid: this.uuidv4(),
           date: new Date().toLocaleDateString(),
-          name_en: language ? name : '',
-          name_ru: language ? '' : name,
+          name_en: name,
+          name_ru: name,
         }
         dispatch({
           type: 'galleryListing/CREATE_MAIN_GALLERY',
@@ -99,8 +99,7 @@ class MainGallery extends React.Component {
     const { form, galleryList } = this.props
     const { mainGallery, totalmainGallery } = galleryList
     const { language } = this.state
-    const mainGallery1 = mainGallery.sort(this.sortNumber)
-    console.log('mainGallery1======>>>>', mainGallery1)
+    const mainGallery1 = handleFilterGallery(mainGallery)
 
     const columns = [
       {
@@ -115,7 +114,7 @@ class MainGallery extends React.Component {
         render: record => (
           <span>
             <i
-              className="fa fa-trash mr-2"
+              className="fa fa-trash mr-2 closeIcon"
               onClick={() => {
                 this.handleDeleteMainGallery(record.uuid)
               }}

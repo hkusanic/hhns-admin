@@ -165,7 +165,7 @@ class QuotesList extends React.Component {
             <Table
               // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
-                record.translation_required === true ? 'NotTranslated' : 'translated'
+                record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
               className="utils__scrollTable"
               scroll={{ x: '100%' }}

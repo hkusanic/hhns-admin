@@ -65,7 +65,13 @@ class AddForm extends React.Component {
     if (nextProps.blog.editBlog && upoading) {
       const { blog, english } = nextProps
       const { editBlog } = blog
-      const html = editBlog ? (english ? editBlog.body_en : editBlog.body_ru) : ''
+      const html = editBlog
+        ? english
+          ? editBlog.body_en
+          : editBlog.body_ru
+          ? editBlog.body_ru
+          : ''
+        : ''
       let editorState = ''
       if (html.length > 0) {
         const contentBlock = htmlToDraft(html)
@@ -289,19 +295,8 @@ class AddForm extends React.Component {
     const { files } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
-    // console.log('add form: ', editingBlog)
-
     return (
       <>
-        {editingBlog && editingBlog.title_en && editingBlog.title_ru ? (
-          <div style={{ paddingTop: '10px' }}>
-            <div>
-              <strong>Title :</strong>
-              &nbsp;&nbsp;
-              <span>{english ? editingBlog.title_en : editingBlog.title_ru}</span>
-            </div>
-          </div>
-        ) : null}
         <Form className="mt-3" onSubmit={this.handleFormBody}>
           <div className="form-group">
             <FormItem label={english ? 'Title_En' : 'Title_Ru'}>
