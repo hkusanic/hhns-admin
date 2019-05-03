@@ -1,7 +1,7 @@
 import React from 'react'
 // import { Button } from 'antd'
 // import { FormattedMessage } from 'react-intl'
-import HomeMenu from './HomeMenu'
+// import HomeMenu from './HomeMenu'
 // import ProjectManagement from './ProjectManagement'
 // import IssuesHistory from './IssuesHistory'
 // import LiveSearch from './LiveSearch'
@@ -31,9 +31,7 @@ class TopBar extends React.Component {
         <div className="mr-4">
           <LanguageSelector />
         </div>
-        <div className="mr-4">
-          <HomeMenu />
-        </div>
+        <div className="mr-4">{/* <HomeMenu /> */}</div>
         <ProfileMenu />
       </div>
     )

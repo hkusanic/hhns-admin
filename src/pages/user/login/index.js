@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, Checkbox } from 'antd'
 import { Helmet } from 'react-helmet'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import styles from './style.module.scss'
 
@@ -31,7 +31,7 @@ class Login extends Component {
         <Helmet title="Login" />
         <div className={`${styles.title} login-heading`}>
           <h1>
-            <strong>His Holiness Niranjana Swami</strong>
+            <strong>Hare Krishna! Welcome to the Admin page of niranjanaswami.net </strong>
           </h1>
         </div>
         <div className={styles.block}>

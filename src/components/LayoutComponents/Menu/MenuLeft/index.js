@@ -205,14 +205,14 @@ class MenuLeft extends React.Component {
         {...menuSettings}
         className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
       >
-        <div className={styles.logo}>
-          <div className={styles.logoContainer}>
-            <img
+        {/* <div className={styles.logo}> */}
+        {/* <div className={styles.logoContainer}> */}
+        {/* <img
               src={`resources/images/logo-inverse${menuSettings.collapsed ? '-mobile' : ''}.png`}
               alt=""
-            />
-          </div>
-        </div>
+            /> */}
+        {/* </div> */}
+        {/* </div> */}
         <Scrollbars
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (

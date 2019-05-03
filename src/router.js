@@ -343,7 +343,7 @@ class Router extends React.Component {
       <ConnectedRouter history={history}>
         <IndexLayout>
           <Switch>
-            <Route exact path="/" render={() => <Redirect to="/dashboard/alpha" />} />
+            <Route exact path="/" render={() => <Redirect to="/blog/blog-list" />} />
             {routes.map(route => (
               <Route
                 path={route.path}

@@ -26,12 +26,12 @@ class ProfileMenu extends React.Component {
   }
 
   render() {
-    const { user } = this.props
+    // const { user } = this.props
     const { count } = this.state
     const menu = (
       <Menu selectable={false}>
-        <Menu.Item>
-          <strong>
+        {/* <Menu.Item> */}
+        {/* <strong>
             <FormattedMessage id="topBar.profileMenu.hello" />, {user.name || 'Anonymous'}
           </strong>
           <div>
@@ -45,10 +45,10 @@ class ProfileMenu extends React.Component {
               <FormattedMessage id="topBar.profileMenu.role" />:{' '}
             </strong>
             {user.role}
-          </div>
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item>
+          </div> */}
+        {/* </Menu.Item> */}
+        {/* <Menu.Divider /> */}
+        {/* <Menu.Item>
           <div>
             <strong>
               <FormattedMessage id="topBar.profileMenu.email" />:{' '}
@@ -68,7 +68,7 @@ class ProfileMenu extends React.Component {
             <FormattedMessage id="topBar.profileMenu.editProfile" />
           </a>
         </Menu.Item>
-        <Menu.Divider />
+        <Menu.Divider /> */}
         <Menu.Item>
           <a href="javascript: void(0);" onClick={this.logout}>
             <i className={`${styles.menuIcon} icmn-exit`} />
