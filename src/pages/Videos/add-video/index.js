@@ -29,22 +29,14 @@ import styles from './style.module.scss'
 const FormItem = Form.Item
 const { TabPane } = Tabs
 const { Option } = Select
-let id = 0;
-let initialize = true;
+let id = 0
+let initialize = true
 @Form.create()
 @connect(({ video, lecture }) => ({ video, lecture }))
 class AddVideo extends React.Component {
   state = {
     autoCompleteDataSource: '',
     language: true,
-    event: '',
-    location: '',
-    type: '',
-    videoReference: '',
-    videoUrlFields: [],
-    videoUrl: [],
-    showReference: false,
-    tempUrl: '',
     editingvideo: '',
     translationRequired: true,
     nextUrls: [],
@@ -52,7 +44,7 @@ class AddVideo extends React.Component {
   }
 
   componentDidMount() {
-    initialize =true;
+    initialize = true
     const { location, dispatch } = this.props
     const uuid = location.state
     if (uuid !== undefined) {
@@ -73,7 +65,6 @@ class AddVideo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {form} = this.props;
     if (nextProps.video.editVideo !== '') {
       const { video } = nextProps
       let ar = []
@@ -82,21 +73,17 @@ class AddVideo extends React.Component {
       }
       this.setState({
         editingvideo: video.editVideo,
-        type: video.editVideo && video.editVideo.type ? video.editVideo.type : '',
-        videoUrl: video.editVideo && video.editVideo.urls ? video.editVideo.urls || [] : [],
-        showReference: video.editVideo && video.editVideo.type ? video.editVideo.type !== 'other' : false,
         translationRequired: video.editVideo ? video.editVideo.translation_required : true,
         nextUrls: ar,
       })
-      if(initialize){
-        let arKeys =[];
+      if (initialize) {
+        const arKeys = []
         video.editVideo.urls.map((k, index) => {
-          arKeys.push(index);
+          arKeys.push(index)
         })
-        this.setState({arKeys: arKeys});
-          id = arKeys.length - 1;
-          initialize = false;
-          
+        this.setState({ arKeys })
+        id = arKeys.length - 1
+        initialize = false
       }
     }
     if (nextProps.video.isVideoCreated) {
@@ -104,25 +91,24 @@ class AddVideo extends React.Component {
     }
   }
 
-  remove = (k) => {
-    const { form } = this.props;
-    const keys = form.getFieldValue('keys');
+  remove = k => {
+    const { form } = this.props
+    const keys = form.getFieldValue('keys')
     if (keys.length === 1) {
-      return;
+      return
     }
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
-    });
+    })
   }
 
-  
   add = () => {
-    const { form } = this.props;
-    const keys = form.getFieldValue('keys');
-    const nextKeys = keys.concat(++id);
+    const { form } = this.props
+    const keys = form.getFieldValue('keys')
+    const nextKeys = keys.concat(++id)
     form.setFieldsValue({
       keys: nextKeys,
-    });
+    })
   }
 
   handleLanguage = () => {
@@ -131,34 +117,6 @@ class AddVideo extends React.Component {
       language: !language,
     })
   }
-
-  // handleSelectEvent = event => {
-  //   this.setState({
-  //     event,
-  //   })
-  // }
-
-  // handleSelectLocation = location => {
-  //   this.setState({
-  //     location,
-  //   })
-  // }
-
-  // handleSelectType = type => {
-  //   if (type !== 'other') {
-  //     this.setState({ showReference: true, type, autoCompleteDataSource: [] }, () => {
-  //     })
-  //   } else {
-  //     this.setState({ showReference: false, type, autoCompleteDataSource: [] }, () => {
-  //     })
-  //   }
-  // }
-
-  // handleVideoReferenceSelect = reference => {
-  //   this.setState({
-  //     videoReference: reference,
-  //   })
-  // }
 
   handleVideoReferenceSearch = reference => {
     const { form, dispatch } = this.props
@@ -186,36 +144,27 @@ class AddVideo extends React.Component {
     }
   }
 
-
   handleSubmitForm = () => {
     const { form, dispatch } = this.props
     const uuid = this.props.location.state
-    // const {
-    //   language,
-    //   event,
-    //   location,
-    //   type,
-    //   videoReference,
-    //   editingvideo,
-    //   translationRequired,
-    // } = this.state
-    const {language, translationRequired, editingvideo} = this.state;
+    const { language, translationRequired, editingvideo } = this.state
     const titleVideo = form.getFieldValue('title')
     const author = form.getFieldValue('author')
     const videoLanguage = form.getFieldValue('language')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
-    const event = form.getFieldValue('event');
-    const location = form.getFieldValue('location');
-    const type = form.getFieldValue('type');
-    const videoReference = form.getFieldValue('reference');
-    //const translationRequired = form.getFieldValue('translation');
+    const event = form.getFieldValue('event')
+    const location = form.getFieldValue('location')
+    const type = form.getFieldValue('type')
+    const videoReference = form.getFieldValue('reference')
 
     form.validateFields(['title', 'create_date'], (err, values) => {
+      console.info(values)
       const dynamicFieldValues = []
       const keys = form.getFieldValue('keys')
 
       keys.map((k, index) => {
+        console.info(index)
         const val = form.getFieldValue(`url-[${k}]`)
         dynamicFieldValues.push(val)
       })
@@ -242,7 +191,7 @@ class AddVideo extends React.Component {
             location: language ? (editingvideo ? editingvideo.ru.location : '') : location,
           },
         }
-        console.log(body);
+        console.log(body)
         if (editingvideo !== '') {
           body.audit = editingvideo.audit
           const payload = {
@@ -259,7 +208,6 @@ class AddVideo extends React.Component {
             body,
           })
         }
-        this.setState({ id: 0 })
       }
     })
   }
@@ -277,16 +225,7 @@ class AddVideo extends React.Component {
     form.resetFields()
     this.setState({
       language: true,
-      event: '',
-      location: '',
-      type: '',
-      videoReference: '',
-      videoUrl: [],
-      videoUrlFields: [],
-      tempUrl: [],
-      showReference: false,
       editingvideo: '',
-      id: 0,
     })
   }
 
@@ -315,34 +254,35 @@ class AddVideo extends React.Component {
         sm: { span: 20, offset: 4 },
       },
     }
-     
-    
-    
-    getFieldDecorator('keys', { rules: [
-      {
-        required: true,
-        message: 'Url is required',
-      },
-    ],initialValue: (this.state.arKeys.length>0 ? this.state.arKeys : [0] ) });
-    const keys = getFieldValue('keys');
+
+    getFieldDecorator('keys', {
+      rules: [
+        {
+          required: true,
+          message: 'Url is required',
+        },
+      ],
+      initialValue: this.state.arKeys.length > 0 ? this.state.arKeys : [0],
+    })
+    const keys = getFieldValue('keys')
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
         label={index === 0 ? 'Youtube Url' : ''}
-        required={true}
+        required
         key={k}
       >
         {getFieldDecorator(`url-[${k}]`, {
           validateTrigger: ['onChange', 'onBlur'],
-          rules: [{
-            required: true,
-            whitespace: true,
-            message: "Please input url or delete this field.",
-          }],
+          rules: [
+            {
+              required: true,
+              whitespace: true,
+              message: 'Please input url or delete this field.',
+            },
+          ],
           initialValue: this.state.nextUrls[k] ? this.state.nextUrls[k] : '',
-        })(
-          <Input placeholder="Url" style={{ width: '60%', marginRight: 8 }} />
-        )}
+        })(<Input placeholder="Url" style={{ width: '60%', marginRight: 8 }} />)}
         {keys.length > 1 ? (
           <Icon
             className="dynamic-delete-button"
@@ -351,8 +291,8 @@ class AddVideo extends React.Component {
           />
         ) : null}
       </Form.Item>
-    ));
-    
+    ))
+
     return (
       <React.Fragment>
         <div>
@@ -476,13 +416,14 @@ class AddVideo extends React.Component {
                             )}
                           </FormItem>
                         </div>
-                        {form.getFieldValue('type')==='kirtan' || form.getFieldValue('type')==='lecture' ? (
+                        {form.getFieldValue('type') === 'kirtan' ||
+                        form.getFieldValue('type') === 'lecture' ? (
                           <div className="form-group">
                             <FormItem label="Reference">
                               {form.getFieldDecorator('reference', {
                                 rules: [
                                   {
-                                    required: form.getFieldValue('type')==='lecture',
+                                    required: form.getFieldValue('type') === 'lecture',
                                     message: 'Reference is required',
                                   },
                                 ],
