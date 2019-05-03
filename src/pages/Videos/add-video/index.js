@@ -132,33 +132,33 @@ class AddVideo extends React.Component {
     })
   }
 
-  handleSelectEvent = event => {
-    this.setState({
-      event,
-    })
-  }
+  // handleSelectEvent = event => {
+  //   this.setState({
+  //     event,
+  //   })
+  // }
 
-  handleSelectLocation = location => {
-    this.setState({
-      location,
-    })
-  }
+  // handleSelectLocation = location => {
+  //   this.setState({
+  //     location,
+  //   })
+  // }
 
-  handleSelectType = type => {
-    if (type !== 'other') {
-      this.setState({ showReference: true, type, autoCompleteDataSource: [] }, () => {
-      })
-    } else {
-      this.setState({ showReference: false, type, autoCompleteDataSource: [] }, () => {
-      })
-    }
-  }
+  // handleSelectType = type => {
+  //   if (type !== 'other') {
+  //     this.setState({ showReference: true, type, autoCompleteDataSource: [] }, () => {
+  //     })
+  //   } else {
+  //     this.setState({ showReference: false, type, autoCompleteDataSource: [] }, () => {
+  //     })
+  //   }
+  // }
 
-  handleVideoReferenceSelect = reference => {
-    this.setState({
-      videoReference: reference,
-    })
-  }
+  // handleVideoReferenceSelect = reference => {
+  //   this.setState({
+  //     videoReference: reference,
+  //   })
+  // }
 
   handleVideoReferenceSearch = reference => {
     const { form, dispatch } = this.props
@@ -186,48 +186,37 @@ class AddVideo extends React.Component {
     }
   }
 
-  handleAddVideoUrl = () => {
-    const { videoUrlFields, tempUrl, videoUrl } = this.state
-    const ar = videoUrlFields
-    let len = ar.length
-    const arUrls = videoUrl
-    if (tempUrl !== '') arUrls.push(tempUrl)
-
-    ar.push(
-      <Input key={++len} onChange={e => this.handleUrlValueChange(e)} placeholder="Youtube Url" />,
-    )
-    this.setState({ videoUrlFields: ar, videoUrl: arUrls, tempUrl: '' })
-  }
-
-  handleUrlValueChange = e => {
-    this.setState({ tempUrl: e.target.value })
-  }
 
   handleSubmitForm = () => {
     const { form, dispatch } = this.props
     const uuid = this.props.location.state
-    const {
-      language,
-      event,
-      location,
-      type,
-      videoReference,
-      editingvideo,
-      translationRequired,
-    } = this.state
+    // const {
+    //   language,
+    //   event,
+    //   location,
+    //   type,
+    //   videoReference,
+    //   editingvideo,
+    //   translationRequired,
+    // } = this.state
+    const {language, translationRequired, editingvideo} = this.state;
     const titleVideo = form.getFieldValue('title')
     const author = form.getFieldValue('author')
     const videoLanguage = form.getFieldValue('language')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
+    const event = form.getFieldValue('event');
+    const location = form.getFieldValue('location');
+    const type = form.getFieldValue('type');
+    const videoReference = form.getFieldValue('reference');
+    //const translationRequired = form.getFieldValue('translation');
 
     form.validateFields(['title', 'create_date'], (err, values) => {
-      console.info(values)
       const dynamicFieldValues = []
       const keys = form.getFieldValue('keys')
 
       keys.map((k, index) => {
-        const val = form.getFieldValue(`urls-${index}`)
+        const val = form.getFieldValue(`url-[${k}]`)
         dynamicFieldValues.push(val)
       })
 
@@ -253,6 +242,7 @@ class AddVideo extends React.Component {
             location: language ? (editingvideo ? editingvideo.ru.location : '') : location,
           },
         }
+        console.log(body);
         if (editingvideo !== '') {
           body.audit = editingvideo.audit
           const payload = {
@@ -328,13 +318,18 @@ class AddVideo extends React.Component {
      
     
     
-    getFieldDecorator('keys', { initialValue: (this.state.arKeys.length>0 ? this.state.arKeys : [0] ) });
+    getFieldDecorator('keys', { rules: [
+      {
+        required: true,
+        message: 'Url is required',
+      },
+    ],initialValue: (this.state.arKeys.length>0 ? this.state.arKeys : [0] ) });
     const keys = getFieldValue('keys');
     const formItems = keys.map((k, index) => (
       <Form.Item
         {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
         label={index === 0 ? 'Youtube Url' : ''}
-        required={false}
+        required={true}
         key={k}
       >
         {getFieldDecorator(`url-[${k}]`, {
@@ -468,7 +463,6 @@ class AddVideo extends React.Component {
                                 style={{ width: '100%' }}
                                 placeholder="Select Type"
                                 optionFilterProp="children"
-                                onChange={this.handleSelectType}
                                 filterOption={(input, option) =>
                                   option.props.children
                                     .toLowerCase()
@@ -482,7 +476,6 @@ class AddVideo extends React.Component {
                             )}
                           </FormItem>
                         </div>
-                        {}
                         {form.getFieldValue('type')==='kirtan' || form.getFieldValue('type')==='lecture' ? (
                           <div className="form-group">
                             <FormItem label="Reference">
@@ -503,7 +496,6 @@ class AddVideo extends React.Component {
                                   style={{ width: '100%' }}
                                   placeholder="Reference"
                                   optionFilterProp="children"
-                                  onSelect={this.handleVideoReferenceSelect}
                                   onSearch={this.handleVideoReferenceSearch}
                                 />,
                               )}
@@ -566,7 +558,6 @@ class AddVideo extends React.Component {
                                 style={{ width: '100%' }}
                                 placeholder="Select Event"
                                 optionFilterProp="children"
-                                onChange={this.handleSelectEvent}
                                 filterOption={(input, option) =>
                                   option.props.children
                                     .toLowerCase()
@@ -602,7 +593,6 @@ class AddVideo extends React.Component {
                                 style={{ width: '100%' }}
                                 placeholder="Select Location"
                                 optionFilterProp="children"
-                                onChange={this.handleSelectLocation}
                                 filterOption={(input, option) =>
                                   option.props.children
                                     .toLowerCase()
@@ -623,41 +613,12 @@ class AddVideo extends React.Component {
                           </FormItem>
                         </div>
                         <div className="form-group">
-                          {/* <FormItem label="Youtube">
-                            {form.getFieldDecorator('youtube', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Url is required',
-                                },
-                              ],
-                              initialValue:
-                                editingvideo && editingvideo.urls ? editingvideo.urls[0] : '',
-                            })(<Input placeholder="Youtube Url" />)}
-                          </FormItem>
-                          {this.state.videoUrlFields.map(input => {
-                            return input
-                          })} */}
                           {formItems}
                           <Form.Item {...formItemLayoutWithOutLabel}>
                             <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
                               <Icon type="plus" /> Add field
                             </Button>
                           </Form.Item>
-                          {/* <FormItem>
-                            <div className={styles.submit}>
-                              <span className="mr-3">
-                                <Button
-                                  type="default"
-                                  icon="plus-circle"
-                                  onClick={this.handleAddVideoUrl}
-                                  htmlType="submit"
-                                >
-                                  Add Another Item
-                                </Button>
-                              </span>
-                            </div>
-                          </FormItem> */}
                         </div>
                         <FormItem>
                           <div className={styles.submit}>
