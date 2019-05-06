@@ -70,6 +70,14 @@ class BlogList extends React.Component {
     })
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/blog/add-blog-post',
+      state: record.uuid,
+    })
+  }
+
   render() {
     const { language } = this.state
     const { blog } = this.props
@@ -135,6 +143,13 @@ class BlogList extends React.Component {
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  }, // double click
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

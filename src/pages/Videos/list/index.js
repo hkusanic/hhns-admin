@@ -86,6 +86,14 @@ class VideoList extends React.Component {
     })
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/video/create',
+      state: record.uuid,
+    })
+  }
+
   render() {
     const { video } = this.props
     const { videos, totalVideos } = video
@@ -171,6 +179,13 @@ class VideoList extends React.Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

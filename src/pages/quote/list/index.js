@@ -94,6 +94,14 @@ class QuotesList extends React.Component {
     })
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/quote/create',
+      state: record.uuid,
+    })
+  }
+
   render() {
     const { language } = this.state
     const { quote } = this.props
@@ -170,6 +178,13 @@ class QuotesList extends React.Component {
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

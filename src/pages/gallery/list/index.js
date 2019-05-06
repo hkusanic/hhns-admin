@@ -77,6 +77,14 @@ class GalleryList extends React.Component {
     })
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/gallery/create',
+      state: record.uuid,
+    })
+  }
+
   render() {
     const { gallery } = this.props
     const { mainGallery, subGallery, totalSubGallery } = gallery
@@ -159,6 +167,13 @@ class GalleryList extends React.Component {
                 rowClassName={record =>
                   record.translation_required === true ? 'NotTranslated' : 'translated'
                 }
+                onRow={record => {
+                  return {
+                    onDoubleClick: () => {
+                      this.hanldeRedirect(record)
+                    },
+                  }
+                }}
                 className="utils__scrollTable"
                 scroll={{ x: '100%' }}
                 columns={columns}

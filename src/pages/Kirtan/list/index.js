@@ -58,6 +58,14 @@ class KirtanList extends React.Component {
     })
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/kirtan/create',
+      state: record.uuid,
+    })
+  }
+
   render() {
     const { kirtan } = this.props
     const { language } = this.state
@@ -128,6 +136,13 @@ class KirtanList extends React.Component {
                 rowClassName={record =>
                   record.translation_required === true ? 'NotTranslated' : 'translated'
                 }
+                onRow={record => {
+                  return {
+                    onDoubleClick: () => {
+                      this.hanldeRedirect(record)
+                    },
+                  }
+                }}
                 className="utils__scrollTable"
                 scroll={{ x: '100%' }}
                 columns={columns}
