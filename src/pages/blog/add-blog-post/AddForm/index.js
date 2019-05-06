@@ -26,6 +26,7 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { uuidv4 } from '../../../../services/custom'
 import styles from '../style.module.scss'
+import serverAddress from '../../../../services/config'
 
 const { Option } = Select
 const FormItem = Form.Item
@@ -187,7 +188,7 @@ class AddForm extends React.Component {
     const fileType = file.type
     $.ajax({
       type: 'GET',
-      url: `http://localhost:3000/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+      url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
       success: data => {
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
@@ -242,7 +243,7 @@ class AddForm extends React.Component {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
     $.ajax({
       type: 'GET',
-      url: `http://localhost:3000/api/blog/deleteFile/?filename=${fileName}`,
+      url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: data => {
         notification.success({
           message: 'File Deleted',
