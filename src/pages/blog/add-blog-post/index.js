@@ -15,7 +15,7 @@ class BlogAddPost extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      language: true,
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
       editingBlog: '',
     }
   }
@@ -28,6 +28,9 @@ class BlogAddPost extends React.Component {
         editingBlog: blog.editBlog,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   handleLanguage = checked => {

@@ -3,7 +3,7 @@ import React from 'react'
 import { Timeline } from 'antd'
 
 const AuditTimeline = ({ audit }) => {
-  // console.log(audit)
+  audit = audit.reverse()
 
   return (
     <div>

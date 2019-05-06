@@ -56,7 +56,7 @@ class AddLecture extends React.Component {
       editinglecture: '',
       editedBody: '',
       translation: '',
-      language: true,
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
       uploading: true,
       audioUploading: false,
       transcriptionUploading: false,
@@ -134,6 +134,9 @@ class AddLecture extends React.Component {
     if (nextProps.lecture.isLectureCreated) {
       this.handleReset()
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   componentWillUnmount() {

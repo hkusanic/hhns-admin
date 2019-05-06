@@ -50,7 +50,7 @@ class CreateGallery extends React.Component {
       gallery: '2019',
       editGallery: '',
       uploading: true,
-      language: true,
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
       translationRequired: false,
     }
   }
@@ -90,6 +90,9 @@ class CreateGallery extends React.Component {
     if (nextProps.gallery.isGalleryCreated) {
       this.handleReset()
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   componentWillUnmount() {

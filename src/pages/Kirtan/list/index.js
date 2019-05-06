@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -28,6 +28,9 @@ class KirtanList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   handlePageChnage = page => {

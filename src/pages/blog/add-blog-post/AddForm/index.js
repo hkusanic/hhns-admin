@@ -122,12 +122,13 @@ class AddForm extends React.Component {
     const { files, editorState, editingBlog, translationRequired, publishDate, date } = this.state
     const titleEn = form.getFieldValue('title')
     const tag = form.getFieldValue('tag')
+    const author = form.getFieldValue('author')
     const language = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     const body = {
-      author: 'nirajanana swami',
       uuid: uuid || uuidv4(),
       language,
+      author,
       files,
       needs_translation: translationRequired,
       date,
@@ -318,6 +319,27 @@ class AddForm extends React.Component {
                     : editingBlog.tags_ru
                   : '',
               })(<Input placeholder="Tags" />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Author">
+              {form.getFieldDecorator('author', {
+                initialValue: editingBlog ? editingBlog.author : '',
+              })(
+                <Select
+                  id="product-edit-colors"
+                  showSearch
+                  style={{ width: '100%' }}
+                  placeholder="Select Author"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  <Option value="Niranjana Swami">Niranjana Swami</Option>
+                  <Option value="Other">Other</Option>
+                </Select>,
+              )}
             </FormItem>
           </div>
           <div className="form-group">

@@ -45,7 +45,7 @@ class AddQuote extends React.Component {
     editorState: EditorState.createEmpty(),
     editingQuote: '',
     editedBody: '',
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
     translationRequired: true,
   }
 
@@ -93,6 +93,9 @@ class AddQuote extends React.Component {
         })
       }
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   handleCheckbox = event => {
@@ -292,7 +295,7 @@ class AddQuote extends React.Component {
                             }
                           >
                             <Option value="Niranjana Swami">Niranjana Swami</Option>
-                            <Option value="Other" />
+                            <Option value="Other">Other</Option>
                           </Select>,
                         )}
                       </FormItem>

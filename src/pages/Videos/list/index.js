@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 @connect(({ video }) => ({ video }))
 class VideoList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -29,6 +29,9 @@ class VideoList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   showing100Characters = sentence => {
