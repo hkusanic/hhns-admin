@@ -322,7 +322,7 @@ export async function getLeftMenuData() {
       ],
     },
     {
-      title: 'Video',
+      title: 'VIDEO',
       key: 'video',
       children: [
         {
@@ -713,7 +713,7 @@ export async function getTopMenuData() {
       ],
     },
     {
-      title: 'Video',
+      title: 'VIDEO',
       key: 'video',
       children: [
         {

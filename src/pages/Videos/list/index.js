@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 @connect(({ video }) => ({ video }))
 class VideoList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -29,6 +29,9 @@ class VideoList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   showing100Characters = sentence => {
@@ -80,6 +83,14 @@ class VideoList extends React.Component {
       type: 'video/GET_VIDEOS',
       page: 1,
       createdDateSort: order,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/video/create',
+      state: record.uuid,
     })
   }
 
@@ -168,6 +179,13 @@ class VideoList extends React.Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 @connect(({ blog }) => ({ blog }))
 class BlogList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -30,6 +30,9 @@ class BlogList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   showing100Characters = sentence => {
@@ -64,6 +67,14 @@ class BlogList extends React.Component {
     const { language } = this.state
     this.setState({
       language: !language,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/blog/add-blog-post',
+      state: record.uuid,
     })
   }
 
@@ -132,6 +143,13 @@ class BlogList extends React.Component {
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  }, // double click
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

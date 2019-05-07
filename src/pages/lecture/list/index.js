@@ -12,7 +12,7 @@ const { Option } = Select
 @connect(({ lecture }) => ({ lecture }))
 class ProductsList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -31,6 +31,9 @@ class ProductsList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   showing100Characters = sentence => {
@@ -83,6 +86,14 @@ class ProductsList extends React.Component {
     const { language } = this.state
     this.setState({
       language: !language,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/lecture/create',
+      state: record.uuid,
     })
   }
 
@@ -172,6 +183,13 @@ class ProductsList extends React.Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

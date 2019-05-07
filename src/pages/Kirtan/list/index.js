@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -28,6 +28,9 @@ class KirtanList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   handlePageChnage = page => {
@@ -52,6 +55,14 @@ class KirtanList extends React.Component {
     const { language } = this.state
     this.setState({
       language: !language,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/kirtan/create',
+      state: record.uuid,
     })
   }
 
@@ -125,6 +136,13 @@ class KirtanList extends React.Component {
                 rowClassName={record =>
                   record.translation_required === true ? 'NotTranslated' : 'translated'
                 }
+                onRow={record => {
+                  return {
+                    onDoubleClick: () => {
+                      this.hanldeRedirect(record)
+                    },
+                  }
+                }}
                 className="utils__scrollTable"
                 scroll={{ x: '100%' }}
                 columns={columns}

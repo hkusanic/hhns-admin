@@ -13,7 +13,7 @@ const { Option } = Select
 @connect(({ quote }) => ({ quote }))
 class QuotesList extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -32,6 +32,9 @@ class QuotesList extends React.Component {
         page: 1,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   showing100Characters = sentence => {
@@ -88,6 +91,14 @@ class QuotesList extends React.Component {
     const { language } = this.state
     this.setState({
       language: !language,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/quote/create',
+      state: record.uuid,
     })
   }
 
@@ -167,6 +178,13 @@ class QuotesList extends React.Component {
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

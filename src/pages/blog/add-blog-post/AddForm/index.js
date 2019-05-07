@@ -26,6 +26,7 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { uuidv4 } from '../../../../services/custom'
 import styles from '../style.module.scss'
+import serverAddress from '../../../../services/config'
 
 const { Option } = Select
 const FormItem = Form.Item
@@ -122,12 +123,13 @@ class AddForm extends React.Component {
     const { files, editorState, editingBlog, translationRequired, publishDate, date } = this.state
     const titleEn = form.getFieldValue('title')
     const tag = form.getFieldValue('tag')
+    const author = form.getFieldValue('author')
     const language = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     const body = {
-      author: 'nirajanana swami',
       uuid: uuid || uuidv4(),
       language,
+      author,
       files,
       needs_translation: translationRequired,
       date,
@@ -187,7 +189,7 @@ class AddForm extends React.Component {
     const fileType = file.type
     $.ajax({
       type: 'GET',
-      url: `http://localhost:3000/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+      url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
       success: data => {
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
@@ -242,7 +244,7 @@ class AddForm extends React.Component {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
     $.ajax({
       type: 'GET',
-      url: `http://localhost:3000/api/blog/deleteFile/?filename=${fileName}`,
+      url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: data => {
         notification.success({
           message: 'File Deleted',
@@ -299,7 +301,7 @@ class AddForm extends React.Component {
       <>
         <Form className="mt-3" onSubmit={this.handleFormBody}>
           <div className="form-group">
-            <FormItem label={english ? 'Title_En' : 'Title_Ru'}>
+            <FormItem label={english ? 'Title' : 'Title'}>
               {form.getFieldDecorator('title', {
                 initialValue: editingBlog
                   ? english
@@ -310,7 +312,7 @@ class AddForm extends React.Component {
             </FormItem>
           </div>
           <div className="form-group">
-            <FormItem label={english ? 'Tags_En' : 'Tags_Ru'}>
+            <FormItem label={english ? 'Tags' : 'Tags'}>
               {form.getFieldDecorator('tag', {
                 initialValue: editingBlog
                   ? english
@@ -318,6 +320,27 @@ class AddForm extends React.Component {
                     : editingBlog.tags_ru
                   : '',
               })(<Input placeholder="Tags" />)}
+            </FormItem>
+          </div>
+          <div className="form-group">
+            <FormItem label="Author">
+              {form.getFieldDecorator('author', {
+                initialValue: editingBlog ? editingBlog.author : '',
+              })(
+                <Select
+                  id="product-edit-colors"
+                  showSearch
+                  style={{ width: '100%' }}
+                  placeholder="Select Author"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  <Option value="Niranjana Swami">Niranjana Swami</Option>
+                  <Option value="Other">Other</Option>
+                </Select>,
+              )}
             </FormItem>
           </div>
           <div className="form-group">
@@ -385,7 +408,7 @@ class AddForm extends React.Component {
             </FormItem>
           </div>
           <div className="form-group">
-            <FormItem label={english ? 'Body_En' : 'Body_Ru'}>
+            <FormItem label={english ? 'Body' : 'Body'}>
               {form.getFieldDecorator('content', {
                 initialValue: editorState || '',
               })(

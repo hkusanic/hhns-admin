@@ -72,7 +72,7 @@ class IndexLayout extends React.PureComponent {
       }
       // redirect to main dashboard when user on login page and authorized
       if (isLoginLayout && isUserAuthorized) {
-        return <Redirect to="/dashboard/alpha" />
+        return <Redirect to="/blog/blog-list" />
       }
       // in other case render previously set layout
       return <Container>{children}</Container>
@@ -80,7 +80,7 @@ class IndexLayout extends React.PureComponent {
 
     return (
       <Fragment>
-        <Helmet titleTemplate="Clean UI | %s" title="React Admin Template" />
+        <Helmet titleTemplate="HHNS ADMIN" title="hhns Admin" />
         {BootstrappedLayout()}
       </Fragment>
     )

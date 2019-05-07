@@ -13,7 +13,7 @@ const FormItem = Form.Item
 @connect(({ galleryList }) => ({ galleryList }))
 class MainGallery extends React.Component {
   state = {
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -36,6 +36,9 @@ class MainGallery extends React.Component {
         type: 'galleryListing/GET_MAIN_GALLERY_LIST',
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   handleDeleteMainGallery = uuid => {

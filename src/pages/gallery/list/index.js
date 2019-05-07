@@ -14,7 +14,7 @@ const { Option } = Select
 class GalleryList extends React.Component {
   state = {
     gallery: '2019',
-    language: true,
+    language: window.localStorage['app.settings.locale'] === '"en-US"',
   }
 
   componentDidMount() {
@@ -43,6 +43,9 @@ class GalleryList extends React.Component {
         body,
       })
     }
+    this.setState({
+      language: window.localStorage['app.settings.locale'] === '"en-US"',
+    })
   }
 
   hadleSelectGallery = gallery => {
@@ -71,6 +74,14 @@ class GalleryList extends React.Component {
     const { language } = this.state
     this.setState({
       language: !language,
+    })
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    history.push({
+      pathname: '/gallery/create',
+      state: record.uuid,
     })
   }
 
@@ -156,6 +167,13 @@ class GalleryList extends React.Component {
                 rowClassName={record =>
                   record.translation_required === true ? 'NotTranslated' : 'translated'
                 }
+                onRow={record => {
+                  return {
+                    onDoubleClick: () => {
+                      this.hanldeRedirect(record)
+                    },
+                  }
+                }}
                 className="utils__scrollTable"
                 scroll={{ x: '100%' }}
                 columns={columns}
