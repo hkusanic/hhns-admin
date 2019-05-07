@@ -301,7 +301,7 @@ class AddForm extends React.Component {
       <>
         <Form className="mt-3" onSubmit={this.handleFormBody}>
           <div className="form-group">
-            <FormItem label={english ? 'Title_En' : 'Title_Ru'}>
+            <FormItem label={english ? 'Title' : 'Title'}>
               {form.getFieldDecorator('title', {
                 initialValue: editingBlog
                   ? english
@@ -312,7 +312,7 @@ class AddForm extends React.Component {
             </FormItem>
           </div>
           <div className="form-group">
-            <FormItem label={english ? 'Tags_En' : 'Tags_Ru'}>
+            <FormItem label={english ? 'Tags' : 'Tags'}>
               {form.getFieldDecorator('tag', {
                 initialValue: editingBlog
                   ? english
@@ -408,7 +408,7 @@ class AddForm extends React.Component {
             </FormItem>
           </div>
           <div className="form-group">
-            <FormItem label={english ? 'Body_En' : 'Body_Ru'}>
+            <FormItem label={english ? 'Body' : 'Body'}>
               {form.getFieldDecorator('content', {
                 initialValue: editorState || '',
               })(

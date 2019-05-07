@@ -1,8 +1,12 @@
 /* eslint-disable */
 import React from 'react'
+import moment from 'moment'
 import { Timeline } from 'antd'
 
 const AuditTimeline = ({ audit }) => {
+  if (!audit) {
+    return <div>No Audit is availble</div>
+  }
   audit = audit.reverse()
 
   return (
@@ -13,7 +17,8 @@ const AuditTimeline = ({ audit }) => {
             item = JSON.parse(item)
             return (
               <Timeline.Item key={index}>
-                {item.fullName} {item.dateTime}
+                {item.fullName}{' '}
+                {moment(item.dateTime, 'YYYYMMDDTHHmmssZ').format('h:mm a, MMMM Do YYYY')}
               </Timeline.Item>
             )
           })}
