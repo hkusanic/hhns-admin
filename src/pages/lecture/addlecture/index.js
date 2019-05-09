@@ -57,7 +57,7 @@ class AddLecture extends React.Component {
       editinglecture: '',
       editedBody: '',
       translation: '',
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
+      language: true,
       uploading: true,
       audioUploading: false,
       transcriptionUploading: false,
@@ -70,15 +70,26 @@ class AddLecture extends React.Component {
     console.log(this.props)
     const { router, dispatch } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { state } = location
+    if (state !== undefined) {
+      const { id, language } = state
+      const uuid = id
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'lecture/GET_LECTURE_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'lecture/GET_LECTURE_BY_ID',
-        payload: body,
-      })
     }
     dispatch({
       type: 'lecture/GET_TOPICS',
@@ -135,20 +146,38 @@ class AddLecture extends React.Component {
     if (nextProps.lecture.isLectureCreated) {
       this.handleReset()
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   componentWillUnmount() {
+    this.handleReset()
     this.setState({
+      date: new Date(),
+      // publishDate: new Date(),
+      audioLink: '',
+      transcriptionFiles: [],
+      summaryFiles: [],
+      editorState: EditorState.createEmpty(),
+      editorStateSummary: EditorState.createEmpty(),
+      editorStateTranscription: EditorState.createEmpty(),
       editinglecture: '',
+      editedBody: '',
+      translation: '',
+      language: true,
+      uploading: true,
+      audioUploading: false,
+      transcriptionUploading: false,
+      summaryUploading: false,
+      translationRequired: false,
     })
   }
 
-  handleLanguage = checked => {
+  handleLanguage = () => {
+    const { language } = this.state
     this.setState({
-      language: checked,
+      language: !language,
     })
   }
 
@@ -553,6 +582,14 @@ class AddLecture extends React.Component {
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
+        <Switch
+          defaultChecked
+          checkedChildren={language ? 'en' : 'ru'}
+          unCheckedChildren={language ? 'en' : 'ru'}
+          onChange={this.handleLanguage}
+          className="toggle"
+          style={{ width: '100px', marginLeft: '10px' }}
+        />
         {editinglecture && editinglecture.en && editinglecture.ru ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
@@ -562,24 +599,12 @@ class AddLecture extends React.Component {
             </div>
           </div>
         ) : null}
+
         <Tabs defaultActiveKey="1">
           <TabPane tab="Lecture" key="1">
             <div>
               <Helmet title="Add Blog Post" />
               <section className="card">
-                <div className="card-header mb-2">
-                  <div className="utils__title">
-                    <strong>Lecture Add/Edit</strong>
-                    <Switch
-                      defaultChecked
-                      checkedChildren={language ? 'en' : 'ru'}
-                      unCheckedChildren={language ? 'en' : 'ru'}
-                      onChange={this.handleLanguage}
-                      className="toggle"
-                      style={{ width: '100px', marginLeft: '10px' }}
-                    />
-                  </div>
-                </div>
                 <div className="card-body">
                   <div className={styles.addPost}>
                     <Form className="mt-3">

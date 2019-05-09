@@ -50,7 +50,7 @@ class CreateGallery extends React.Component {
       gallery: '2019',
       editGallery: '',
       uploading: true,
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
+      language: true,
       translationRequired: false,
     }
   }
@@ -58,16 +58,28 @@ class CreateGallery extends React.Component {
   componentDidMount() {
     const { dispatch, router } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { state } = location
+    if (state !== undefined) {
+      const { id, language } = state
+      const uuid = id
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'gallery/GET_GALLERY_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'gallery/GET_GALLERY_BY_ID',
-        payload: body,
-      })
     }
+
     dispatch({
       type: 'gallery/GET_GALLERY_LIST',
     })
@@ -90,9 +102,9 @@ class CreateGallery extends React.Component {
     if (nextProps.gallery.isGalleryCreated) {
       this.handleReset()
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   componentWillUnmount() {
@@ -101,10 +113,13 @@ class CreateGallery extends React.Component {
     this.setState({
       photoFiles: [],
       galleryBody: EditorState.createEmpty(),
-      createDate: '',
-      publishDate: '',
+      createDate: new Date(),
+      publishDate: new Date(),
       gallery: '2019',
       editGallery: '',
+      uploading: true,
+      language: true,
+      translationRequired: false,
     })
   }
 

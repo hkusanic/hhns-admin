@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 @connect(({ blog }) => ({ blog }))
 class BlogList extends React.Component {
   state = {
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
   }
 
   componentDidMount() {
@@ -30,9 +30,9 @@ class BlogList extends React.Component {
         page: 1,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   showing100Characters = sentence => {
@@ -107,7 +107,7 @@ class BlogList extends React.Component {
         key: 'uuid',
         render: record => (
           <span>
-            <Link to={{ pathname: '/blog/add-blog-post', state: record.uuid }}>
+            <Link to={{ pathname: '/blog/add-blog-post', state: { id: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i

@@ -32,11 +32,11 @@ const { Option } = Select
 let id = 0
 let initialize = true
 @Form.create()
-@connect(({ video, lecture }) => ({ video, lecture }))
+@connect(({ video, lecture, router }) => ({ video, lecture, router }))
 class AddVideo extends React.Component {
   state = {
     autoCompleteDataSource: '',
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
     editingvideo: '',
     translationRequired: true,
     nextUrls: [],
@@ -45,16 +45,27 @@ class AddVideo extends React.Component {
 
   componentDidMount() {
     initialize = true
-    const { location, dispatch } = this.props
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { dispatch, router } = this.props
+    const { location } = router
+    const { state } = location
+    if (state !== undefined) {
+      const { uuid, language } = state
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'video/GET_VIDEO_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'video/GET_VIDEO_BY_ID',
-        payload: body,
-      })
     }
     dispatch({
       type: 'lecture/GET_EVENTS',
@@ -89,8 +100,20 @@ class AddVideo extends React.Component {
     if (nextProps.video.isVideoCreated) {
       this.handleReset()
     }
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
+  }
+
+  componentWillUnmount() {
+    this.handleReset()
     this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
+      autoCompleteDataSource: '',
+      language: true,
+      editingvideo: '',
+      translationRequired: true,
+      nextUrls: [],
+      arKeys: [],
     })
   }
 

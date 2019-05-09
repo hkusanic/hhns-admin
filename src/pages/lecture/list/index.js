@@ -12,7 +12,7 @@ const { Option } = Select
 @connect(({ lecture }) => ({ lecture }))
 class ProductsList extends React.Component {
   state = {
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
   }
 
   componentDidMount() {
@@ -31,9 +31,9 @@ class ProductsList extends React.Component {
         page: 1,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   showing100Characters = sentence => {
@@ -130,7 +130,7 @@ class ProductsList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/lecture/create', state: record.uuid }}>
+            <Link to={{ pathname: '/lecture/create', state: { id: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i

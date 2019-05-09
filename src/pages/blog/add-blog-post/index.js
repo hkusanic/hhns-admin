@@ -15,8 +15,23 @@ class BlogAddPost extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
+      language: true,
       editingBlog: '',
+    }
+  }
+
+  componentDidMount() {
+    const { router } = this.props
+    const { location } = router
+    const { state } = location
+    if (state !== undefined) {
+      const { language } = state
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
     }
   }
 
@@ -28,14 +43,12 @@ class BlogAddPost extends React.Component {
         editingBlog: blog.editBlog,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
   }
 
   handleLanguage = checked => {
+    const { language } = this.state
     this.setState({
-      language: checked,
+      language: !language,
     })
   }
 

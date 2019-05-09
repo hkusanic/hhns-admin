@@ -47,17 +47,21 @@ class AddForm extends React.Component {
   }
 
   componentDidMount() {
-    const { router, dispatch } = this.props
+    const { dispatch, router } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { state } = location
+    if (state !== undefined) {
+      const { id } = state
+      const uuid = id
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+        dispatch({
+          type: 'blog/GET_BLOG_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'blog/GET_BLOG_BY_ID',
-        payload: body,
-      })
     }
   }
 
@@ -95,6 +99,20 @@ class AddForm extends React.Component {
       })
       this.handleReset()
     }
+  }
+
+  componentWillUnmount() {
+    this.handleReset()
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingBlog: '',
+      editedBody: '',
+      translationRequired: false,
+      upoading: true,
+      date: new Date(),
+      publishDate: new Date(),
+    })
   }
 
   handleCreateDate = (date, dateString) => {
@@ -280,6 +298,7 @@ class AddForm extends React.Component {
       editorState: '',
       editingBlog: {},
       files: [],
+      translationRequired: false,
     })
   }
 
