@@ -20,6 +20,21 @@ class BlogAddPost extends React.Component {
     }
   }
 
+  componentDidMount() {
+    const { router } = this.props
+    const { location } = router
+    const { state } = location
+    if (state !== undefined) {
+      const { language } = state
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.blog.editBlog) {
       const { blog } = nextProps
@@ -31,8 +46,9 @@ class BlogAddPost extends React.Component {
   }
 
   handleLanguage = checked => {
+    const { language } = this.state
     this.setState({
-      language: checked,
+      language: !language,
     })
   }
 

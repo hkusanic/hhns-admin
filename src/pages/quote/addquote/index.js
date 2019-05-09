@@ -50,18 +50,28 @@ class AddQuote extends React.Component {
   }
 
   componentDidMount() {
-    const { router, dispatch } = this.props
-
+    const { dispatch, router } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { state } = location
+    if (state !== undefined) {
+      const { id, language } = state
+      const uuid = id
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'quote/GET_QUOTE_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'quote/GET_QUOTE_BY_ID',
-        payload: body,
-      })
     }
     dispatch({
       type: 'quote/GET_TOPICS',
@@ -187,11 +197,11 @@ class AddQuote extends React.Component {
     })
   }
 
-  handleLanguage = checked => {
+  handleLanguage = () => {
+    const { language, editingQuote } = this.state
     this.setState({
-      language: checked,
+      language: !language,
     })
-    const { editingQuote, language } = this.state
     const html = editingQuote
       ? language
         ? editingQuote.en.body

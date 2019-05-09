@@ -141,7 +141,7 @@ class QuotesList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/quote/create', state: record.uuid }}>
+            <Link to={{ pathname: '/quote/create', state: { id: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i

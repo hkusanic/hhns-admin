@@ -52,16 +52,27 @@ class AddKirtan extends React.Component {
   componentDidMount() {
     const { dispatch, router } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
-      }
+    const { state } = location
+    if (state !== undefined) {
+      const { id, language } = state
+      console.log('state ====>>>>>', id, language)
+      const uuid = id
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
 
-      dispatch({
-        type: 'kirtan/GET_KIRTAN_BY_ID',
-        payload: body,
-      })
+        dispatch({
+          type: 'kirtan/GET_KIRTAN_BY_ID',
+          payload: body,
+        })
+      }
     }
     dispatch({
       type: 'lecture/GET_EVENTS',
@@ -86,7 +97,6 @@ class AddKirtan extends React.Component {
         createDate: editKirtan ? editKirtan.created_date : '',
         publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
         translationRequired: editKirtan ? editKirtan.translation_required : false,
-        language: true,
       })
     }
     // this.setState({

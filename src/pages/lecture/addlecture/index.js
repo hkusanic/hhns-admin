@@ -70,15 +70,26 @@ class AddLecture extends React.Component {
     console.log(this.props)
     const { router, dispatch } = this.props
     const { location } = router
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { state } = location
+    if (state !== undefined) {
+      const { id, language } = state
+      const uuid = id
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'lecture/GET_LECTURE_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'lecture/GET_LECTURE_BY_ID',
-        payload: body,
-      })
     }
     dispatch({
       type: 'lecture/GET_TOPICS',
@@ -163,9 +174,10 @@ class AddLecture extends React.Component {
     })
   }
 
-  handleLanguage = checked => {
+  handleLanguage = () => {
+    const { language } = this.state
     this.setState({
-      language: checked,
+      language: !language,
     })
   }
 

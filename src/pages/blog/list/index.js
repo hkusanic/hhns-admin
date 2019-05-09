@@ -107,7 +107,7 @@ class BlogList extends React.Component {
         key: 'uuid',
         render: record => (
           <span>
-            <Link to={{ pathname: '/blog/add-blog-post', state: record.uuid }}>
+            <Link to={{ pathname: '/blog/add-blog-post', state: { id: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i

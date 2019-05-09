@@ -32,7 +32,7 @@ const { Option } = Select
 let id = 0
 let initialize = true
 @Form.create()
-@connect(({ video, lecture }) => ({ video, lecture }))
+@connect(({ video, lecture, router }) => ({ video, lecture, router }))
 class AddVideo extends React.Component {
   state = {
     autoCompleteDataSource: '',
@@ -45,16 +45,27 @@ class AddVideo extends React.Component {
 
   componentDidMount() {
     initialize = true
-    const { location, dispatch } = this.props
-    const uuid = location.state
-    if (uuid !== undefined) {
-      const body = {
-        uuid,
+    const { dispatch, router } = this.props
+    const { location } = router
+    const { state } = location
+    if (state !== undefined) {
+      const { uuid, language } = state
+      setTimeout(
+        this.setState({
+          language,
+        }),
+        0,
+      )
+      if (uuid !== undefined) {
+        const body = {
+          uuid,
+        }
+
+        dispatch({
+          type: 'video/GET_VIDEO_BY_ID',
+          payload: body,
+        })
       }
-      dispatch({
-        type: 'video/GET_VIDEO_BY_ID',
-        payload: body,
-      })
     }
     dispatch({
       type: 'lecture/GET_EVENTS',

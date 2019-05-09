@@ -108,7 +108,7 @@ class GalleryList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/gallery/create', state: record.uuid }}>
+            <Link to={{ pathname: '/gallery/create', state: { id: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i

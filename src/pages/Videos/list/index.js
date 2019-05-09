@@ -127,7 +127,7 @@ class VideoList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/video/create', state: record.uuid }}>
+            <Link to={{ pathname: '/video/create', state: { uuid: record.uuid, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
