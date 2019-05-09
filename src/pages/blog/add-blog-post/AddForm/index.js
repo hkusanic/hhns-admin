@@ -97,6 +97,20 @@ class AddForm extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.handleReset()
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingBlog: '',
+      editedBody: '',
+      translationRequired: false,
+      upoading: true,
+      date: new Date(),
+      publishDate: new Date(),
+    })
+  }
+
   handleCreateDate = (date, dateString) => {
     console.info(date, dateString)
     setTimeout(() => {
@@ -280,6 +294,7 @@ class AddForm extends React.Component {
       editorState: '',
       editingBlog: {},
       files: [],
+      translationRequired: false,
     })
   }
 

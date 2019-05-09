@@ -98,6 +98,30 @@ class AddQuote extends React.Component {
     // })
   }
 
+  componentWillUnmount() {
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingQuote: '',
+      editedBody: '',
+      language: true,
+      translationRequired: true,
+    })
+  }
+
+  handleReset = () => {
+    const { form } = this.props
+    form.resetFields()
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingQuote: '',
+      editedBody: '',
+      language: true,
+      translationRequired: true,
+    })
+  }
+
   handleCheckbox = event => {
     setTimeout(() => {
       this.setState({

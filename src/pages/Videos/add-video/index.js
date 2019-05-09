@@ -94,6 +94,18 @@ class AddVideo extends React.Component {
     // })
   }
 
+  componentWillUnmount() {
+    this.handleReset()
+    this.setState({
+      autoCompleteDataSource: '',
+      language: true,
+      editingvideo: '',
+      translationRequired: true,
+      nextUrls: [],
+      arKeys: [],
+    })
+  }
+
   remove = k => {
     const { form } = this.props
     const keys = form.getFieldValue('keys')

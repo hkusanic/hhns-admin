@@ -101,10 +101,13 @@ class CreateGallery extends React.Component {
     this.setState({
       photoFiles: [],
       galleryBody: EditorState.createEmpty(),
-      createDate: '',
-      publishDate: '',
+      createDate: new Date(),
+      publishDate: new Date(),
       gallery: '2019',
       editGallery: '',
+      uploading: true,
+      language: true,
+      translationRequired: false,
     })
   }
 

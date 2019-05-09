@@ -40,7 +40,7 @@ const { Dragger } = Upload
 @connect(({ kirtan, lecture, router }) => ({ kirtan, lecture, router }))
 class AddKirtan extends React.Component {
   state = {
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
     audioLink: '',
     createDate: new Date(),
     publishDate: new Date(),
@@ -86,16 +86,25 @@ class AddKirtan extends React.Component {
         createDate: editKirtan ? editKirtan.created_date : '',
         publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
         translationRequired: editKirtan ? editKirtan.translation_required : false,
-        language: window.localStorage['app.settings.locale'] === '"en-US"',
+        language: true,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   componentWillUnmount() {
     this.handleReset()
+    this.setState({
+      language: true,
+      audioLink: '',
+      createDate: new Date(),
+      publishDate: new Date(),
+      translationRequired: false,
+      editingKirtan: '',
+      editorState: EditorState.createEmpty(),
+    })
   }
 
   handleUpdateBody = (language, editKirtan) => {

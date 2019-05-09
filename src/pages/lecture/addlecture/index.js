@@ -141,8 +141,25 @@ class AddLecture extends React.Component {
   }
 
   componentWillUnmount() {
+    this.handleReset()
     this.setState({
+      date: new Date(),
+      // publishDate: new Date(),
+      audioLink: '',
+      transcriptionFiles: [],
+      summaryFiles: [],
+      editorState: EditorState.createEmpty(),
+      editorStateSummary: EditorState.createEmpty(),
+      editorStateTranscription: EditorState.createEmpty(),
       editinglecture: '',
+      editedBody: '',
+      translation: '',
+      language: true,
+      uploading: true,
+      audioUploading: false,
+      transcriptionUploading: false,
+      summaryUploading: false,
+      translationRequired: false,
     })
   }
 
@@ -553,6 +570,14 @@ class AddLecture extends React.Component {
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
+        <Switch
+          defaultChecked
+          checkedChildren={language ? 'en' : 'ru'}
+          unCheckedChildren={language ? 'en' : 'ru'}
+          onChange={this.handleLanguage}
+          className="toggle"
+          style={{ width: '100px', marginLeft: '10px' }}
+        />
         {editinglecture && editinglecture.en && editinglecture.ru ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
@@ -562,37 +587,12 @@ class AddLecture extends React.Component {
             </div>
           </div>
         ) : null}
-        <div className="card-header mb-2">
-          <div className="utils__title">
-            <strong>Lecture Add/Edit</strong>
-            <Switch
-              defaultChecked
-              checkedChildren={language ? 'en' : 'ru'}
-              unCheckedChildren={language ? 'en' : 'ru'}
-              onChange={this.handleLanguage}
-              className="toggle"
-              style={{ width: '100px', marginLeft: '10px' }}
-            />
-          </div>
-        </div>
+
         <Tabs defaultActiveKey="1">
           <TabPane tab="Lecture" key="1">
             <div>
               <Helmet title="Add Blog Post" />
               <section className="card">
-                {/* <div className="card-header mb-2">
-                  <div className="utils__title">
-                    <strong>Lecture Add/Edit</strong>
-                    <Switch
-                      defaultChecked
-                      checkedChildren={language ? 'en' : 'ru'}
-                      unCheckedChildren={language ? 'en' : 'ru'}
-                      onChange={this.handleLanguage}
-                      className="toggle"
-                      style={{ width: '100px', marginLeft: '10px' }}
-                    />
-                  </div>
-                </div> */}
                 <div className="card-body">
                   <div className={styles.addPost}>
                     <Form className="mt-3">
