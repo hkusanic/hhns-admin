@@ -57,7 +57,7 @@ class AddLecture extends React.Component {
       editinglecture: '',
       editedBody: '',
       translation: '',
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
+      language: true,
       uploading: true,
       audioUploading: false,
       transcriptionUploading: false,
@@ -135,9 +135,9 @@ class AddLecture extends React.Component {
     if (nextProps.lecture.isLectureCreated) {
       this.handleReset()
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   componentWillUnmount() {
@@ -562,12 +562,25 @@ class AddLecture extends React.Component {
             </div>
           </div>
         ) : null}
+        <div className="card-header mb-2">
+          <div className="utils__title">
+            <strong>Lecture Add/Edit</strong>
+            <Switch
+              defaultChecked
+              checkedChildren={language ? 'en' : 'ru'}
+              unCheckedChildren={language ? 'en' : 'ru'}
+              onChange={this.handleLanguage}
+              className="toggle"
+              style={{ width: '100px', marginLeft: '10px' }}
+            />
+          </div>
+        </div>
         <Tabs defaultActiveKey="1">
           <TabPane tab="Lecture" key="1">
             <div>
               <Helmet title="Add Blog Post" />
               <section className="card">
-                <div className="card-header mb-2">
+                {/* <div className="card-header mb-2">
                   <div className="utils__title">
                     <strong>Lecture Add/Edit</strong>
                     <Switch
@@ -579,7 +592,7 @@ class AddLecture extends React.Component {
                       style={{ width: '100px', marginLeft: '10px' }}
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="card-body">
                   <div className={styles.addPost}>
                     <Form className="mt-3">

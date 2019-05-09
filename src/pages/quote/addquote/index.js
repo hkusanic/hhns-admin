@@ -45,7 +45,7 @@ class AddQuote extends React.Component {
     editorState: EditorState.createEmpty(),
     editingQuote: '',
     editedBody: '',
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
     translationRequired: true,
   }
 
@@ -93,9 +93,9 @@ class AddQuote extends React.Component {
         })
       }
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   handleCheckbox = event => {

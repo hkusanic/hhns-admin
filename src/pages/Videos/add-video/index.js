@@ -36,7 +36,7 @@ let initialize = true
 class AddVideo extends React.Component {
   state = {
     autoCompleteDataSource: '',
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
     editingvideo: '',
     translationRequired: true,
     nextUrls: [],
@@ -89,9 +89,9 @@ class AddVideo extends React.Component {
     if (nextProps.video.isVideoCreated) {
       this.handleReset()
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   remove = k => {

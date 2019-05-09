@@ -7,7 +7,7 @@ import React from 'react'
 // import LiveSearch from './LiveSearch'
 // import BitcoinPrice from './BitcoinPrice'
 import ProfileMenu from './ProfileMenu'
-import LanguageSelector from './LanguageSelector'
+// import LanguageSelector from './LanguageSelector'
 import styles from './style.module.scss'
 
 class TopBar extends React.Component {
@@ -28,9 +28,9 @@ class TopBar extends React.Component {
           </Button>
         </a> */}
         <div className="mr-4">{/* <BitcoinPrice /> */}</div>
-        <div className="mr-4">
+        {/* <div className="mr-4">
           <LanguageSelector />
-        </div>
+        </div> */}
         <div className="mr-4">{/* <HomeMenu /> */}</div>
         <ProfileMenu />
       </div>

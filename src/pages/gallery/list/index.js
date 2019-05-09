@@ -14,7 +14,7 @@ const { Option } = Select
 class GalleryList extends React.Component {
   state = {
     gallery: '2019',
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
   }
 
   componentDidMount() {
@@ -43,9 +43,9 @@ class GalleryList extends React.Component {
         body,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   hadleSelectGallery = gallery => {
