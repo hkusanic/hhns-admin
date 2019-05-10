@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
 /* eslint-disable no-nested-ternary */
@@ -24,7 +25,7 @@ import {
 } from 'antd'
 import { connect } from 'react-redux'
 import $ from 'jquery'
-import { EditorState, convertToRaw, ContentState } from 'draft-js'
+import { EditorState, convertToRaw, ContentState, convertFromHTML, convertFromRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { Helmet } from 'react-helmet'
@@ -45,6 +46,13 @@ const { Dragger } = Upload
 class AddLecture extends React.Component {
   constructor(props) {
     super(props)
+
+    console.log('props from constructor ====>', props)
+
+    // const transcriptionText =
+    //   props.lecture.editLecture.en.transcription.text &&
+    //   props.lecture.editLecture.en.transcription.text
+
     this.state = {
       date: new Date(),
       // publishDate: new Date(),
@@ -52,8 +60,10 @@ class AddLecture extends React.Component {
       transcriptionFiles: [],
       summaryFiles: [],
       editorState: EditorState.createEmpty(),
-      editorStateSummary: EditorState.createEmpty(),
-      editorStateTranscription: EditorState.createEmpty(),
+      editorStateSummaryEn: EditorState.createEmpty(),
+      editorStateSummaryRu: EditorState.createEmpty(),
+      editorStateTranscriptionEn: EditorState.createEmpty(),
+      editorStateTranscriptionRu: EditorState.createEmpty(),
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -63,11 +73,13 @@ class AddLecture extends React.Component {
       transcriptionUploading: false,
       summaryUploading: false,
       translationRequired: false,
+      titleEn: '',
+      titleRu: '',
     }
   }
 
   componentDidMount() {
-    console.log(this.props)
+    // console.log(this.props)
     const { router, dispatch } = this.props
     const { location } = router
     const { state } = location
@@ -116,39 +128,71 @@ class AddLecture extends React.Component {
         translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
       })
 
-      const htmlTranscription = lecture.editLecture ? lecture.editLecture.en.transcription.text : ''
-      let editorStateTranscription = ''
-      if (htmlTranscription.length > 0) {
-        const contentBlock = htmlToDraft(htmlTranscription)
-        if (contentBlock) {
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          editorStateTranscription = EditorState.createWithContent(contentState)
-        }
+      let editorStateTranscriptionEn = ''
+      let editorStateTranscriptionRu = ''
+      let editorStateSummaryEn = ''
+      let editorStateSummaryRu = ''
 
-        const htmlSummary = lecture.editLecture ? lecture.editLecture.ru.summary.text : ''
-        let editorStateSummary = ''
-        if (htmlSummary.length > 0) {
-          const contentBlockSummary = htmlToDraft(htmlSummary)
-          if (contentBlockSummary) {
-            const contentState = ContentState.createFromBlockArray(
-              contentBlockSummary.contentBlocks,
-            )
-            editorStateSummary = EditorState.createWithContent(contentState)
-          }
+      const htmlTranscriptionEn = lecture.editLecture
+        ? lecture.editLecture.en.transcription.text
+        : ''
+      const htmlSummaryEn = lecture.editLecture
+        ? lecture.editLecture.en.summary.text
+        : EditorState.createEmpty()
 
-          this.setState({
-            editorStateTranscription,
-            editorStateSummary,
-          })
+      const titleEn = lecture.editLecture ? lecture.editLecture.en.title : ''
+      const titleRu = lecture.editLecture ? lecture.editLecture.ru.title : ''
+
+      if (htmlTranscriptionEn && htmlTranscriptionEn.length > 0) {
+        const contentBlockEn = htmlToDraft(htmlTranscriptionEn)
+        if (contentBlockEn) {
+          const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
+          editorStateTranscriptionEn = EditorState.createWithContent(contentStateEn)
         }
       }
+
+      if (htmlSummaryEn && htmlSummaryEn.length > 0) {
+        const contentBlockEn2 = htmlToDraft(htmlSummaryEn)
+        if (contentBlockEn2) {
+          const contentStateEn2 = ContentState.createFromBlockArray(contentBlockEn2.contentBlocks)
+          editorStateSummaryEn = EditorState.createWithContent(contentStateEn2)
+        }
+      }
+
+      const htmlTranscriptionRu = lecture.editLecture
+        ? lecture.editLecture.ru.transcription.text
+        : ''
+      const htmlSummaryRu = lecture.editLecture
+        ? lecture.editLecture.ru.summary.text
+        : EditorState.createEmpty()
+
+      if (htmlTranscriptionRu && htmlTranscriptionRu.length > 0) {
+        const contentBlockRu = htmlToDraft(htmlTranscriptionRu)
+        if (contentBlockRu) {
+          const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
+          editorStateTranscriptionRu = EditorState.createWithContent(contentStateRu)
+        }
+      }
+      if (htmlSummaryRu && htmlSummaryRu.length > 0) {
+        const contentBlockRu2 = htmlToDraft(htmlSummaryRu)
+        if (contentBlockRu2) {
+          const contentStateRu2 = ContentState.createFromBlockArray(contentBlockRu2.contentBlocks)
+          editorStateSummaryRu = EditorState.createWithContent(contentStateRu2)
+        }
+      }
+
+      this.setState({
+        editorStateTranscriptionEn,
+        editorStateTranscriptionRu,
+        editorStateSummaryEn,
+        editorStateSummaryRu,
+        titleEn,
+        titleRu,
+      })
     }
     if (nextProps.lecture.isLectureCreated) {
       this.handleReset()
     }
-    // this.setState({
-    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
-    // })
   }
 
   componentWillUnmount() {
@@ -160,8 +204,10 @@ class AddLecture extends React.Component {
       transcriptionFiles: [],
       summaryFiles: [],
       editorState: EditorState.createEmpty(),
-      editorStateSummary: EditorState.createEmpty(),
-      editorStateTranscription: EditorState.createEmpty(),
+      editorStateSummaryEn: EditorState.createEmpty(),
+      editorStateSummaryRu: EditorState.createEmpty(),
+      editorStateTranscriptionEn: EditorState.createEmpty(),
+      editorStateTranscriptionRu: EditorState.createEmpty(),
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -187,17 +233,27 @@ class AddLecture extends React.Component {
     const {
       audioLink,
       editorState,
-      editorStateSummary,
-      editorStateTranscription,
+      editorStateTranscriptionEn,
+      editorStateTranscriptionRu,
+      editorStateSummaryEn,
+      editorStateSummaryRu,
       editinglecture,
       transcriptionFiles,
       summaryFiles,
       translationRequired,
       translation,
       language,
+      titleEn,
+      titleRu,
     } = this.state
     const { location } = router
-    const uuid = location.state
+    const { state } = location
+
+    let uuid = ''
+    if (state !== undefined) {
+      const { id } = state
+      uuid = id
+    }
     const title = form.getFieldValue('title')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
@@ -208,17 +264,30 @@ class AddLecture extends React.Component {
     const locationlecture = form.getFieldValue('location')
     const event = form.getFieldValue('event')
     const topic = form.getFieldValue('topic')
-    const parts = form.getFieldValue('parts')
+    const part = form.getFieldValue('part')
     const chapter = form.getFieldValue('chapter')
     const verse = form.getFieldValue('verse')
-    const editorSummary = draftToHtml(convertToRaw(editorStateSummary.getCurrentContent()))
-    const editorTranscription = draftToHtml(
-      convertToRaw(editorStateTranscription.getCurrentContent()),
+
+    let editorTranscriptionEn = null
+    let editorTranscriptionRu = null
+    let editorSummaryEn = null
+    let editorSummaryRu = null
+
+    editorTranscriptionEn = draftToHtml(
+      convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
+    )
+    editorTranscriptionRu = draftToHtml(
+      convertToRaw(editorStateTranscriptionRu.getCurrentContent()),
     )
 
-    const body = {
+    editorSummaryEn = draftToHtml(convertToRaw(editorStateSummaryEn.getCurrentContent()))
+    editorSummaryRu = draftToHtml(convertToRaw(editorStateSummaryRu.getCurrentContent()))
+
+    let body = {}
+
+    body = {
       uuid: uuid || uuidv4(),
-      parts,
+      part,
       verse,
       chapter,
       author,
@@ -241,39 +310,41 @@ class AddLecture extends React.Component {
         location: locationlecture,
         topic,
         event,
-        title: language ? title : editinglecture ? editinglecture.en.title : '',
+        title: titleEn,
         translation: language ? translation : editinglecture ? editinglecture.en.translation : '',
         summary: {
           attachment_link: '',
           attachment_name: '',
-          text: '',
+          text: editorSummaryEn,
         },
         transcription: {
           attachment_name: '',
           attachment_link: transcriptionFiles,
-          text: editorTranscription,
+          text: editorTranscriptionEn,
         },
       },
       ru: {
         location: locationlecture,
         topic,
         event,
-        title: language ? (editinglecture ? editinglecture.ru.title : '') : title,
+        title: titleRu,
         translation: language ? (editinglecture ? editinglecture.ru.translation : '') : translation,
         summary: {
           attachment_link: summaryFiles,
           attachment_name: '',
-          text: editorSummary,
+          text: editorSummaryRu,
         },
         transcription: {
           attachment_name: '',
           attachment_link: '',
-          text: '',
+          text: editorTranscriptionRu,
         },
       },
     }
+
     if (editinglecture !== '') {
       body.audit = editinglecture.audit
+
       const payload = {
         body,
         uuid,
@@ -296,16 +367,64 @@ class AddLecture extends React.Component {
     })
   }
 
-  onEditorChangeStateSummary: Function = editorStateSummary => {
-    this.setState({
-      editorStateSummary,
-    })
+  // onEditorChangeStateSummary: Function = editorStateSummary => {
+  //   this.setState({
+  //     editorStateSummary,
+  //   })
+  // }
+
+  onEditorChangeStateSummary = summary => {
+    const { language } = this.state
+
+    if (language) {
+      this.setState({
+        editorStateSummaryEn: summary,
+      })
+    }
+
+    if (!language) {
+      this.setState({
+        editorStateSummaryRu: summary,
+      })
+    }
   }
 
-  onEditorChangeStateTranscription: Function = editorStateTranscription => {
-    this.setState({
-      editorStateTranscription,
-    })
+  // onEditorChangeStateTranscription: Function = editorStateTranscription => {
+  //   this.setState({
+  //     editorStateTranscription,
+  //   })
+  // }
+
+  onEditorChangeStateTranscription = transcription => {
+    const { language } = this.state
+
+    if (language) {
+      this.setState({
+        editorStateTranscriptionEn: transcription,
+      })
+    }
+
+    if (!language) {
+      this.setState({
+        editorStateTranscriptionRu: transcription,
+      })
+    }
+  }
+
+  inputFieldChange = event => {
+    const { language } = this.state
+
+    if (language) {
+      this.setState({
+        titleEn: event.target.value,
+      })
+    }
+
+    if (!language) {
+      this.setState({
+        titleRu: event.target.value,
+      })
+    }
   }
 
   // getBase64 = (img, callback) => {
@@ -529,8 +648,10 @@ class AddLecture extends React.Component {
       editinglecture: '',
       audioLink: '',
       editorState: EditorState.createEmpty(),
-      editorStateSummary: EditorState.createEmpty(),
-      editorStateTranscription: EditorState.createEmpty(),
+      editorStateSummaryEn: EditorState.createEmpty(),
+      editorStateSummaryRu: EditorState.createEmpty(),
+      editorStateTranscriptionEn: EditorState.createEmpty(),
+      editorStateTranscriptionRu: EditorState.createEmpty(),
       transcriptionUploading: false,
       summaryUploading: false,
       audioUploading: false,
@@ -565,20 +686,22 @@ class AddLecture extends React.Component {
     const { form, english, lecture } = this.props
     const { topics, events, locations } = lecture
     const {
-      date,
       editinglecture,
-      editedBody,
       editorState,
       language,
-      files,
-      editorStateSummary,
-      editorStateTranscription,
       audioLink,
       transcriptionFiles,
       summaryFiles,
       translationRequired,
+      editorStateTranscriptionEn,
+      editorStateTranscriptionRu,
+      editorStateSummaryEn,
+      editorStateSummaryRu,
+      titleEn,
+      titleRu,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
@@ -610,6 +733,14 @@ class AddLecture extends React.Component {
                     <Form className="mt-3">
                       <div className="form-group">
                         <FormItem label={language ? 'Title' : 'Title'}>
+                          <Input
+                            onChange={this.inputFieldChange}
+                            value={language ? titleEn : titleRu}
+                            placeholder="lecture title"
+                          />
+                        </FormItem>
+
+                        {/* <FormItem label={language ? 'Title' : 'Title'}>
                           {form.getFieldDecorator('title', {
                             initialValue:
                               editinglecture && editinglecture.en && editinglecture.ru
@@ -618,7 +749,7 @@ class AddLecture extends React.Component {
                                   : editinglecture.ru.title
                                 : '',
                           })(<Input placeholder="lecture title" />)}
-                        </FormItem>
+                        </FormItem> */}
                       </div>
                       <div className="form-group">
                         <FormItem label="Author">
@@ -645,13 +776,15 @@ class AddLecture extends React.Component {
                       <div className="form-group">
                         <FormItem label="Language">
                           {form.getFieldDecorator('language', {
-                            initialValue: editinglecture ? editinglecture.language : '',
+                            initialValue: editinglecture
+                              ? editinglecture.language
+                              : 'Select a Language',
                           })(
                             <Select
                               id="product-edit-colors"
                               showSearch
                               style={{ width: '100%' }}
-                              placeholder="Select a color"
+                              placeholder="Select a Language"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
@@ -815,10 +948,10 @@ class AddLecture extends React.Component {
                         </FormItem>
                       </div>
                       <div className="form-group">
-                        <FormItem label="Part">
-                          {form.getFieldDecorator('parts', {
-                            initialValue: editinglecture ? editinglecture.parts : '',
-                          })(<Input type="Number" placeholder="parts/songs" />)}
+                        <FormItem label="Part / Conta">
+                          {form.getFieldDecorator('part', {
+                            initialValue: editinglecture ? editinglecture.part : '',
+                          })(<Input type="Number" placeholder="part/songs" />)}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -967,7 +1100,13 @@ class AddLecture extends React.Component {
                 <Form className="mt-3">
                   <div className="form-group">
                     <FormItem label={language ? 'Summary' : 'Summary'}>
-                      {form.getFieldDecorator('summary', {
+                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                        <Editor
+                          editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
+                          onEditorStateChange={this.onEditorChangeStateSummary}
+                        />
+                      </div>
+                      {/* {form.getFieldDecorator('summary', {
                         initialValue: editorStateSummary,
                       })(
                         <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
@@ -976,7 +1115,7 @@ class AddLecture extends React.Component {
                             onEditorStateChange={this.onEditorChangeStateSummary}
                           />
                         </div>,
-                      )}
+                      )} */}
                     </FormItem>
                   </div>
                   <div className="form-group">
@@ -1035,16 +1174,31 @@ class AddLecture extends React.Component {
                 &nbsp;
                 <div className="form-group">
                   <FormItem label={language ? 'Transcription' : 'Transcription'}>
-                    {form.getFieldDecorator('transcription', {
-                      initialValue: editorStateTranscription,
+                    <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                      <Editor
+                        editorState={
+                          language ? editorStateTranscriptionEn : editorStateTranscriptionRu
+                        }
+                        onEditorStateChange={this.onEditorChangeStateTranscription}
+                      />
+                    </div>
+
+                    {/* {form.getFieldDecorator('transcription', {
+                      initialValue: editinglecture
+                        ? language
+                          ? editorStateTranscriptionEn
+                          : editorStateTranscriptionRu
+                        : '',
                     })(
                       <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                         <Editor
-                          editorState={editorStateTranscription}
+                          editorState={
+                            language ? editorStateTranscriptionEn : editorStateTranscriptionRu
+                          }
                           onEditorStateChange={this.onEditorChangeStateTranscription}
                         />
                       </div>,
-                    )}
+                    )} */}
                   </FormItem>
                 </div>
                 <div className="form-group">
