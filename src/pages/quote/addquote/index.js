@@ -143,8 +143,17 @@ class AddQuote extends React.Component {
   handleFormBody = event => {
     event.preventDefault()
     const { form, dispatch, router, english } = this.props
+    // const { location } = router
+    // const uuid = location.state
     const { location } = router
-    const uuid = location.state
+    const { state } = location
+
+    let uuid = ''
+    if (state !== undefined) {
+      const { id } = state
+      uuid = id
+    }
+
     const { files, editorState, editingQuote, translationRequired, topics, language } = this.state
     const titleEn = form.getFieldValue('title')
     const topic = form.getFieldValue('topic')
