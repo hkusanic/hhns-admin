@@ -137,7 +137,13 @@ class AddForm extends React.Component {
     event.preventDefault()
     const { form, dispatch, router, english } = this.props
     const { location } = router
-    const uuid = location.state
+    // const uuid = location.state
+    const { state } = location
+    let uuid = ''
+    if (state !== undefined) {
+      const { id } = state
+      uuid = id
+    }
     const { files, editorState, editingBlog, translationRequired, publishDate, date } = this.state
     const titleEn = form.getFieldValue('title')
     const tag = form.getFieldValue('tag')

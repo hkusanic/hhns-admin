@@ -281,7 +281,14 @@ class CreateGallery extends React.Component {
     event.preventDefault()
     const { form, dispatch, router } = this.props
     const { location } = router
-    const uuid = location.state
+    // const uuid = location.state
+    const { state } = location
+
+    let uuid = ''
+    if (state !== undefined) {
+      const { id } = state
+      uuid = id
+    }
     const {
       photoFiles,
       galleryBody,

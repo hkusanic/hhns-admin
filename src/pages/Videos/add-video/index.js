@@ -171,8 +171,18 @@ class AddVideo extends React.Component {
   }
 
   handleSubmitForm = () => {
-    const { form, dispatch } = this.props
-    const uuid = this.props.location.state
+    const { form, dispatch, router } = this.props
+    // const uuid = this.props.location.state
+    // const { location } = router
+    const location2 = router.location
+    const { state } = location2
+
+    let uuid = ''
+    if (state !== undefined) {
+      // eslint-disable-next-line no-shadow
+      const { id } = state
+      uuid = id
+    }
     const { language, translationRequired, editingvideo } = this.state
     const titleVideo = form.getFieldValue('title')
     const author = form.getFieldValue('author')
