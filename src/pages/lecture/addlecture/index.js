@@ -50,7 +50,7 @@ class AddLecture extends React.Component {
   constructor(props) {
     super(props)
 
-    console.log('props from constructor ====>', props)
+    // console.log('props from constructor ====>', props)
 
     // const transcriptionText =
     //   props.lecture.editLecture.en.transcription.text &&
@@ -125,6 +125,9 @@ class AddLecture extends React.Component {
     })
     dispatch({
       type: 'lecture/GET_LOCATIONS',
+    })
+    dispatch({
+      type: 'lecture/GET_TRANSLATIONS',
     })
   }
 
@@ -328,7 +331,13 @@ class AddLecture extends React.Component {
 
     let body = {}
 
-    if (titleEn === '' || locationEn === '' || eventEn === '' || topicEn === '') {
+    if (
+      titleEn === '' ||
+      locationEn === '' ||
+      eventEn === '' ||
+      topicEn === '' ||
+      translationEn === ''
+    ) {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
@@ -788,6 +797,16 @@ class AddLecture extends React.Component {
     )
   }
 
+  handleTranslationChange = translation => {
+    this.setState(
+      {
+        translationEn: translation.title_en,
+        translationRu: translation.title_ru,
+      },
+      () => this.onFieldValueChange(),
+    )
+  }
+
   onFieldValueChange = () => {
     const {
       titleEn,
@@ -810,9 +829,7 @@ class AddLecture extends React.Component {
 
   render() {
     const { form, english, lecture } = this.props
-    const { topics, events, locations } = lecture
-
-    console.log('lecture===>', lecture)
+    const { topics, events, locations, translations } = lecture
 
     const {
       editinglecture,
@@ -841,7 +858,7 @@ class AddLecture extends React.Component {
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
-    console.log('formElements ===>', formElements)
+    console.log('this.state ===>>>', this.state)
 
     return (
       <React.Fragment>
@@ -1206,49 +1223,28 @@ class AddLecture extends React.Component {
                               showSearch
                               style={{ width: '100%' }}
                               placeholder="Select Artist"
-                              onChange={this.handleSelectTranslation}
+                              // onChange={this.handleSelectTranslation}
                               optionFilterProp="children"
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
                                 0
                               }
                             >
-                              <Option key={1} value="Moldovan">
-                                Moldovan
-                              </Option>
-                              <Option key={12} value="No translation">
-                                No translation
-                              </Option>
-                              <Option key={13} value="Balinese">
-                                Balinese
-                              </Option>
-                              <Option key={14} value="Hungarian">
-                                Hungarian
-                              </Option>
-                              <Option key={15} value="Hindi">
-                                Hindi
-                              </Option>
-                              <Option key={16} value="Italian">
-                                Italian
-                              </Option>
-                              <Option key={17} value="Lithuanian">
-                                Lithuanian
-                              </Option>
-                              <Option key={18} value="Latvian">
-                                Latvian
-                              </Option>
-                              <Option key={19} value="Mandarian Chinese">
-                                Mandarian Chinese
-                              </Option>
-                              <Option key={10} value="Russain">
-                                Russain
-                              </Option>
-                              <Option key={20} value="Russain dubbed">
-                                Russain dubbed
-                              </Option>
-                              <Option key={21} value="German">
-                                German
-                              </Option>
+                              {translations && translations.length > 0
+                                ? translations.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleTranslationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
                             </Select>,
                           )}
                         </FormItem>

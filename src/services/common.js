@@ -60,3 +60,18 @@ export async function getLocationList() {
       return error
     })
 }
+
+export async function getTranslationList() {
+  const url = `${serverAddress}/api/translation/`
+  return axios
+    .get(url)
+    .then(response => {
+      if (response && response.data) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}
