@@ -858,8 +858,6 @@ class AddLecture extends React.Component {
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
-    console.log('this.state ===>>>', this.state)
-
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
