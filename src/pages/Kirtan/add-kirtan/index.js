@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -30,6 +31,9 @@ import BackNavigation from '../../../common/BackNavigation/index'
 import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 import serverAddress from '../../../services/config'
+import { formInputElements } from '../../../utils/addKirtanInput'
+import { checkValidation } from '../../../utils/checkValidation'
+import './index.css'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -47,6 +51,16 @@ class AddKirtan extends React.Component {
     translationRequired: false,
     editingKirtan: '',
     editorState: EditorState.createEmpty(),
+    titleEn: '',
+    titleRu: '',
+    eventEn: '',
+    eventRu: '',
+    locationEn: '',
+    locationRu: '',
+    switchDisabled: true,
+    formElements: formInputElements,
+    bodyContentEn: '',
+    bodyContentRu: '',
   }
 
   componentDidMount() {
@@ -55,7 +69,7 @@ class AddKirtan extends React.Component {
     const { state } = location
     if (state !== undefined) {
       const { id, language } = state
-      console.log('state ====>>>>>', id, language)
+      // console.log('state ====>>>>>', id, language)
       const uuid = id
       setTimeout(
         this.setState({
@@ -98,6 +112,56 @@ class AddKirtan extends React.Component {
         publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
         translationRequired: editKirtan ? editKirtan.translation_required : false,
       })
+
+      const titleEn = editKirtan ? editKirtan.en.title : ''
+      const titleRu = editKirtan ? editKirtan.ru.title : ''
+
+      const locationEn = editKirtan ? editKirtan.en.location : ''
+      const locationRu = editKirtan ? editKirtan.ru.location : ''
+
+      const eventEn = editKirtan ? editKirtan.en.event : ''
+      const eventRu = editKirtan ? editKirtan.ru.event : ''
+
+      let bodyContentEn = ''
+      let bodyContentRu = ''
+
+      const htmlBodyEn = editKirtan ? editKirtan.en.body : ''
+
+      const htmlBodyRu = editKirtan ? editKirtan.ru.body : ''
+
+      if (htmlBodyEn && htmlBodyEn.length > 0) {
+        const contentBlockEn = htmlToDraft(htmlBodyEn)
+        if (contentBlockEn) {
+          const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
+          bodyContentEn = EditorState.createWithContent(contentStateEn)
+        }
+      }
+
+      if (htmlBodyRu && htmlBodyRu.length > 0) {
+        const contentBlockRu = htmlToDraft(htmlBodyRu)
+        if (contentBlockRu) {
+          const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
+          bodyContentRu = EditorState.createWithContent(contentStateRu)
+        }
+      }
+
+      this.setState(
+        {
+          titleEn,
+          titleRu,
+          locationEn,
+          locationRu,
+          eventEn,
+          eventRu,
+          bodyContentEn,
+          bodyContentRu,
+        },
+        () => {
+          if (!this.onFieldValueChange()) {
+            this.setState({ switchDisabled: false })
+          }
+        },
+      )
     }
     // this.setState({
     //   language: window.localStorage['app.settings.locale'] === '"en-US"',
@@ -132,16 +196,6 @@ class AddKirtan extends React.Component {
     }
   }
 
-  handleLanguage = () => {
-    const { language, editingKirtan } = this.state
-    if (editingKirtan !== '') {
-      this.handleUpdateBody(!language, editingKirtan)
-    }
-    this.setState({
-      language: !language,
-    })
-  }
-
   handleCheckbox = event => {
     setTimeout(() => {
       this.setState({
@@ -169,9 +223,23 @@ class AddKirtan extends React.Component {
   }
 
   onEditorStateChange: Function = editorState => {
-    this.setState({
-      editorState,
-    })
+    const { language } = this.state
+
+    if (language) {
+      this.setState({
+        bodyContentEn: editorState,
+      })
+    }
+
+    if (!language) {
+      this.setState({
+        bodyContentRu: editorState,
+      })
+    }
+
+    // this.setState({
+    //   editorState,
+    // })
   }
 
   handleUploading = info => {
@@ -285,23 +353,46 @@ class AddKirtan extends React.Component {
 
   handleSubmitForm = () => {
     const { form, dispatch, router } = this.props
-    const uuid = router.location.state
+    // const uuid = router.location.state
+    const { location } = router
+    const { state } = location
+
+    let uuid = ''
+    if (state !== undefined) {
+      const { id } = state
+      uuid = id
+    }
     const {
-      language,
+      // language,
       audioLink,
       createDate,
       publishDate,
       translationRequired,
-      editorState,
+      // editorState,
       editingKirtan,
+      titleEn,
+      titleRu,
+      eventEn,
+      eventRu,
+      locationEn,
+      locationRu,
+      bodyContentEn,
+      bodyContentRu,
     } = this.state
-    const titlekirtan = form.getFieldValue('title')
-    const kirtanBody = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    const locationKirtan = form.getFieldValue('location')
-    const event = form.getFieldValue('event')
+    // const titlekirtan = form.getFieldValue('title')
+    // const kirtanBody = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    // const locationKirtan = form.getFieldValue('location')
+    // const event = form.getFieldValue('event')
     const type = form.getFieldValue('type')
     const artist = form.getFieldValue('artist')
     const kirtanLanguage = form.getFieldValue('language')
+
+    let editorbodyContentEn = null
+    let editorbodyContentRu = null
+
+    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+
     form.validateFields(['title', 'create_date'], (err, values) => {
       console.info(values)
       if (!err) {
@@ -315,18 +406,18 @@ class AddKirtan extends React.Component {
           artist,
           type,
           en: {
-            title: language ? titlekirtan : editingKirtan ? editingKirtan.en.title : '',
-            event: language ? event : editingKirtan ? editingKirtan.en.event : '',
+            title: titleEn,
+            event: eventEn,
             topic: '',
-            location: language ? locationKirtan : editingKirtan ? editingKirtan.en.location : '',
-            body: language ? kirtanBody : editingKirtan ? editingKirtan.en.body : '',
+            location: locationEn,
+            body: editorbodyContentEn,
           },
           ru: {
-            title: language ? (editingKirtan ? editingKirtan.ru.title : '') : titlekirtan,
-            event: language ? (editingKirtan ? editingKirtan.ru.event : '') : event,
+            title: titleRu,
+            event: eventRu,
             topic: '',
-            location: language ? (editingKirtan ? editingKirtan.ru.location : '') : locationKirtan,
-            body: language ? (editingKirtan ? editingKirtan.en.body : '') : kirtanBody,
+            location: locationRu,
+            body: editorbodyContentRu,
           },
         }
 
@@ -363,11 +454,106 @@ class AddKirtan extends React.Component {
     })
   }
 
+  handleLanguage = () => {
+    const { language, editingKirtan } = this.state
+    if (editingKirtan !== '') {
+      this.handleUpdateBody(!language, editingKirtan)
+    }
+    this.setState({
+      language: !language,
+    })
+  }
+
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  handleLocationChange = location => {
+    this.setState(
+      {
+        locationEn: location.title_en,
+        locationRu: location.title_ru,
+      },
+      () => this.onFieldValueChange(),
+    )
+  }
+
+  handleEventChange = event => {
+    this.setState(
+      {
+        eventEn: event.title_en,
+        eventRu: event.title_ru,
+      },
+      () => this.onFieldValueChange(),
+    )
+  }
+
+  onFieldValueChange = () => {
+    const { titleEn, locationEn, eventEn } = this.state
+
+    if (titleEn !== '' && locationEn !== '' && eventEn !== '') {
+      this.setState({ switchDisabled: false })
+      return false
+    }
+
+    this.setState({ switchDisabled: true })
+    return true
+  }
+
   render() {
     const { form, lecture, kirtan } = this.props
     const { events, locations } = lecture
-    const { language, audioLink, translationRequired, editorState, editingKirtan } = this.state
+    const {
+      language,
+      audioLink,
+      translationRequired,
+      editorState,
+      editingKirtan,
+      switchDisabled,
+      titleEn,
+      titleRu,
+      eventEn,
+      eventRu,
+      locationEn,
+      locationRu,
+      formElements,
+      bodyContentEn,
+      bodyContentRu,
+    } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    console.log('lecture ===>', lecture)
+
     return (
       <React.Fragment>
         <div>
@@ -389,6 +575,7 @@ class AddKirtan extends React.Component {
                   <div className="utils__title">
                     <strong>Kirtan Add/Edit</strong>
                     <Switch
+                      disabled={switchDisabled}
                       defaultChecked
                       checkedChildren={language ? 'en' : 'ru'}
                       unCheckedChildren={language ? 'en' : 'ru'}
@@ -403,20 +590,17 @@ class AddKirtan extends React.Component {
                     <Form className="mt-3">
                       <div className="form-group">
                         <FormItem label={language ? 'Title' : 'Title'}>
-                          {form.getFieldDecorator('title', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Title is required',
-                              },
-                            ],
-                            initialValue:
-                              editingKirtan && editingKirtan.en && editingKirtan.ru
-                                ? language
-                                  ? editingKirtan.en.title
-                                  : editingKirtan.ru.title
-                                : '',
-                          })(<Input placeholder="Kirtan Title" />)}
+                          <Input
+                            onChange={this.handleTitleChange}
+                            value={language ? titleEn : titleRu}
+                            placeholder="Kirtan title"
+                            name="title"
+                          />
+                          {!formElements.title.valid &&
+                          formElements.title.validation &&
+                          formElements.title.touched ? (
+                            <div className="invalidFeedback">{formElements.title.errorMessage}</div>
+                          ) : null}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -540,12 +724,13 @@ class AddKirtan extends React.Component {
                       <div className="form-group">
                         <FormItem label="Location">
                           {form.getFieldDecorator('location', {
-                            initialValue:
-                              editingKirtan && editingKirtan.en && editingKirtan.ru
-                                ? language
-                                  ? editingKirtan.en.location
-                                  : editingKirtan.ru.location
-                                : '',
+                            // initialValue:
+                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
+                            //     ? language
+                            //       ? editingKirtan.en.location
+                            //       : editingKirtan.ru.location
+                            //     : '',
+                            initialValue: language ? locationEn : locationRu,
                           })(
                             <Select
                               id="product-edit-colors"
@@ -553,7 +738,7 @@ class AddKirtan extends React.Component {
                               style={{ width: '100%' }}
                               placeholder="Select Location"
                               optionFilterProp="children"
-                              onChange={this.handleSelectLocation}
+                              // onChange={this.handleSelectLocation}
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
                                 0
@@ -562,8 +747,14 @@ class AddKirtan extends React.Component {
                               {locations && locations.length > 0
                                 ? locations.map(item => {
                                     return (
-                                      <Option key={item._id} value={item.title}>
-                                        {item.title}
+                                      <Option
+                                        onClick={() => {
+                                          this.handleLocationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
                                       </Option>
                                     )
                                   })
@@ -575,12 +766,13 @@ class AddKirtan extends React.Component {
                       <div className="form-group">
                         <FormItem label="Event">
                           {form.getFieldDecorator('event', {
-                            initialValue:
-                              editingKirtan && editingKirtan.en && editingKirtan.ru
-                                ? language
-                                  ? editingKirtan.en.event
-                                  : editingKirtan.ru.event
-                                : '',
+                            // initialValue:
+                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
+                            //     ? language
+                            //       ? editingKirtan.en.event
+                            //       : editingKirtan.ru.event
+                            //     : '',
+                            initialValue: language ? eventEn : eventRu,
                           })(
                             <Select
                               id="product-edit-colors"
@@ -588,7 +780,7 @@ class AddKirtan extends React.Component {
                               style={{ width: '100%' }}
                               placeholder="Select Event"
                               optionFilterProp="children"
-                              onChange={this.handleSelectEvent}
+                              // onChange={this.handleSelectEvent}
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
                                 0
@@ -597,8 +789,14 @@ class AddKirtan extends React.Component {
                               {events && events.length > 0
                                 ? events.map(item => {
                                     return (
-                                      <Option key={item._id} value={item.title}>
-                                        {item.title}
+                                      <Option
+                                        onClick={() => {
+                                          this.handleEventChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
                                       </Option>
                                     )
                                   })
@@ -608,7 +806,16 @@ class AddKirtan extends React.Component {
                         </FormItem>
                       </div>
                       <div className="form-group">
-                        <FormItem label="Body">
+                        <FormItem label={language ? 'Body' : 'Body'}>
+                          <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                            <Editor
+                              editorState={language ? bodyContentEn : bodyContentRu}
+                              onEditorStateChange={this.onEditorStateChange}
+                            />
+                          </div>
+                        </FormItem>
+
+                        {/* <FormItem label="Body">
                           {form.getFieldDecorator('content', {
                             initialValue: editorState || '',
                           })(
@@ -619,7 +826,7 @@ class AddKirtan extends React.Component {
                               />
                             </div>,
                           )}
-                        </FormItem>
+                        </FormItem> */}
                       </div>
                       <div className="form-group">
                         <FormItem label="Attachment">

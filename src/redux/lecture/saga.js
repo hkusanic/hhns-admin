@@ -8,7 +8,7 @@ import {
   updateLecture,
   getLectureByUuid,
 } from 'services/lecture'
-import { getTopicList, getEventList, getLocationList } from 'services/common'
+import { getTopicList, getEventList, getLocationList, getTranslationList } from 'services/common'
 import actions from './action'
 
 export function* getLectureListSaga(payload) {
@@ -247,12 +247,35 @@ export function* getLectureByUuidSaga(body) {
   }
 }
 
+export function* getTranslations() {
+  try {
+    const result = yield call(getTranslationList)
+    const { data } = result
+
+    if (result.status === 200) {
+      yield put({
+        type: 'lecture/SET_STATE',
+        payload: {
+          editLecture: '',
+          translations: data.translation,
+        },
+      })
+    }
+  } catch (err) {
+    notification.error({
+      message: 'Error',
+      description: 'Error Occured while getting Locations',
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.GET_LECTURES, getLectureListSaga),
     takeEvery(actions.GET_TOPICS, getTopics),
     takeEvery(actions.GET_EVENTS, getEvents),
     takeEvery(actions.GET_LOCATIONS, getLocations),
+    takeEvery(actions.GET_TRANSLATIONS, getTranslations),
     takeEvery(actions.CREATE_LECTURE, createLectureSaga),
     takeEvery(actions.DELETE_LECTURE, deleteBlogByUuidSaga),
     takeEvery(actions.UPDATE_LECTURE, updateLectureSaga),
