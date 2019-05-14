@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
@@ -439,14 +442,29 @@ class AddKirtan extends React.Component {
         type: 'kirtan/UPDATE_KIRTAN',
         payload,
       })
+      this.scrollToTopPage()
     } else {
       dispatch({
         type: 'kirtan/CREATE_KIRTAN',
         payload: body,
       })
+      this.scrollToTopPage()
     }
     // }
     // })
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   handleReset = () => {
@@ -731,7 +749,35 @@ class AddKirtan extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label="Location">
-                          {form.getFieldDecorator('location', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Location"
+                            optionFilterProp="children"
+                            value={language ? locationEn : locationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {locations && locations.length > 0
+                              ? locations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleLocationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('location', {
                             // initialValue:
                             //   editingKirtan && editingKirtan.en && editingKirtan.ru
                             //     ? language
@@ -768,12 +814,40 @@ class AddKirtan extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label="Event">
-                          {form.getFieldDecorator('event', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Event"
+                            optionFilterProp="children"
+                            value={language ? eventEn : eventRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {events && events.length > 0
+                              ? events.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleEventChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('event', {
                             // initialValue:
                             //   editingKirtan && editingKirtan.en && editingKirtan.ru
                             //     ? language
@@ -810,7 +884,7 @@ class AddKirtan extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">

@@ -590,25 +590,25 @@ class BlogAddPost extends React.Component {
                       </FormItem>
 
                       {/* <FormItem label={english ? 'Title' : 'Title'}>
-              {form.getFieldDecorator('title', {
-                initialValue: editingBlog
-                  ? english
-                    ? editingBlog.title_en
-                    : editingBlog.title_ru
-                  : '',
-              })(<Input placeholder="Post title" />)}
-            </FormItem> */}
+                            {form.getFieldDecorator('title', {
+                              initialValue: editingBlog
+                                ? english
+                                  ? editingBlog.title_en
+                                  : editingBlog.title_ru
+                                : '',
+                            })(<Input placeholder="Post title" />)}
+                          </FormItem> */}
                     </div>
                     <div className="form-group">
                       {/* <FormItem label={english ? 'Tags' : 'Tags'}>
-              {form.getFieldDecorator('tag', {
-                initialValue: editingBlog
-                  ? english
-                    ? editingBlog.tags_en
-                    : editingBlog.tags_ru
-                  : '',
-              })(<Input placeholder="Tags" />)}
-            </FormItem> */}
+                            {form.getFieldDecorator('tag', {
+                              initialValue: editingBlog
+                                ? english
+                                  ? editingBlog.tags_en
+                                  : editingBlog.tags_ru
+                                : '',
+                            })(<Input placeholder="Tags" />)}
+                          </FormItem> */}
                       <FormItem label={language ? 'Tags' : 'Tags'}>
                         <Input
                           onChange={this.handleTagsChange}
