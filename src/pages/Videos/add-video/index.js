@@ -720,7 +720,36 @@ class AddVideo extends React.Component {
                         </div>
                         <div className="form-group">
                           <FormItem label="Event">
-                            {form.getFieldDecorator('event', {
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Event"
+                              optionFilterProp="children"
+                              value={language ? eventEn : eventRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {events && events.length > 0
+                                ? events.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleEventChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
+
+                            {/* {form.getFieldDecorator('event', {
                               // initialValue:
                               //   editingvideo && (editingvideo.en || editingvideo.ru)
                               //     ? language
@@ -757,12 +786,41 @@ class AddVideo extends React.Component {
                                     })
                                   : null}
                               </Select>,
-                            )}
+                            )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
                           <FormItem label="Location">
-                            {form.getFieldDecorator('location', {
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Location"
+                              optionFilterProp="children"
+                              value={language ? locationEn : locationRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {locations && locations.length > 0
+                                ? locations.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleLocationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
+
+                            {/* {form.getFieldDecorator('location', {
                               // initialValue:
                               //   editingvideo && (editingvideo.en || editingvideo.ru)
                               //     ? language
@@ -799,7 +857,7 @@ class AddVideo extends React.Component {
                                     })
                                   : null}
                               </Select>,
-                            )}
+                            )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
