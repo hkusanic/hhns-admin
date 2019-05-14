@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable react/no-access-state-in-setstate */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable array-callback-return */
@@ -17,6 +21,7 @@ import {
   Checkbox,
   AutoComplete,
   Tabs,
+  notification,
 } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
@@ -25,6 +30,9 @@ import { uuidv4 } from '../../../services/custom'
 import BackNavigation from '../../../common/BackNavigation/index'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import styles from './style.module.scss'
+import { formInputElements } from '../../../utils/addVideoInput'
+import { checkValidation } from '../../../utils/checkValidation'
+import './index.css'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -41,6 +49,14 @@ class AddVideo extends React.Component {
     translationRequired: true,
     nextUrls: [],
     arKeys: [],
+    titleEn: '',
+    titleRu: '',
+    locationEn: '',
+    locationRu: '',
+    eventEn: '',
+    eventRu: '',
+    switchDisabled: true,
+    formElements: formInputElements,
   }
 
   componentDidMount() {
@@ -76,17 +92,42 @@ class AddVideo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('nextProps===>', nextProps)
+
     if (nextProps.video.editVideo !== '') {
       const { video } = nextProps
       let ar = []
       if (video.editVideo && video.editVideo.urls && video.editVideo.urls.length > 0) {
         ar = video.editVideo.urls
       }
-      this.setState({
-        editingvideo: video.editVideo,
-        translationRequired: video.editVideo ? video.editVideo.translation_required : true,
-        nextUrls: ar,
-      })
+
+      const titleEn = video.editVideo ? video.editVideo.en.title : ''
+      const titleRu = video.editVideo ? video.editVideo.ru.title : ''
+
+      const locationEn = video.editVideo ? video.editVideo.en.location : ''
+      const locationRu = video.editVideo ? video.editVideo.ru.location : ''
+
+      const eventEn = video.editVideo ? video.editVideo.en.event : ''
+      const eventRu = video.editVideo ? video.editVideo.ru.event : ''
+
+      this.setState(
+        {
+          editingvideo: video.editVideo,
+          translationRequired: video.editVideo ? video.editVideo.translation_required : true,
+          nextUrls: ar,
+          titleEn,
+          titleRu,
+          locationEn,
+          locationRu,
+          eventEn,
+          eventRu,
+        },
+        () => {
+          if (!this.onFieldValueChange()) {
+            this.setState({ switchDisabled: false })
+          }
+        },
+      )
       if (initialize) {
         const arKeys = []
         video.editVideo.urls.map((k, index) => {
@@ -173,79 +214,113 @@ class AddVideo extends React.Component {
   handleSubmitForm = () => {
     const { form, dispatch, router } = this.props
     // const uuid = this.props.location.state
-    // const { location } = router
-    const location2 = router.location
-    const { state } = location2
+    const { location } = router
+    const { state } = location
 
-    let uuid = ''
-    if (state !== undefined) {
-      // eslint-disable-next-line no-shadow
-      const { id } = state
-      uuid = id
-    }
-    const { language, translationRequired, editingvideo } = this.state
-    const titleVideo = form.getFieldValue('title')
+    // let uuid = ''
+    // if (state !== undefined) {
+    //   const { id } = state
+    //   uuid = id
+    // }
+
+    const uuid = this.props.video.editVideo.uuid
+
+    const {
+      translationRequired,
+      editingvideo,
+      titleEn,
+      locationEn,
+      eventEn,
+      titleRu,
+      locationRu,
+      eventRu,
+    } = this.state
+    // const titleVideo = form.getFieldValue('title')
     const author = form.getFieldValue('author')
     const videoLanguage = form.getFieldValue('language')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
-    const event = form.getFieldValue('event')
-    const location = form.getFieldValue('location')
+    // const event = form.getFieldValue('event')
+    // const location = form.getFieldValue('location')
     const type = form.getFieldValue('type')
     const videoReference = form.getFieldValue('reference')
 
-    form.validateFields(['title', 'create_date'], (err, values) => {
-      console.info(values)
-      const dynamicFieldValues = []
-      const keys = form.getFieldValue('keys')
-
-      keys.map((k, index) => {
-        console.info(index)
-        const val = form.getFieldValue(`url-[${k}]`)
-        dynamicFieldValues.push(val)
+    if (titleEn === '' || locationEn === '' || eventEn === '') {
+      notification.error({
+        message: 'Error',
+        description: 'Please fill all the fields',
       })
 
-      if (!err) {
-        const body = {
-          uuid: uuid || uuidv4(),
-          date,
-          published_date: publishDate,
-          language: videoLanguage,
-          reference: videoReference,
-          translation_required: translationRequired,
-          type,
-          author,
-          urls: dynamicFieldValues,
-          en: {
-            title: language ? titleVideo : editingvideo ? editingvideo.en.title : '',
-            event: language ? event : editingvideo ? editingvideo.en.event : '',
-            location: language ? location : editingvideo ? editingvideo.en.location : '',
-          },
-          ru: {
-            title: language ? (editingvideo ? editingvideo.ru.title : '') : titleVideo,
-            event: language ? (editingvideo ? editingvideo.ru.event : '') : event,
-            location: language ? (editingvideo ? editingvideo.ru.location : '') : location,
-          },
-        }
-        console.log(body)
-        if (editingvideo !== '') {
-          body.audit = editingvideo.audit
-          const payload = {
-            body,
-            uuid,
-          }
-          dispatch({
-            type: 'video/UPDATE_VIDEO',
-            payload,
-          })
-        } else {
-          dispatch({
-            type: 'video/CREATE_VIDEO',
-            body,
-          })
-        }
-      }
+      return
+    }
+
+    // form.validateFields(['title', 'create_date'], (err, values) => {
+    // console.info(values)
+    const dynamicFieldValues = []
+    const keys = form.getFieldValue('keys')
+
+    keys.map((k, index) => {
+      console.info(index)
+      const val = form.getFieldValue(`url-[${k}]`)
+      dynamicFieldValues.push(val)
     })
+
+    // if (!err) {
+    const body = {
+      uuid: uuid || uuidv4(),
+      date,
+      published_date: publishDate,
+      language: videoLanguage,
+      reference: videoReference,
+      translation_required: translationRequired,
+      type,
+      author,
+      urls: dynamicFieldValues,
+      en: {
+        title: titleEn,
+        event: eventEn,
+        location: locationEn,
+      },
+      ru: {
+        title: titleRu,
+        event: eventRu,
+        location: locationRu,
+      },
+    }
+
+    if (editingvideo !== '') {
+      body.audit = editingvideo.audit
+      const payload = {
+        body,
+        uuid,
+      }
+      dispatch({
+        type: 'video/UPDATE_VIDEO',
+        payload,
+      })
+      this.scrollToTopPage()
+    } else {
+      dispatch({
+        type: 'video/CREATE_VIDEO',
+        body,
+      })
+      this.scrollToTopPage()
+    }
+    // }
+    // })
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   handleCheckbox = event => {
@@ -265,14 +340,124 @@ class AddVideo extends React.Component {
     })
   }
 
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  handleLocationChange = location => {
+    this.setState(
+      {
+        locationEn: location.title_en,
+        locationRu: location.title_ru,
+      },
+      () => this.onFieldValueChange(),
+    )
+  }
+
+  handleEventChange = event => {
+    this.setState(
+      {
+        eventEn: event.title_en,
+        eventRu: event.title_ru,
+      },
+      () => this.onFieldValueChange(),
+    )
+  }
+
+  onFieldValueChange = () => {
+    const { titleEn, locationEn, eventEn } = this.state
+
+    if (titleEn !== '' && locationEn !== '' && eventEn !== '') {
+      this.setState({ switchDisabled: false })
+      return false
+    }
+
+    this.setState({ switchDisabled: true })
+    return true
+  }
+
   render() {
     const { form, lecture, video } = this.props
     const { events, locations } = lecture
-    const { language, translationRequired } = this.state
+    const {
+      language,
+      translationRequired,
+      titleEn,
+      titleRu,
+      locationEn,
+      locationRu,
+      eventEn,
+      eventRu,
+      switchDisabled,
+      editingvideo,
+      formElements,
+    } = this.state
     const dateFormat = 'YYYY/MM/DD'
     const { getFieldDecorator, getFieldValue } = this.props.form
-
-    const { editingvideo } = this.state
 
     const formItemLayout = {
       labelCol: {
@@ -350,6 +535,7 @@ class AddVideo extends React.Component {
                   <div className="utils__title">
                     <strong>Video Add/Edit</strong>
                     <Switch
+                      disabled={switchDisabled}
                       defaultChecked
                       checkedChildren={language ? 'en' : 'ru'}
                       unCheckedChildren={language ? 'en' : 'ru'}
@@ -363,7 +549,20 @@ class AddVideo extends React.Component {
                       <Form className="mt-3">
                         <div className="form-group">
                           <FormItem label={language ? 'Title' : 'Title'}>
-                            {form.getFieldDecorator('title', {
+                            <Input
+                              onChange={this.handleTitleChange}
+                              value={language ? titleEn : titleRu}
+                              placeholder="video title"
+                              name="title"
+                            />
+                            {!formElements.title.valid &&
+                            formElements.title.validation &&
+                            formElements.title.touched ? (
+                              <div className="invalidFeedback">
+                                {formElements.title.errorMessage}
+                              </div>
+                            ) : null}
+                            {/* {form.getFieldDecorator('title', {
                               rules: [
                                 {
                                   required: true,
@@ -376,7 +575,7 @@ class AddVideo extends React.Component {
                                     ? editingvideo.en.title
                                     : editingvideo.ru.title
                                   : '',
-                            })(<Input placeholder="Video Title" />)}
+                            })(<Input placeholder="Video Title" />)} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -521,13 +720,43 @@ class AddVideo extends React.Component {
                         </div>
                         <div className="form-group">
                           <FormItem label="Event">
-                            {form.getFieldDecorator('event', {
-                              initialValue:
-                                editingvideo && (editingvideo.en || editingvideo.ru)
-                                  ? language
-                                    ? editingvideo.en.event
-                                    : editingvideo.ru.event
-                                  : '',
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Event"
+                              optionFilterProp="children"
+                              value={language ? eventEn : eventRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {events && events.length > 0
+                                ? events.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleEventChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
+
+                            {/* {form.getFieldDecorator('event', {
+                              // initialValue:
+                              //   editingvideo && (editingvideo.en || editingvideo.ru)
+                              //     ? language
+                              //       ? editingvideo.en.event
+                              //       : editingvideo.ru.event
+                              //     : '',
+                              initialValue: language ? eventEn : eventRu,
                             })(
                               <Select
                                 id="product-edit-colors"
@@ -544,25 +773,61 @@ class AddVideo extends React.Component {
                                 {events && events.length > 0
                                   ? events.map(item => {
                                       return (
-                                        <Option key={item._id} value={item.title}>
-                                          {item.title}
+                                        <Option
+                                          onClick={() => {
+                                            this.handleEventChange(item)
+                                          }}
+                                          key={item._id}
+                                          value={language ? item.title_en : item.title_ru}
+                                        >
+                                          {language ? item.title_en : item.title_ru}
                                         </Option>
                                       )
                                     })
                                   : null}
                               </Select>,
-                            )}
+                            )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
                           <FormItem label="Location">
-                            {form.getFieldDecorator('location', {
-                              initialValue:
-                                editingvideo && (editingvideo.en || editingvideo.ru)
-                                  ? language
-                                    ? editingvideo.en.location
-                                    : editingvideo.ru.location
-                                  : '',
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Location"
+                              optionFilterProp="children"
+                              value={language ? locationEn : locationRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {locations && locations.length > 0
+                                ? locations.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleLocationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
+
+                            {/* {form.getFieldDecorator('location', {
+                              // initialValue:
+                              //   editingvideo && (editingvideo.en || editingvideo.ru)
+                              //     ? language
+                              //       ? editingvideo.en.location
+                              //       : editingvideo.ru.location
+                              //     : '',
+                              initialValue: language ? locationEn : locationRu,
                             })(
                               <Select
                                 id="product-edit-colors"
@@ -579,14 +844,20 @@ class AddVideo extends React.Component {
                                 {locations && locations.length > 0
                                   ? locations.map(item => {
                                       return (
-                                        <Option key={item._id} value={item.title}>
-                                          {item.title}
+                                        <Option
+                                          onClick={() => {
+                                            this.handleLocationChange(item)
+                                          }}
+                                          key={item._id}
+                                          value={language ? item.title_en : item.title_ru}
+                                        >
+                                          {language ? item.title_en : item.title_ru}
                                         </Option>
                                       )
                                     })
                                   : null}
                               </Select>,
-                            )}
+                            )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
