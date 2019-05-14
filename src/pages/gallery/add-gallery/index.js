@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
@@ -362,14 +365,29 @@ class CreateGallery extends React.Component {
         type: 'gallery/UPDATE_GALLERY',
         payload,
       })
+      this.scrollToTopPage()
     } else {
       dispatch({
         type: 'gallery/CREATE_GALLERY',
         body,
       })
+      this.scrollToTopPage()
     }
     // }
     // })
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   deleteFile = item => {
