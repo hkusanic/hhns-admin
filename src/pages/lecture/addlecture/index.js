@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
@@ -416,12 +419,27 @@ class AddLecture extends React.Component {
         type: 'lecture/UPDATE_LECTURE',
         payload,
       })
+      this.scrollToTopPage()
     } else {
       dispatch({
         type: 'lecture/CREATE_LECTURE',
         body,
       })
+      this.scrollToTopPage()
     }
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   onEditorStateChange: Function = editorState => {
