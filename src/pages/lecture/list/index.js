@@ -109,16 +109,16 @@ class ProductsList extends React.Component {
         key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
       },
-      {
-        title: 'Event',
-        dataIndex: language ? 'en.event' : 'ru.event',
-        key: language ? 'en.event' : 'ru.event',
-      },
-      {
-        title: 'Author',
-        dataIndex: 'author',
-        key: 'author',
-      },
+      // {
+      //   title: 'Event',
+      //   dataIndex: language ? 'en.event' : 'ru.event',
+      //   key: language ? 'en.event' : 'ru.event',
+      // },
+      // {
+      //   title: 'Author',
+      //   dataIndex: 'author',
+      //   key: 'author',
+      // },
       {
         title: 'Date',
         dataIndex: 'created_date',

@@ -88,6 +88,7 @@ class AddLecture extends React.Component {
       translationRu: '',
       switchDisabled: true,
       formElements: formInputElements,
+      transcribe: false,
     }
   }
 
@@ -225,6 +226,7 @@ class AddLecture extends React.Component {
           eventRu,
           translationEn,
           translationRu,
+          transcribe: lecture.editLecture.transcribe_required,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -289,6 +291,7 @@ class AddLecture extends React.Component {
       topicRu,
       translationEn,
       translationRu,
+      transcribe,
     } = this.state
     const { location } = router
     const { state } = location
@@ -355,6 +358,7 @@ class AddLecture extends React.Component {
       published_date: publishDate,
       audio_link: audioLink,
       translation_required: translationRequired,
+      transcribe_required: transcribe,
       counters: {
         ru_summary_view: 0,
         ru_transcription_view: 0,
@@ -721,6 +725,14 @@ class AddLecture extends React.Component {
     }, 0)
   }
 
+  handleTranscribe = event => {
+    setTimeout(() => {
+      this.setState({
+        transcribe: event.target.checked,
+      })
+    }, 0)
+  }
+
   handleSelectTranslation = translation => {
     this.setState({ translation })
   }
@@ -853,6 +865,7 @@ class AddLecture extends React.Component {
       translationRu,
       switchDisabled,
       formElements,
+      transcribe,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1243,6 +1256,27 @@ class AddLecture extends React.Component {
                                 : null}
                             </Select>,
                           )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem>
+                          <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
+                            &nbsp; Need Transcribe ?
+                          </Checkbox>
+
+                          {/* {form.getFieldDecorator('transcribe', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Need Transcribe is required',
+                              },
+                            ],
+                            initialValue: editinglecture ? editinglecture.translation_required : '',
+                          })(
+                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                              &nbsp; Need Translation ?
+                            </Checkbox>,
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
