@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
@@ -59,8 +62,8 @@ class AddKirtan extends React.Component {
     locationRu: '',
     switchDisabled: true,
     formElements: formInputElements,
-    bodyContentEn: '',
-    bodyContentRu: '',
+    bodyContentEn: EditorState.createEmpty(),
+    bodyContentRu: EditorState.createEmpty(),
   }
 
   componentDidMount() {
@@ -105,13 +108,6 @@ class AddKirtan extends React.Component {
       const { editKirtan } = kirtan
       const { language } = this.state
       this.handleUpdateBody(language, editKirtan)
-      this.setState({
-        editingKirtan: editKirtan,
-        audioLink: editKirtan ? editKirtan.audio_link : '',
-        createDate: editKirtan ? editKirtan.created_date : '',
-        publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
-        translationRequired: editKirtan ? editKirtan.translation_required : false,
-      })
 
       const titleEn = editKirtan ? editKirtan.en.title : ''
       const titleRu = editKirtan ? editKirtan.ru.title : ''
@@ -147,6 +143,11 @@ class AddKirtan extends React.Component {
 
       this.setState(
         {
+          editingKirtan: editKirtan,
+          audioLink: editKirtan ? editKirtan.audio_link : '',
+          createDate: editKirtan ? editKirtan.created_date : '',
+          publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
+          translationRequired: editKirtan ? editKirtan.translation_required : false,
           titleEn,
           titleRu,
           locationEn,
@@ -393,52 +394,77 @@ class AddKirtan extends React.Component {
     editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
     editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
 
-    form.validateFields(['title', 'create_date'], (err, values) => {
-      console.info(values)
-      if (!err) {
-        const body = {
-          uuid: uuid || uuidv4(),
-          created_date: createDate,
-          published_date: publishDate,
-          language: kirtanLanguage,
-          audio_link: audioLink,
-          translation_required: translationRequired,
-          artist,
-          type,
-          en: {
-            title: titleEn,
-            event: eventEn,
-            topic: '',
-            location: locationEn,
-            body: editorbodyContentEn,
-          },
-          ru: {
-            title: titleRu,
-            event: eventRu,
-            topic: '',
-            location: locationRu,
-            body: editorbodyContentRu,
-          },
-        }
+    // form.validateFields(['title', 'create_date'], (err, values) => {
+    //   console.info(values)
+    //   if (!err) {
 
-        if (editingKirtan !== '' && uuid) {
-          body.audit = editingKirtan.audit
-          const payload = {
-            body,
-            uuid,
-          }
-          dispatch({
-            type: 'kirtan/UPDATE_KIRTAN',
-            payload,
-          })
-        } else {
-          dispatch({
-            type: 'kirtan/CREATE_KIRTAN',
-            payload: body,
-          })
-        }
+    if (titleEn === '' || locationEn === '' || eventEn === '') {
+      notification.error({
+        message: 'Error',
+        description: 'Please fill all the fields',
+      })
+
+      return
+    }
+
+    const body = {
+      uuid: uuid || uuidv4(),
+      created_date: createDate,
+      published_date: publishDate,
+      language: kirtanLanguage,
+      audio_link: audioLink,
+      translation_required: translationRequired,
+      artist,
+      type,
+      en: {
+        title: titleEn,
+        event: eventEn,
+        topic: '',
+        location: locationEn,
+        body: editorbodyContentEn,
+      },
+      ru: {
+        title: titleRu,
+        event: eventRu,
+        topic: '',
+        location: locationRu,
+        body: editorbodyContentRu,
+      },
+    }
+
+    if (editingKirtan !== '' && uuid) {
+      body.audit = editingKirtan.audit
+      const payload = {
+        body,
+        uuid,
       }
-    })
+      dispatch({
+        type: 'kirtan/UPDATE_KIRTAN',
+        payload,
+      })
+      this.scrollToTopPage()
+    } else {
+      dispatch({
+        type: 'kirtan/CREATE_KIRTAN',
+        payload: body,
+      })
+      this.scrollToTopPage()
+    }
+    // }
+    // })
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   handleReset = () => {
@@ -723,7 +749,35 @@ class AddKirtan extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label="Location">
-                          {form.getFieldDecorator('location', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Location"
+                            optionFilterProp="children"
+                            value={language ? locationEn : locationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {locations && locations.length > 0
+                              ? locations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleLocationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('location', {
                             // initialValue:
                             //   editingKirtan && editingKirtan.en && editingKirtan.ru
                             //     ? language
@@ -760,12 +814,40 @@ class AddKirtan extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label="Event">
-                          {form.getFieldDecorator('event', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Event"
+                            optionFilterProp="children"
+                            value={language ? eventEn : eventRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {events && events.length > 0
+                              ? events.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleEventChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('event', {
                             // initialValue:
                             //   editingKirtan && editingKirtan.en && editingKirtan.ru
                             //     ? language
@@ -802,7 +884,7 @@ class AddKirtan extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">

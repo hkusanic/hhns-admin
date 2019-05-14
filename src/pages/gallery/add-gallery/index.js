@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
@@ -32,6 +35,9 @@ import BackNavigation from '../../../common/BackNavigation/index'
 import { uuidv4, handleFilterGallery } from '../../../services/custom'
 import styles from './style.module.scss'
 import serverAddress from '../../../services/config'
+import { formInputElements } from '../../../utils/addGalleryInput'
+import { checkValidation } from '../../../utils/checkValidation'
+import './index.css'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -52,6 +58,10 @@ class CreateGallery extends React.Component {
       uploading: true,
       language: true,
       translationRequired: false,
+      titleEn: '',
+      titleRu: '',
+      formElements: formInputElements,
+      switchDisabled: true,
     }
   }
 
@@ -87,17 +97,31 @@ class CreateGallery extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { uploading } = this.state
+
     if (nextProps.gallery.editGallery !== '' && uploading) {
       const { gallery } = nextProps
       const { editGallery } = gallery
-      this.setState({
-        editGallery,
-        gallery: editGallery.gallery || '2019',
-        photoFiles: editGallery.photos || [],
-        createDate: editGallery.date || '',
-        publishDate: editGallery.publish_date || '',
-        translationRequired: editGallery.translation_required,
-      })
+
+      const titleEn = gallery.editGallery ? gallery.editGallery.title_en : ''
+      const titleRu = gallery.editGallery ? gallery.editGallery.title_ru : ''
+
+      this.setState(
+        {
+          editGallery,
+          gallery: editGallery.gallery || '2019',
+          photoFiles: editGallery.photos || [],
+          createDate: editGallery.date || '',
+          publishDate: editGallery.publish_date || '',
+          translationRequired: editGallery.translation_required,
+          titleEn,
+          titleRu,
+        },
+        () => {
+          if (!this.onFieldValueChange()) {
+            this.setState({ switchDisabled: false })
+          }
+        },
+      )
     }
     if (nextProps.gallery.isGalleryCreated) {
       this.handleReset()
@@ -120,6 +144,9 @@ class CreateGallery extends React.Component {
       uploading: true,
       language: true,
       translationRequired: false,
+      titleEn: '',
+      titleRu: '',
+      formElements: formInputElements,
     })
   }
 
@@ -279,7 +306,7 @@ class CreateGallery extends React.Component {
 
   handleFormBody = event => {
     event.preventDefault()
-    const { form, dispatch, router } = this.props
+    const { dispatch, router } = this.props
     const { location } = router
     // const uuid = location.state
     const { state } = location
@@ -296,51 +323,71 @@ class CreateGallery extends React.Component {
       createDate,
       publishDate,
       editGallery,
-      language,
+      // language,
       translationRequired,
+      titleEn,
+      titleRu,
     } = this.state
-    const title = form.getFieldValue('title')
+    // const title = form.getFieldValue('title')
+
     const bodyEn = draftToHtml(convertToRaw(galleryBody.getCurrentContent()))
-    form.validateFields(['title', 'create_date', 'publish_date'], (err, values) => {
-      console.info(values)
-      if (!err) {
-        const body = {
-          uuid: uuid || uuidv4(),
-          gallery,
-          date: createDate,
-          publish_date: publishDate,
-          photos: photoFiles,
-          body: bodyEn,
-          translation_required: translationRequired,
-          title_en: language
-            ? title
-            : editGallery && editGallery.title_en
-            ? editGallery.title_en
-            : '',
-          title_ru: language
-            ? editGallery && editGallery.title_ru
-              ? editGallery.title_ru
-              : ''
-            : title,
-        }
-        if (editGallery !== '' && uuid) {
-          body.audit = editGallery.audit
-          const payload = {
-            body,
-            uuid,
-          }
-          dispatch({
-            type: 'gallery/UPDATE_GALLERY',
-            payload,
-          })
-        } else {
-          dispatch({
-            type: 'gallery/CREATE_GALLERY',
-            body,
-          })
-        }
+
+    if (titleEn === '') {
+      notification.error({
+        message: 'Error',
+        description: 'Please fill all the fields',
+      })
+
+      return
+    }
+
+    // form.validateFields(['title', 'create_date', 'publish_date'], (err, values) => {
+    // console.info(values)
+    // if (!err) {
+    const body = {
+      uuid: uuid || uuidv4(),
+      gallery,
+      date: createDate,
+      publish_date: publishDate,
+      photos: photoFiles,
+      body: bodyEn,
+      translation_required: translationRequired,
+      title_en: titleEn,
+      title_ru: titleRu,
+    }
+    if (editGallery !== '' && uuid) {
+      body.audit = editGallery.audit
+      const payload = {
+        body,
+        uuid,
       }
-    })
+      dispatch({
+        type: 'gallery/UPDATE_GALLERY',
+        payload,
+      })
+      this.scrollToTopPage()
+    } else {
+      dispatch({
+        type: 'gallery/CREATE_GALLERY',
+        body,
+      })
+      this.scrollToTopPage()
+    }
+    // }
+    // })
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   deleteFile = item => {
@@ -389,13 +436,69 @@ class CreateGallery extends React.Component {
     })
   }
 
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  onFieldValueChange = () => {
+    const { titleEn } = this.state
+
+    if (titleEn !== '') {
+      this.setState({ switchDisabled: false })
+      return false
+    }
+
+    this.setState({ switchDisabled: true })
+    return true
+  }
+
   render() {
     const { form, gallery } = this.props
     let { mainGallery } = gallery
     mainGallery = handleFilterGallery(mainGallery)
     const dateFormat = 'YYYY/MM/DD'
 
-    const { galleryBody, photoFiles, editGallery, language, translationRequired } = this.state
+    const {
+      galleryBody,
+      photoFiles,
+      editGallery,
+      language,
+      translationRequired,
+      titleEn,
+      titleRu,
+      switchDisabled,
+      formElements,
+    } = this.state
     return (
       <div>
         <BackNavigation link="/gallery/list" title="Gallery List" />
@@ -416,6 +519,7 @@ class CreateGallery extends React.Component {
                 <div className="utils__title">
                   <strong>Create Gallery</strong>
                   <Switch
+                    disabled={switchDisabled}
                     defaultChecked
                     checkedChildren={language ? 'en' : 'ru'}
                     unCheckedChildren={language ? 'en' : 'ru'}
@@ -430,7 +534,19 @@ class CreateGallery extends React.Component {
                   <Form className="mt-3">
                     <div className="form-group">
                       <FormItem label="Title">
-                        {form.getFieldDecorator('title', {
+                        <Input
+                          onChange={this.handleTitleChange}
+                          value={language ? titleEn : titleRu}
+                          placeholder="lecture title"
+                          name="title"
+                        />
+                        {!formElements.title.valid &&
+                        formElements.title.validation &&
+                        formElements.title.touched ? (
+                          <div className="invalidFeedback">{formElements.title.errorMessage}</div>
+                        ) : null}
+
+                        {/* {form.getFieldDecorator('title', {
                           rules: [
                             {
                               required: true,
@@ -443,7 +559,7 @@ class CreateGallery extends React.Component {
                                 ? editGallery.title_en
                                 : editGallery.title_ru
                               : '',
-                        })(<Input placeholder="Enter Title" />)}
+                        })(<Input placeholder="Enter Title" />)} */}
                       </FormItem>
                     </div>
                     <div className="form-group">

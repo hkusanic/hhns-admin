@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
@@ -88,11 +91,11 @@ class AddLecture extends React.Component {
       translationRu: '',
       switchDisabled: true,
       formElements: formInputElements,
+      transcribe: false,
     }
   }
 
   componentDidMount() {
-    // console.log(this.props)
     const { router, dispatch } = this.props
     const { location } = router
     const { state } = location
@@ -136,14 +139,6 @@ class AddLecture extends React.Component {
     if (nextProps.lecture.editLecture !== '' && uploading) {
       const { lecture } = nextProps
       const { language } = this.state
-      this.setState({
-        editinglecture: lecture.editLecture,
-        audioLink: lecture.editLecture.audio_link,
-        summaryFiles: lecture.editLecture.ru.summary.attachment_link,
-        transcriptionFiles: lecture.editLecture.en.transcription.attachment_link,
-        translationRequired: lecture.editLecture.translation_required,
-        translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
-      })
 
       let editorStateTranscriptionEn = ''
       let editorStateTranscriptionRu = ''
@@ -213,6 +208,12 @@ class AddLecture extends React.Component {
 
       this.setState(
         {
+          editinglecture: lecture.editLecture,
+          audioLink: lecture.editLecture.audio_link,
+          summaryFiles: lecture.editLecture.ru.summary.attachment_link,
+          transcriptionFiles: lecture.editLecture.en.transcription.attachment_link,
+          translationRequired: lecture.editLecture.translation_required,
+          translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
           editorStateTranscriptionEn,
           editorStateTranscriptionRu,
           editorStateSummaryEn,
@@ -227,6 +228,7 @@ class AddLecture extends React.Component {
           eventRu,
           translationEn,
           translationRu,
+          transcribe: lecture.editLecture.transcribe_required,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -291,6 +293,7 @@ class AddLecture extends React.Component {
       topicRu,
       translationEn,
       translationRu,
+      transcribe,
     } = this.state
     const { location } = router
     const { state } = location
@@ -357,6 +360,7 @@ class AddLecture extends React.Component {
       published_date: publishDate,
       audio_link: audioLink,
       translation_required: translationRequired,
+      transcribe_required: transcribe,
       counters: {
         ru_summary_view: 0,
         ru_transcription_view: 0,
@@ -414,12 +418,27 @@ class AddLecture extends React.Component {
         type: 'lecture/UPDATE_LECTURE',
         payload,
       })
+      this.scrollToTopPage()
     } else {
       dispatch({
         type: 'lecture/CREATE_LECTURE',
         body,
       })
+      this.scrollToTopPage()
     }
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   onEditorStateChange: Function = editorState => {
@@ -723,6 +742,14 @@ class AddLecture extends React.Component {
     }, 0)
   }
 
+  handleTranscribe = event => {
+    setTimeout(() => {
+      this.setState({
+        transcribe: event.target.checked,
+      })
+    }, 0)
+  }
+
   handleSelectTranslation = translation => {
     this.setState({ translation })
   }
@@ -855,6 +882,7 @@ class AddLecture extends React.Component {
       translationRu,
       switchDisabled,
       formElements,
+      transcribe,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1039,7 +1067,35 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Location' : 'Location'}>
-                          {form.getFieldDecorator('location', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Location"
+                            optionFilterProp="children"
+                            value={language ? locationEn : locationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {locations && locations.length > 0
+                              ? locations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleLocationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('location', {
                             rules: [
                               {
                                 required: true,
@@ -1081,12 +1137,40 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Event' : 'Event'}>
-                          {form.getFieldDecorator('event', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Event"
+                            optionFilterProp="children"
+                            value={language ? eventEn : eventRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {events && events.length > 0
+                              ? events.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleEventChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('event', {
                             rules: [
                               {
                                 required: true,
@@ -1128,12 +1212,40 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Topic' : 'Topic'}>
-                          {form.getFieldDecorator('topic', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Topic"
+                            optionFilterProp="children"
+                            value={language ? topicEn : topicRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {topics && topics.length > 0
+                              ? topics.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleTopicChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('topic', {
                             rules: [
                               {
                                 required: true,
@@ -1175,11 +1287,11 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
-                        <FormItem label="Part / Conta">
+                        <FormItem label="Part / Canto">
                           {form.getFieldDecorator('part', {
                             initialValue: editinglecture ? editinglecture.part : '',
                           })(<Input type="Number" placeholder="part/songs" />)}
@@ -1201,7 +1313,36 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label="Translation">
-                          {form.getFieldDecorator('translation', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Artist"
+                            // onChange={this.handleSelectTranslation}
+                            optionFilterProp="children"
+                            value={language ? translationEn : translationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {translations && translations.length > 0
+                              ? translations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleTranslationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('translation', {
                             rules: [
                               {
                                 required: true,
@@ -1244,7 +1385,28 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem>
+                          <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
+                            &nbsp; Need Transcribe ?
+                          </Checkbox>
+
+                          {/* {form.getFieldDecorator('transcribe', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Need Transcribe is required',
+                              },
+                            ],
+                            initialValue: editinglecture ? editinglecture.translation_required : '',
+                          })(
+                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                              &nbsp; Need Translation ?
+                            </Checkbox>,
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
