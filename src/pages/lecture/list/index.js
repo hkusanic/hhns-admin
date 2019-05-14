@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
-import { Table, DatePicker, Select, Switch } from 'antd'
+import { Table, DatePicker, Select, Switch, Checkbox } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -13,6 +14,7 @@ const { Option } = Select
 class ProductsList extends React.Component {
   state = {
     language: true,
+    transcribe: false,
   }
 
   componentDidMount() {
@@ -97,8 +99,16 @@ class ProductsList extends React.Component {
     })
   }
 
+  handleTranscribe = event => {
+    setTimeout(() => {
+      this.setState({
+        transcribe: event.target.checked,
+      })
+    }, 0)
+  }
+
   render() {
-    const { language } = this.state
+    const { language, transcribe } = this.state
     const { lecture } = this.props
     const { lectures, totalLectures } = lecture
     const data = lectures
@@ -175,7 +185,10 @@ class ProductsList extends React.Component {
               <Option value="asc">Ascending</Option>
               <Option value="desc">Descending</Option>
             </Select>
-            ,
+            &nbsp;&nbsp;&nbsp;
+            {/* <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
+              &nbsp; Transcribe ?
+            </Checkbox> */}
           </div>
           <div className="card-body">
             <Table
