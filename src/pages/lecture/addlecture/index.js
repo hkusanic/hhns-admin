@@ -136,14 +136,6 @@ class AddLecture extends React.Component {
     if (nextProps.lecture.editLecture !== '' && uploading) {
       const { lecture } = nextProps
       const { language } = this.state
-      this.setState({
-        editinglecture: lecture.editLecture,
-        audioLink: lecture.editLecture.audio_link,
-        summaryFiles: lecture.editLecture.ru.summary.attachment_link,
-        transcriptionFiles: lecture.editLecture.en.transcription.attachment_link,
-        translationRequired: lecture.editLecture.translation_required,
-        translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
-      })
 
       let editorStateTranscriptionEn = ''
       let editorStateTranscriptionRu = ''
@@ -213,6 +205,12 @@ class AddLecture extends React.Component {
 
       this.setState(
         {
+          editinglecture: lecture.editLecture,
+          audioLink: lecture.editLecture.audio_link,
+          summaryFiles: lecture.editLecture.ru.summary.attachment_link,
+          transcriptionFiles: lecture.editLecture.en.transcription.attachment_link,
+          translationRequired: lecture.editLecture.translation_required,
+          translation: lecture.editLecture.translation ? lecture.editLecture.translation : '',
           editorStateTranscriptionEn,
           editorStateTranscriptionRu,
           editorStateSummaryEn,
@@ -1179,7 +1177,7 @@ class AddLecture extends React.Component {
                         </FormItem>
                       </div>
                       <div className="form-group">
-                        <FormItem label="Part / Conta">
+                        <FormItem label="Part / Canto">
                           {form.getFieldDecorator('part', {
                             initialValue: editinglecture ? editinglecture.part : '',
                           })(<Input type="Number" placeholder="part/songs" />)}
