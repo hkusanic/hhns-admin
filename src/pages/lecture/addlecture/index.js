@@ -1068,7 +1068,35 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Location' : 'Location'}>
-                          {form.getFieldDecorator('location', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Location"
+                            optionFilterProp="children"
+                            value={language ? locationEn : locationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {locations && locations.length > 0
+                              ? locations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleLocationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('location', {
                             rules: [
                               {
                                 required: true,
@@ -1110,12 +1138,40 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Event' : 'Event'}>
-                          {form.getFieldDecorator('event', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Event"
+                            optionFilterProp="children"
+                            value={language ? eventEn : eventRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {events && events.length > 0
+                              ? events.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleEventChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('event', {
                             rules: [
                               {
                                 required: true,
@@ -1157,12 +1213,40 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label={language ? 'Topic' : 'Topic'}>
-                          {form.getFieldDecorator('topic', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Topic"
+                            optionFilterProp="children"
+                            value={language ? topicEn : topicRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {topics && topics.length > 0
+                              ? topics.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleTopicChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('topic', {
                             rules: [
                               {
                                 required: true,
@@ -1204,7 +1288,7 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -1230,7 +1314,36 @@ class AddLecture extends React.Component {
                       </div>
                       <div className="form-group">
                         <FormItem label="Translation">
-                          {form.getFieldDecorator('translation', {
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Artist"
+                            // onChange={this.handleSelectTranslation}
+                            optionFilterProp="children"
+                            value={language ? translationEn : translationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {translations && translations.length > 0
+                              ? translations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleTranslationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
+
+                          {/* {form.getFieldDecorator('translation', {
                             rules: [
                               {
                                 required: true,
@@ -1273,7 +1386,7 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>,
-                          )}
+                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
