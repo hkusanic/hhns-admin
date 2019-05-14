@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -6,6 +7,9 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { handleFilterGallery } from '../../../services/custom'
 import styles from './style.module.scss'
+import { formInputElements } from '../../../utils/addMainGalleryInput'
+import { checkValidation } from '../../../utils/checkValidation'
+import './index.css'
 
 const FormItem = Form.Item
 
@@ -14,6 +18,10 @@ const FormItem = Form.Item
 class MainGallery extends React.Component {
   state = {
     language: true,
+    titleEn: '',
+    titleRu: '',
+    switchDisabled: true,
+    formElements: formInputElements,
   }
 
   componentDidMount() {
@@ -64,22 +72,23 @@ class MainGallery extends React.Component {
   handleFormBody = event => {
     event.preventDefault()
     const { form, dispatch } = this.props
-    const name = form.getFieldValue('title')
-    form.validateFields(['title'], (err, values) => {
-      console.info(values)
-      if (!err) {
-        const body = {
-          uuid: this.uuidv4(),
-          date: new Date().toLocaleDateString(),
-          name_en: name,
-          name_ru: name,
-        }
-        dispatch({
-          type: 'galleryListing/CREATE_MAIN_GALLERY',
-          body,
-        })
-      }
+    const { titleEn, titleRu } = this.state
+    // const name = form.getFieldValue('title')
+    // form.validateFields(['title'], (err, values) => {
+    // console.info(values)
+    // if (!err) {
+    const body = {
+      uuid: this.uuidv4(),
+      date: new Date().toLocaleDateString(),
+      name_en: titleEn,
+      name_ru: titleRu,
+    }
+    dispatch({
+      type: 'galleryListing/CREATE_MAIN_GALLERY',
+      body,
     })
+    // }
+    // })
   }
 
   handleLanguage = () => {
@@ -98,10 +107,56 @@ class MainGallery extends React.Component {
     return a - b
   }
 
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  onFieldValueChange = () => {
+    const { titleEn } = this.state
+
+    if (titleEn !== '') {
+      this.setState({ switchDisabled: false })
+      return false
+    }
+
+    this.setState({ switchDisabled: true })
+    return true
+  }
+
   render() {
     const { form, galleryList } = this.props
     const { mainGallery, totalmainGallery } = galleryList
-    const { language } = this.state
+    const { language, titleEn, titleRu, switchDisabled, formElements } = this.state
     const mainGallery1 = handleFilterGallery(mainGallery)
 
     const columns = [
@@ -135,6 +190,7 @@ class MainGallery extends React.Component {
             <div className="utils__title">
               <strong>Create Main Gallery</strong>
               <Switch
+                disabled={switchDisabled}
                 defaultChecked
                 checkedChildren={language ? 'en' : 'ru'}
                 unCheckedChildren={language ? 'en' : 'ru'}
@@ -148,7 +204,21 @@ class MainGallery extends React.Component {
             <div className={styles.addPost}>
               <Form className="mt-3">
                 <div className="form-group">
-                  <FormItem label="Title">
+                  <FormItem label={language ? 'Title' : 'Title'}>
+                    <Input
+                      onChange={this.handleTitleChange}
+                      value={language ? titleEn : titleRu}
+                      placeholder="lecture title"
+                      name="title"
+                    />
+                    {!formElements.title.valid &&
+                    formElements.title.validation &&
+                    formElements.title.touched ? (
+                      <div className="invalidFeedback">{formElements.title.errorMessage}</div>
+                    ) : null}
+                  </FormItem>
+
+                  {/* <FormItem label="Title">
                     {form.getFieldDecorator('title', {
                       rules: [
                         {
@@ -157,7 +227,7 @@ class MainGallery extends React.Component {
                         },
                       ],
                     })(<Input placeholder="Enter Title" />)}
-                  </FormItem>
+                  </FormItem> */}
                 </div>
               </Form>
             </div>
