@@ -64,7 +64,11 @@ class AddLecture extends React.Component {
       // publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
       summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
       editorState: EditorState.createEmpty(),
       editorStateSummaryEn: EditorState.createEmpty(),
       editorStateSummaryRu: EditorState.createEmpty(),
@@ -206,6 +210,12 @@ class AddLecture extends React.Component {
         }
       }
 
+      const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
+      const transcriptionFilesRu = lecture.editLecture.ru.transcription.attachment_link
+
+      const summaryFilesEn = lecture.editLecture.en.summary.attachment_link
+      const summaryFilesRu = lecture.editLecture.ru.summary.attachment_link
+
       this.setState(
         {
           editinglecture: lecture.editLecture,
@@ -228,6 +238,10 @@ class AddLecture extends React.Component {
           eventRu,
           translationEn,
           translationRu,
+          transcriptionFilesEn,
+          transcriptionFilesRu,
+          summaryFilesEn,
+          summaryFilesRu,
           transcribe: lecture.editLecture.transcribe_required,
         },
         () => {
@@ -264,6 +278,10 @@ class AddLecture extends React.Component {
       transcriptionUploading: false,
       summaryUploading: false,
       translationRequired: false,
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
     })
   }
 
@@ -279,7 +297,11 @@ class AddLecture extends React.Component {
       editorStateSummaryRu,
       editinglecture,
       transcriptionFiles,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
       summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
       translationRequired,
       translation,
       language,
@@ -378,13 +400,13 @@ class AddLecture extends React.Component {
         title: titleEn,
         translation: translationEn,
         summary: {
-          attachment_link: '',
+          attachment_link: summaryFilesEn,
           attachment_name: '',
           text: editorSummaryEn,
         },
         transcription: {
           attachment_name: '',
-          attachment_link: transcriptionFiles,
+          attachment_link: transcriptionFilesEn,
           text: editorTranscriptionEn,
         },
       },
@@ -395,13 +417,13 @@ class AddLecture extends React.Component {
         title: titleRu,
         translation: translationRu,
         summary: {
-          attachment_link: summaryFiles,
+          attachment_link: summaryFilesRu,
           attachment_name: '',
           text: editorSummaryRu,
         },
         transcription: {
           attachment_name: '',
-          attachment_link: '',
+          attachment_link: transcriptionFilesRu,
           text: editorTranscriptionRu,
         },
       },
@@ -594,11 +616,17 @@ class AddLecture extends React.Component {
   setUploadedFiles = finalUrl => {
     const {
       transcriptionFiles,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
+      language,
       summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
       audioUploading,
       transcriptionUploading,
       summaryUploading,
     } = this.state
+
     if (audioUploading) {
       this.setState({
         audioLink: finalUrl,
@@ -608,18 +636,36 @@ class AddLecture extends React.Component {
       })
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
+      const arrayEn = [...transcriptionFilesEn]
+      const arrayRu = [...transcriptionFilesRu]
+      if (language) {
+        arrayEn.push(finalUrl)
+      } else {
+        arrayRu.push(finalUrl)
+      }
       array.push(finalUrl)
       this.setState({
         transcriptionFiles: array,
+        transcriptionFilesEn: arrayEn,
+        transcriptionFilesRu: arrayRu,
         transcriptionUploading: false,
         summaryUploading: false,
         audioUploading: false,
       })
     } else if (summaryUploading) {
       const newArray = [...summaryFiles]
+      const newArrayEn = [...summaryFilesEn]
+      const newArrayRu = [...summaryFilesRu]
+      if (language) {
+        newArrayEn.push(finalUrl)
+      } else {
+        newArrayRu.push(finalUrl)
+      }
       newArray.push(finalUrl)
       this.setState({
         summaryFiles: newArray,
+        summaryFilesEn: newArrayEn,
+        summaryFilesRu: newArrayRu,
         transcriptionUploading: false,
         summaryUploading: false,
         audioUploading: false,
@@ -655,31 +701,83 @@ class AddLecture extends React.Component {
   }
 
   handelDeleteSetFiles = (item, type) => {
-    const { transcriptionFiles, summaryFiles } = this.state
+    const {
+      transcriptionFiles,
+      summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
+      language,
+    } = this.state
     if (type === 'audio') {
       this.setState({ audioLink: '' })
     }
     if (type === 'transcription') {
-      for (let i = 0; i < transcriptionFiles.length; i += 1) {
-        if (transcriptionFiles[i] === item) {
-          transcriptionFiles.splice(i, 1)
-          break
+      // for (let i = 0; i < transcriptionFiles.length; i += 1) {
+      //   if (transcriptionFiles[i] === item) {
+      //     transcriptionFiles.splice(i, 1)
+      //     break
+      //   }
+      // }
+      // this.setState({
+      //   transcriptionFiles,
+      // })
+
+      if (language) {
+        for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
+          if (transcriptionFilesEn[i] === item) {
+            transcriptionFilesEn.splice(i, 1)
+            break
+          }
         }
+        this.setState({
+          transcriptionFilesEn,
+        })
+      } else {
+        for (let i = 0; i < transcriptionFilesRu.length; i += 1) {
+          if (transcriptionFilesRu[i] === item) {
+            transcriptionFilesRu.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          transcriptionFilesRu,
+        })
       }
-      this.setState({
-        transcriptionFiles,
-      })
     }
     if (type === 'summary') {
-      for (let i = 0; i < summaryFiles.length; i += 1) {
-        if (summaryFiles[i] === item) {
-          summaryFiles.splice(i, 1)
-          break
+      // for (let i = 0; i < summaryFiles.length; i += 1) {
+      //   if (summaryFiles[i] === item) {
+      //     summaryFiles.splice(i, 1)
+      //     break
+      //   }
+      // }
+      // this.setState({
+      //   summaryFiles,
+      // })
+
+      if (language) {
+        for (let i = 0; i < summaryFilesEn.length; i += 1) {
+          if (summaryFilesEn[i] === item) {
+            summaryFilesEn.splice(i, 1)
+            break
+          }
         }
+        this.setState({
+          summaryFilesEn,
+        })
+      } else {
+        for (let i = 0; i < summaryFilesRu.length; i += 1) {
+          if (summaryFilesRu[i] === item) {
+            summaryFilesRu.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          summaryFilesRu,
+        })
       }
-      this.setState({
-        summaryFiles,
-      })
     }
   }
 
@@ -720,7 +818,11 @@ class AddLecture extends React.Component {
       summaryUploading: false,
       audioUploading: false,
       transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
       summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
       language: true,
       translation: '',
       translationRequired: false,
@@ -864,7 +966,11 @@ class AddLecture extends React.Component {
       language,
       audioLink,
       transcriptionFiles,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
       summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
       translationRequired,
       editorStateTranscriptionEn,
       editorStateTranscriptionRu,
@@ -885,6 +991,10 @@ class AddLecture extends React.Component {
       transcribe,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    console.log('transcriptionFiles render===>', transcriptionFiles)
+    console.log('transcriptionFilesEn render===>', transcriptionFilesEn)
+    console.log('transcriptionFilesRu render===>', transcriptionFilesRu)
 
     return (
       <React.Fragment>
@@ -1500,6 +1610,44 @@ class AddLecture extends React.Component {
                   <div className="form-group">
                     <FormItem label="Attachment">
                       <ul>
+                        {language
+                          ? summaryFilesEn.length > 0 &&
+                            summaryFilesEn.map((item, index) => {
+                              if (item !== '') {
+                                return (
+                                  <li className="filesList">
+                                    {item} &nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-close closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item, 'transcription')
+                                      }}
+                                    />
+                                  </li>
+                                )
+                              }
+                            })
+                          : summaryFilesRu.length > 0 &&
+                            summaryFilesRu.map((item, index) => {
+                              if (item !== '') {
+                                return (
+                                  <li className="filesList">
+                                    {item} &nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-close closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item, 'transcription')
+                                      }}
+                                    />
+                                  </li>
+                                )
+                              }
+                            })}
+                      </ul>
+                    </FormItem>
+
+                    {/* <FormItem label="Attachment">
+                      <ul>
                         {summaryFiles && summaryFiles.length > 0
                           ? summaryFiles.map(item => {
                               if (item !== '') {
@@ -1518,7 +1666,7 @@ class AddLecture extends React.Component {
                             })
                           : null}
                       </ul>
-                    </FormItem>
+                    </FormItem> */}
                   </div>
                   <div className="form-group">
                     <FormItem>
@@ -1583,6 +1731,44 @@ class AddLecture extends React.Component {
                 <div className="form-group">
                   <FormItem label="Attachment">
                     <ul>
+                      {language
+                        ? transcriptionFilesEn.length > 0 &&
+                          transcriptionFilesEn.map((item, index) => {
+                            if (item !== '') {
+                              return (
+                                <li className="filesList">
+                                  {item} &nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-close closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item, 'transcription')
+                                    }}
+                                  />
+                                </li>
+                              )
+                            }
+                          })
+                        : transcriptionFilesRu.length > 0 &&
+                          transcriptionFilesRu.map((item, index) => {
+                            if (item !== '') {
+                              return (
+                                <li className="filesList">
+                                  {item} &nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-close closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item, 'transcription')
+                                    }}
+                                  />
+                                </li>
+                              )
+                            }
+                          })}
+                    </ul>
+                  </FormItem>
+
+                  {/* <FormItem label="Attachment">
+                    <ul>
                       {transcriptionFiles && transcriptionFiles.length > 0
                         ? transcriptionFiles.map(item => {
                             if (item !== '') {
@@ -1601,7 +1787,7 @@ class AddLecture extends React.Component {
                           })
                         : null}
                     </ul>
-                  </FormItem>
+                  </FormItem> */}
                 </div>
                 <div className="form-group">
                   <FormItem>
