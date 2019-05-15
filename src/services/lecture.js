@@ -3,7 +3,6 @@ import serverAddress from './config'
 /* eslint-disable */
 
 export async function getLectureList(page, date, createdDateSort, transcribe_required) {
-  console.log('transcribe_required===>', transcribe_required)
   const pageNumber = page || 1
   const dateNow = date || null
   const createdDateSorting = createdDateSort || null
