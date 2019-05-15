@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable func-names */
+/* eslint-disable one-var */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -31,6 +34,9 @@ import BackNavigation from '../../../common/BackNavigation/index'
 import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
+import { checkValidation } from '../../../utils/checkValidation'
+import { formInputElements } from '../../../utils/addQuoteInput'
+import './index.css'
 
 const { Option } = Select
 const { TabPane } = Tabs
@@ -47,6 +53,12 @@ class AddQuote extends React.Component {
     editedBody: '',
     language: true,
     translationRequired: true,
+    titleEn: '',
+    titleRu: '',
+    bodyContentEn: EditorState.createEmpty(),
+    bodyContentRu: EditorState.createEmpty(),
+    switchDisabled: true,
+    formElements: formInputElements,
   }
 
   componentDidMount() {
@@ -83,25 +95,78 @@ class AddQuote extends React.Component {
       const { quote } = nextProps
       const { editQuote } = quote
       const { language } = this.state
-      const html = editQuote
-        ? language
+
+      const titleEn = editQuote ? (editQuote.en ? editQuote.en.title : '') : ''
+      const titleRu = editQuote ? (editQuote.ru ? editQuote.ru.title : '') : ''
+
+      let bodyContentEn = ''
+      let bodyContentRu = ''
+
+      const htmlbodyContentEn = editQuote
+        ? editQuote.en
           ? editQuote.en.body
-          : editQuote.ru
+          : EditorState.createEmpty()
+        : EditorState.createEmpty()
+
+      const htmlbodyContentRu = editQuote
+        ? editQuote.ru
           ? editQuote.ru.body
-          : ''
-        : ''
-      let editorState = ''
-      if (html.length > 0) {
-        const contentBlock = htmlToDraft(html)
-        if (contentBlock) {
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          editorState = EditorState.createWithContent(contentState)
+          : EditorState.createEmpty()
+        : EditorState.createEmpty()
+
+      if (htmlbodyContentEn && htmlbodyContentEn.length > 0) {
+        const contentBlockEn = htmlToDraft(htmlbodyContentEn)
+        if (contentBlockEn) {
+          const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
+          bodyContentEn = EditorState.createWithContent(contentStateEn)
         }
-        this.setState({
-          editingQuote: quote.editQuote,
-          editorState,
-        })
       }
+
+      if (htmlbodyContentRu && htmlbodyContentRu.length > 0) {
+        const contentBlockRu = htmlToDraft(htmlbodyContentRu)
+        if (contentBlockRu) {
+          const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
+          bodyContentRu = EditorState.createWithContent(contentStateRu)
+        }
+      }
+
+      this.setState(
+        {
+          editingQuote: quote.editQuote,
+          bodyContentEn,
+          bodyContentRu,
+          titleEn,
+          titleRu,
+        },
+        () => {
+          this.onFieldValueChange()
+          // if (!this.onFieldValueChange()) {
+          //   this.setState({ switchDisabled: false })
+          // }
+        },
+      )
+
+      // const html = editQuote
+      //   ? language
+      //     ? editQuote.en.body
+      //     : editQuote.ru
+      //     ? editQuote.ru.body
+      //     : ''
+      //   : ''
+      // let editorState = ''
+      // if (html.length > 0) {
+      //   const contentBlock = htmlToDraft(html)
+      //   if (contentBlock) {
+      //     const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+      //     editorState = EditorState.createWithContent(contentState)
+      //   }
+      //   this.setState({
+      //     editingQuote: quote.editQuote,
+      //     editorState,
+      //     titleEn,
+      //     titleRu
+      //   })
+      // }
     }
     // this.setState({
     //   language: window.localStorage['app.settings.locale'] === '"en-US"',
@@ -154,14 +219,41 @@ class AddQuote extends React.Component {
       uuid = id
     }
 
-    const { files, editorState, editingQuote, translationRequired, topics, language } = this.state
-    const titleEn = form.getFieldValue('title')
+    const {
+      files,
+      editorState,
+      editingQuote,
+      translationRequired,
+      topics,
+      language,
+      titleEn,
+      titleRu,
+      bodyContentEn,
+      bodyContentRu,
+    } = this.state
+    // const titleEn = form.getFieldValue('title')
     const topic = form.getFieldValue('topic')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
     const author = form.getFieldValue('author')
     const languageData = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+
+    let editorbodyContentEn = null
+    let editorbodyContentRu = null
+
+    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+
+    if (titleEn === '') {
+      notification.error({
+        message: 'Error',
+        description: 'Please fill all the fields',
+      })
+
+      return
+    }
+
     const body = {
       author: 'nirajanana swami',
       uuid: uuid || uuidv4(),
@@ -170,15 +262,15 @@ class AddQuote extends React.Component {
       published_date: publishDate,
       needs_translation: translationRequired,
       en: {
-        title: language ? titleEn : editingQuote ? editingQuote.en.title : '',
-        topic: language ? topic : editingQuote ? editingQuote.en.topic : '',
-        body: language ? bodyEn : editingQuote ? editingQuote.en.body : '',
+        title: titleEn,
+        // topic: language ? topic : editingQuote ? editingQuote.en.topic : '',
+        body: editorbodyContentEn,
         author,
       },
       ru: {
-        title: language ? (editingQuote ? editingQuote.ru.title : '') : titleEn,
-        topic: language ? (editingQuote ? editingQuote.ru.topic : '') : topic,
-        body: language ? (editingQuote ? editingQuote.ru.body : '') : bodyEn,
+        title: titleRu,
+        // topic: language ? (editingQuote ? editingQuote.ru.topic : '') : topic,
+        body: editorbodyContentRu,
         author,
       },
     }
@@ -192,12 +284,28 @@ class AddQuote extends React.Component {
         type: 'quote/UPDATE_QUOTE',
         payload,
       })
+
+      this.scrollToTopPage()
     } else {
       dispatch({
         type: 'quote/CREATE_QUOTE',
         payload: body,
       })
+      this.scrollToTopPage()
     }
+  }
+
+  scrollToTopPage = () => {
+    // $('html, body').animate({ scrollTop: 0 }, 'fast')
+    // return false
+
+    const scrollDuration = 500
+    const scrollStep = -window.scrollY / (scrollDuration / 15),
+      scrollInterval = setInterval(function() {
+        if (window.scrollY != 0) {
+          window.scrollBy(0, scrollStep)
+        } else clearInterval(scrollInterval)
+      }, 10)
   }
 
   onEditorStateChange: Function = editorState => {
@@ -206,35 +314,115 @@ class AddQuote extends React.Component {
     })
   }
 
-  handleLanguage = () => {
-    const { language, editingQuote } = this.state
-    this.setState({
-      language: !language,
-    })
-    const html = editingQuote
-      ? language
-        ? editingQuote.en.body
-        : editingQuote.ru
-        ? editingQuote.ru.body
-        : ''
-      : ''
-    let editorState = ''
-    if (html.length > 0) {
-      const contentBlock = htmlToDraft(html)
-      if (contentBlock) {
-        const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-        editorState = EditorState.createWithContent(contentState)
-      }
+  onEditorChangeStatebodyContent = bodyContent => {
+    const { language } = this.state
+
+    if (language) {
       this.setState({
-        editorState,
+        bodyContentEn: bodyContent,
+      })
+    }
+
+    if (!language) {
+      this.setState({
+        bodyContentRu: bodyContent,
       })
     }
   }
 
+  handleTitleChange = event => {
+    const { language, formElements } = this.state
+
+    const updatedFormElements = {
+      ...formElements,
+      [event.target.name]: {
+        ...formElements[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formElements[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formElements: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          titleEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          titleRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
+  handleLanguage = () => {
+    const { language } = this.state
+
+    this.setState({ language: !language })
+  }
+
+  onFieldValueChange = () => {
+    const { titleEn, formElements } = this.state
+
+    if (titleEn !== '') {
+      this.setState({ switchDisabled: false })
+      return false
+    }
+
+    this.setState({ switchDisabled: true })
+    return true
+  }
+
+  // handleLanguage = () => {
+  //   const { language, editingQuote } = this.state
+  //   this.setState({
+  //     language: !language,
+  //   })
+  //   const html = editingQuote
+  //     ? language
+  //       ? editingQuote.en.body
+  //       : editingQuote.ru
+  //       ? editingQuote.ru.body
+  //       : ''
+  //     : ''
+  //   let editorState = ''
+  //   if (html.length > 0) {
+  //     const contentBlock = htmlToDraft(html)
+  //     if (contentBlock) {
+  //       const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+  //       editorState = EditorState.createWithContent(contentState)
+  //     }
+  //     this.setState({
+  //       editorState,
+  //     })
+  //   }
+  // }
+
   render() {
     const { form, english, quote } = this.props
 
-    const { editingQuote, editedBody, editorState, translationRequired, language } = this.state
+    const {
+      editingQuote,
+      editedBody,
+      editorState,
+      translationRequired,
+      language,
+      titleEn,
+      titleRu,
+      bodyContentEn,
+      bodyContentRu,
+      formElements,
+      switchDisabled,
+    } = this.state
     const { files } = this.state
     const { topics } = quote
     const dateFormat = 'YYYY/MM/DD'
@@ -261,6 +449,7 @@ class AddQuote extends React.Component {
                 <div className="utils__title">
                   <strong>Quote Add/Edit</strong>
                   <Switch
+                    disabled={switchDisabled}
                     defaultChecked
                     checkedChildren={language ? 'en' : 'ru'}
                     unCheckedChildren={language ? 'en' : 'ru'}
@@ -275,6 +464,20 @@ class AddQuote extends React.Component {
                   <Form className="mt-3" onSubmit={this.handleFormBody}>
                     <div className="form-group">
                       <FormItem label={language ? 'Title' : 'Title'}>
+                        <Input
+                          onChange={this.handleTitleChange}
+                          value={language ? titleEn : titleRu}
+                          placeholder="lecture title"
+                          name="title"
+                        />
+                        {!formElements.title.valid &&
+                        formElements.title.validation &&
+                        formElements.title.touched ? (
+                          <div className="invalidFeedback">{formElements.title.errorMessage}</div>
+                        ) : null}
+                      </FormItem>
+
+                      {/* <FormItem label={language ? 'Title' : 'Title'}>
                         {form.getFieldDecorator('title', {
                           initialValue: editingQuote
                             ? language
@@ -284,7 +487,7 @@ class AddQuote extends React.Component {
                               : ''
                             : '',
                         })(<Input placeholder="Post title" />)}
-                      </FormItem>
+                      </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem label={language ? 'Topic' : 'Topic'}>
@@ -346,6 +549,32 @@ class AddQuote extends React.Component {
                     <div className="form-group">
                       <FormItem label="Language">
                         {form.getFieldDecorator('language', {
+                          rules: [
+                            {
+                              required: true,
+                              message: 'Language is required',
+                            },
+                          ],
+                          initialValue: editingQuote ? editingQuote.language : 'Select a Language',
+                        })(
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select a Language"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            <Option value="english">English</Option>
+                            <Option value="russian">Russian</Option>
+                          </Select>,
+                        )}
+                      </FormItem>
+
+                      {/* <FormItem label="Language">
+                        {form.getFieldDecorator('language', {
                           initialValue: editingQuote ? editingQuote.language : '',
                         })(
                           <Select
@@ -362,7 +591,7 @@ class AddQuote extends React.Component {
                             <Option value="russian">Russian</Option>
                           </Select>,
                         )}
-                      </FormItem>
+                      </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem label="Date">
@@ -415,7 +644,14 @@ class AddQuote extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem label={english ? 'Body' : 'Body'}>
-                        {form.getFieldDecorator('content', {
+                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                          <Editor
+                            editorState={language ? bodyContentEn : bodyContentRu}
+                            onEditorStateChange={this.onEditorChangeStatebodyContent}
+                          />
+                        </div>
+
+                        {/* {form.getFieldDecorator('content', {
                           initialValue: editorState || '',
                         })(
                           <div className={styles.editor}>
@@ -424,7 +660,7 @@ class AddQuote extends React.Component {
                               onEditorStateChange={this.onEditorStateChange}
                             />
                           </div>,
-                        )}
+                        )} */}
                       </FormItem>
                     </div>
                   </Form>

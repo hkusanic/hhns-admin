@@ -16,7 +16,9 @@ export function* getLectureListSaga(payload) {
     const { page } = payload
     const { date } = payload
     const { createdDateSort } = payload
-    const result = yield call(getLectureList, page, date, createdDateSort)
+    let { transcribe_required } = payload
+    transcribe_required = transcribe_required === true ? true : false
+    const result = yield call(getLectureList, page, date, createdDateSort, transcribe_required)
     const { data } = result
     const { lecture } = data
 
