@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
@@ -11,6 +12,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
+import axios from 'axios'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import './index.css'
@@ -26,6 +28,7 @@ import {
   notification,
   Tabs,
   DatePicker,
+  Progress,
 } from 'antd'
 import { connect } from 'react-redux'
 import $ from 'jquery'
@@ -96,6 +99,10 @@ class AddLecture extends React.Component {
       switchDisabled: true,
       formElements: formInputElements,
       transcribe: false,
+      percentage: 0,
+      transFileInfo: null,
+      transArrayEn: [],
+      transArrayRu: [],
     }
   }
 
@@ -213,6 +220,26 @@ class AddLecture extends React.Component {
       const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
       const transcriptionFilesRu = lecture.editLecture.ru.transcription.attachment_link
 
+      const transArrayEn = []
+      let tempObjectEn = {}
+      const transArrayRu = []
+      let tempObjectRu = {}
+
+      for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
+        tempObjectEn = {
+          fileName: transcriptionFilesEn[i],
+          percentage: 'zeroPercent',
+        }
+        transArrayEn.push(tempObjectEn)
+      }
+      for (let i = 0; i < transcriptionFilesRu.length; i += 1) {
+        tempObjectRu = {
+          fileName: transcriptionFilesRu[i],
+          percentage: 'zeroPercent',
+        }
+        transArrayRu.push(tempObjectRu)
+      }
+
       const summaryFilesEn = lecture.editLecture.en.summary.attachment_link
       const summaryFilesRu = lecture.editLecture.ru.summary.attachment_link
 
@@ -243,6 +270,8 @@ class AddLecture extends React.Component {
           summaryFilesEn,
           summaryFilesRu,
           transcribe: lecture.editLecture.transcribe_required,
+          transArrayEn,
+          transArrayRu,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -297,8 +326,6 @@ class AddLecture extends React.Component {
       editorStateSummaryRu,
       editinglecture,
       transcriptionFiles,
-      transcriptionFilesEn,
-      transcriptionFilesRu,
       summaryFiles,
       summaryFilesEn,
       summaryFilesRu,
@@ -316,6 +343,10 @@ class AddLecture extends React.Component {
       translationEn,
       translationRu,
       transcribe,
+      transArrayEn,
+      transArrayRu,
+      // transcriptionFilesRu,
+      // transcriptionFilesEn
     } = this.state
     const { location } = router
     const { state } = location
@@ -343,6 +374,15 @@ class AddLecture extends React.Component {
     let editorTranscriptionRu = null
     let editorSummaryEn = null
     let editorSummaryRu = null
+
+    const transcriptionFilesEn = []
+    for (let i = 0; i < transArrayEn.length; i += 1) {
+      transcriptionFilesEn.push(transArrayEn[i].fileName)
+    }
+    const transcriptionFilesRu = []
+    for (let i = 0; i < transArrayRu.length; i += 1) {
+      transcriptionFilesRu.push(transArrayRu[i].fileName)
+    }
 
     editorTranscriptionEn = draftToHtml(
       convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
@@ -548,6 +588,24 @@ class AddLecture extends React.Component {
       {
         transcriptionUploading: true,
         uploading: false,
+        transFileInfo: info,
+      },
+      () => {
+        this.handleUploading(info)
+      },
+    )
+  }
+
+  dummyRequest = info => {
+    // this.handleUploading(info)
+    // console.log('file====>',file)
+    // setTimeout(() => {
+    //   onSuccess('ok')
+    // }, 0)
+    this.setState(
+      {
+        transcriptionUploading: true,
+        uploading: false,
       },
       () => {
         this.handleUploading(info)
@@ -556,64 +614,138 @@ class AddLecture extends React.Component {
   }
 
   handleUploading = info => {
-    if (info.file.status === 'uploading') {
-      notification.success({
-        message: 'Uploading Started',
-        description: 'File uploading is started',
-      })
-    }
-    if (info.file.status === 'done') {
-      this.uploads3(info.file)
-    }
+    this.uploads3(info)
+    // if (info.file.status === 'uploading') {
+    //   notification.success({
+    //     message: 'Uploading Started',
+    //     description: 'File uploading is started',
+    //   })
+    // }
+    // if (info.file.status === 'done') {
+    //   this.uploads3(info)
+    // }
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
-    $.ajax({
-      type: 'GET',
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
+    const { transArrayEn, transArrayRu, language } = this.state
+
+    axios({
+      method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-      success: data => {
+    })
+      .then(response => {
+        const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        this.setUploadedFiles(finalUrl)
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-      },
-      error() {
-        notification.error({
-          message: 'Error',
-          description: 'Error occured during uploading, try again',
-        })
-      },
-    })
+        // this.setUploadedFiles(finalUrl)
+
+        if (language) {
+          for (let i = 0; i < transArrayEn.length; i += 1) {
+            if (transArrayEn[i].fileName === finalUrl) {
+              notification.warning({
+                message: 'error',
+                description: `You can't upload file with the same name.`,
+              })
+              return
+            }
+          }
+        } else {
+          for (let i = 0; i < transArrayRu.length; i += 1) {
+            if (transArrayRu[i].fileName === finalUrl) {
+              notification.warning({
+                message: 'error',
+                description: `You can't upload file with the same name.`,
+              })
+              return
+            }
+          }
+        }
+
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
+      })
+      .catch(error => {
+        console.log('error===>', error)
+      })
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+    //   success: data => {
+    //     console.log('data===>',data)
+    //     const temp = data.presignedUrl.toString()
+    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+    //     this.setUploadedFiles(finalUrl)
+    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info.file)
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'Error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file) => {
-    $.ajax({
-      type: 'PUT',
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { onSuccess, onError, action, onProgress, file } = info
+    axios({
+      method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: info.file,
       headers: {
         'Content-Type': file.type,
-        reportProgress: true,
       },
-      processData: false,
-      success: data => {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
+      onUploadProgress: progressEvent => {
+        // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+
+        // console.log('progressEvent===>',progressEvent)
+
+        this.setUploadedFiles(finalUrl, percentCompleted)
+        // this.transSetUploadFiles(finalUrl, percentCompleted)
+        // this.setState({ percentage: percentCompleted })
       },
-      error() {
+    })
+      .then(response => {
+        // notification.success({
+        //   message: 'Success',
+        //   description: 'file has been uploaded successfully',
+        // })
+      })
+      .catch(err => {
         notification.warning({
           message: 'error',
           description: 'Error occured during uploading, try again',
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: presignedUrl,
+    //   data: file.originFileObj,
+    //   headers: {
+    //     'Content-Type': file.type,
+    //     reportProgress: true,
+    //   },
+    //   processData: false,
+    //   success: data => {
+    //     notification.success({
+    //       message: 'Success',
+    //       description: 'file has been uploaded successfully',
+    //     })
+    //   },
+    //   error() {
+    //     notification.warning({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  setUploadedFiles = finalUrl => {
+  setUploadedFiles = (finalUrl, percentCompleted) => {
     const {
       transcriptionFiles,
       transcriptionFilesEn,
@@ -625,6 +757,8 @@ class AddLecture extends React.Component {
       audioUploading,
       transcriptionUploading,
       summaryUploading,
+      transArrayEn,
+      transArrayRu,
     } = this.state
 
     if (audioUploading) {
@@ -638,19 +772,56 @@ class AddLecture extends React.Component {
       const array = [...transcriptionFiles]
       const arrayEn = [...transcriptionFilesEn]
       const arrayRu = [...transcriptionFilesRu]
+      const transEnTemp = [...transArrayEn]
+      const transRuTemp = [...transArrayRu]
+
       if (language) {
         arrayEn.push(finalUrl)
+
+        for (let i = 0; i < transEnTemp.length; i += 1) {
+          if (transEnTemp[i].fileName === finalUrl) {
+            transEnTemp.splice(i, 1)
+            break
+          }
+        }
+        const tempObjectEn = {
+          fileName: finalUrl,
+          percentage: percentCompleted,
+        }
+        transEnTemp.push(tempObjectEn)
       } else {
         arrayRu.push(finalUrl)
+
+        for (let i = 0; i < transRuTemp.length; i += 1) {
+          if (transRuTemp[i].fileName === finalUrl) {
+            transRuTemp.splice(i, 1)
+            break
+          }
+        }
+        const tempObjectRu = {
+          fileName: finalUrl,
+          percentage: percentCompleted,
+        }
+        transRuTemp.push(tempObjectRu)
       }
       array.push(finalUrl)
+
+      if (percentCompleted === 100) {
+        notification.success({
+          message: 'Success',
+          description: 'file has been uploaded successfully',
+        })
+      }
+
       this.setState({
         transcriptionFiles: array,
         transcriptionFilesEn: arrayEn,
         transcriptionFilesRu: arrayRu,
-        transcriptionUploading: false,
+        transcriptionUploading: true,
         summaryUploading: false,
         audioUploading: false,
+        transArrayEn: transEnTemp,
+        transArrayRu: transRuTemp,
       })
     } else if (summaryUploading) {
       const newArray = [...summaryFiles]
@@ -673,11 +844,11 @@ class AddLecture extends React.Component {
     }
   }
 
-  dummyRequest = ({ file, onSuccess }) => {
-    setTimeout(() => {
-      onSuccess('ok')
-    }, 0)
-  }
+  // dummyRequest = ({ file, onSuccess }) => {
+  //   setTimeout(() => {
+  //     onSuccess('ok')
+  //   }, 0)
+  // }
 
   deleteFile = (item, type) => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
@@ -709,6 +880,8 @@ class AddLecture extends React.Component {
       transcriptionFilesEn,
       transcriptionFilesRu,
       language,
+      transArrayEn,
+      transArrayRu,
     } = this.state
     if (type === 'audio') {
       this.setState({ audioLink: '' })
@@ -731,8 +904,15 @@ class AddLecture extends React.Component {
             break
           }
         }
+        for (let i = 0; i < transArrayEn.length; i += 1) {
+          if (transArrayEn[i].fileName === item) {
+            transArrayEn.splice(i, 1)
+            break
+          }
+        }
         this.setState({
           transcriptionFilesEn,
+          transArrayEn,
         })
       } else {
         for (let i = 0; i < transcriptionFilesRu.length; i += 1) {
@@ -741,8 +921,16 @@ class AddLecture extends React.Component {
             break
           }
         }
+
+        for (let i = 0; i < transArrayRu.length; i += 1) {
+          if (transArrayRu[i].fileName === item) {
+            transArrayRu.splice(i, 1)
+            break
+          }
+        }
         this.setState({
           transcriptionFilesRu,
+          transArrayRu,
         })
       }
     }
@@ -793,6 +981,7 @@ class AddLecture extends React.Component {
   }
 
   beforeUpload = file => {
+    this.setState({ percentage: 0 })
     const isJPG = file.type === 'application/pdf'
     if (!isJPG) {
       notification.error({
@@ -989,12 +1178,12 @@ class AddLecture extends React.Component {
       switchDisabled,
       formElements,
       transcribe,
+      transcriptionUploading,
+      percentage,
+      transArrayEn,
+      transArrayRu,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
-
-    console.log('transcriptionFiles render===>', transcriptionFiles)
-    console.log('transcriptionFilesEn render===>', transcriptionFilesEn)
-    console.log('transcriptionFilesRu render===>', transcriptionFilesRu)
 
     return (
       <React.Fragment>
@@ -1732,37 +1921,86 @@ class AddLecture extends React.Component {
                   <FormItem label="Attachment">
                     <ul>
                       {language
-                        ? transcriptionFilesEn.length > 0 &&
-                          transcriptionFilesEn.map((item, index) => {
-                            if (item !== '') {
-                              return (
-                                <li className="filesList">
-                                  {item} &nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-close closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item, 'transcription')
-                                    }}
-                                  />
-                                </li>
-                              )
-                            }
+                        ? // transcriptionFilesEn.length > 0 &&
+                          //   transcriptionFilesEn.map((item, index) => {
+                          //     if (item !== '') {
+                          //       return (
+                          //         <li className="filesList">
+                          //           <i
+                          //             className="fa fa-trash closeIcon"
+                          //             onClick={() => {
+                          //               this.deleteFile(item, 'transcription')
+                          //             }}
+                          //           />
+                          //           <div
+                          //             style={{
+                          //               display: 'inline-block',
+                          //               width: '20rem',
+                          //               paddingLeft: '15px',
+                          //             }}
+                          //           >
+                          //             {item.split('/').pop(-1)}
+                          //           </div>
+                          //           <div style={{ display: 'inline-block', width: '20rem' }}>
+                          //             <Progress percent={percentage} />
+                          //           </div>
+                          //         </li>
+                          //       )
+                          //     }
+                          //   })
+                          transArrayEn.length > 0 &&
+                          transArrayEn.map((item, index) => {
+                            return (
+                              <li className="filesList" key={index}>
+                                <i
+                                  className="fa fa-trash closeIcon"
+                                  onClick={() => {
+                                    this.deleteFile(item.fileName, 'transcription')
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {item.fileName.split('/').pop(-1)}
+                                </div>
+                                {item.percentage !== 'zeroPercent' ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={item.percentage} />
+                                  </div>
+                                ) : null}
+                              </li>
+                            )
                           })
-                        : transcriptionFilesRu.length > 0 &&
-                          transcriptionFilesRu.map((item, index) => {
-                            if (item !== '') {
-                              return (
-                                <li className="filesList">
-                                  {item} &nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-close closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item, 'transcription')
-                                    }}
-                                  />
-                                </li>
-                              )
-                            }
+                        : transArrayRu.length > 0 &&
+                          transArrayRu.map((item, index) => {
+                            return (
+                              <li className="filesList" key={index}>
+                                <i
+                                  className="fa fa-trash closeIcon"
+                                  onClick={() => {
+                                    this.deleteFile(item.fileName, 'transcription')
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {item.fileName.split('/').pop(-1)}
+                                </div>
+                                {item.percentage !== 'zeroPercent' ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={item.percentage} />
+                                  </div>
+                                ) : null}
+                              </li>
+                            )
                           })}
                     </ul>
                   </FormItem>
@@ -1789,25 +2027,26 @@ class AddLecture extends React.Component {
                     </ul>
                   </FormItem> */}
                 </div>
+                {/* <Progress percent={percentage} /> */}
                 <div className="form-group">
                   <FormItem>
-                    {form.getFieldDecorator('Files2')(
-                      <Dragger
-                        beforeUpload={this.beforeUpload}
-                        showUploadList={false}
-                        customRequest={this.dummyRequest}
-                        onChange={this.handleTranscriptionFileChange}
-                      >
-                        <p className="ant-upload-drag-icon">
-                          <Icon type="inbox" />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">
-                          Support for a single or bulk upload. Strictly prohibit from uploading
-                          company data or other band files
-                        </p>
-                      </Dragger>,
-                    )}
+                    {/* {form.getFieldDecorator('Files2')( */}
+                    <Dragger
+                      beforeUpload={this.beforeUpload}
+                      showUploadList={false}
+                      customRequest={this.dummyRequest}
+                      multiple
+                      // onChange={this.handleTranscriptionFileChange}
+                    >
+                      <p className="ant-upload-drag-icon">
+                        <Icon type="inbox" />
+                      </p>
+                      <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                      <p className="ant-upload-hint">
+                        Support for a single or bulk upload. Strictly prohibit from uploading
+                        company data or other band files
+                      </p>
+                    </Dragger>
                   </FormItem>
                 </div>
               </div>
