@@ -627,40 +627,29 @@ class AddLecture extends React.Component {
         uploading: false,
       },
       () => {
-        this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
 
-  dummyRequest = info => {
-    // this.handleUploading(info)
-    // console.log('file====>',file)
-    // setTimeout(() => {
-    //   onSuccess('ok')
-    // }, 0)
-    this.setState(
-      {
-        transcriptionUploading: true,
-        uploading: false,
-      },
-      () => {
-        this.handleUploading(info)
-      },
-    )
-  }
+  // dummyRequest = info => {
+  //   this.handleUploading(info)
+  //   setTimeout(() => {
+  //     onSuccess('ok')
+  //   }, 0)
+  // }
 
-  handleUploading = info => {
-    this.uploads3(info)
-    // if (info.file.status === 'uploading') {
-    //   notification.success({
-    //     message: 'Uploading Started',
-    //     description: 'File uploading is started',
-    //   })
-    // }
-    // if (info.file.status === 'done') {
-    //   this.uploads3(info)
-    // }
-  }
+  // handleUploading = info => {
+  //   if (info.file.status === 'uploading') {
+  //     notification.success({
+  //       message: 'Uploading Started',
+  //       description: 'File uploading is started',
+  //     })
+  //   }
+  //   if (info.file.status === 'done') {
+  //     this.uploads3(info)
+  //   }
+  // }
 
   uploads3 = info => {
     const fileName = info.file.name
@@ -738,7 +727,10 @@ class AddLecture extends React.Component {
         this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
       })
       .catch(error => {
-        console.log('error===>', error)
+        notification.error({
+          message: 'error',
+          description: `Some error occured. Please check your internet connection`,
+        })
       })
 
     // $.ajax({
@@ -849,31 +841,31 @@ class AddLecture extends React.Component {
       if (language) {
         arrayEn.push(finalUrl)
 
-        for (let i = 0; i < transEnTemp.length; i += 1) {
-          if (transEnTemp[i].fileName === finalUrl) {
-            transEnTemp.splice(i, 1)
-            break
+        const objIndex = transEnTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          transEnTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectEn = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
           }
+          transEnTemp.push(tempObjectEn)
         }
-        const tempObjectEn = {
-          fileName: finalUrl,
-          percentage: percentCompleted,
-        }
-        transEnTemp.push(tempObjectEn)
       } else {
         arrayRu.push(finalUrl)
 
-        for (let i = 0; i < transRuTemp.length; i += 1) {
-          if (transRuTemp[i].fileName === finalUrl) {
-            transRuTemp.splice(i, 1)
-            break
+        const objIndex = transRuTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          transRuTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectRu = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
           }
+          transRuTemp.push(tempObjectRu)
         }
-        const tempObjectRu = {
-          fileName: finalUrl,
-          percentage: percentCompleted,
-        }
-        transRuTemp.push(tempObjectRu)
       }
       array.push(finalUrl)
 
