@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
@@ -11,6 +12,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
+import axios from 'axios'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import './index.css'
@@ -26,6 +28,7 @@ import {
   notification,
   Tabs,
   DatePicker,
+  Progress,
 } from 'antd'
 import { connect } from 'react-redux'
 import $ from 'jquery'
@@ -64,7 +67,11 @@ class AddLecture extends React.Component {
       // publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
       summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
       editorState: EditorState.createEmpty(),
       editorStateSummaryEn: EditorState.createEmpty(),
       editorStateSummaryRu: EditorState.createEmpty(),
@@ -92,6 +99,12 @@ class AddLecture extends React.Component {
       switchDisabled: true,
       formElements: formInputElements,
       transcribe: false,
+      percentage: 0,
+      transFileInfo: null,
+      transArrayEn: [],
+      transArrayRu: [],
+      summArrayEn: [],
+      summArrayRu: [],
     }
   }
 
@@ -206,6 +219,52 @@ class AddLecture extends React.Component {
         }
       }
 
+      const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
+      const transcriptionFilesRu = lecture.editLecture.ru.transcription.attachment_link
+
+      const transArrayEn = []
+      let tempObjectEn = {}
+      const transArrayRu = []
+      let tempObjectRu = {}
+
+      for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
+        tempObjectEn = {
+          fileName: transcriptionFilesEn[i],
+          percentage: 'zeroPercent',
+        }
+        transArrayEn.push(tempObjectEn)
+      }
+      for (let i = 0; i < transcriptionFilesRu.length; i += 1) {
+        tempObjectRu = {
+          fileName: transcriptionFilesRu[i],
+          percentage: 'zeroPercent',
+        }
+        transArrayRu.push(tempObjectRu)
+      }
+
+      const summaryFilesEn = lecture.editLecture.en.summary.attachment_link
+      const summaryFilesRu = lecture.editLecture.ru.summary.attachment_link
+
+      const summArrayEn = []
+      let tempObjectEnSumm = {}
+      const summArrayRu = []
+      let tempObjectRuSumm = {}
+
+      for (let i = 0; i < summaryFilesEn.length; i += 1) {
+        tempObjectEnSumm = {
+          fileName: summaryFilesEn[i],
+          percentage: 'zeroPercent',
+        }
+        summArrayEn.push(tempObjectEnSumm)
+      }
+      for (let i = 0; i < summaryFilesRu.length; i += 1) {
+        tempObjectRuSumm = {
+          fileName: summaryFilesRu[i],
+          percentage: 'zeroPercent',
+        }
+        summArrayRu.push(tempObjectRuSumm)
+      }
+
       this.setState(
         {
           editinglecture: lecture.editLecture,
@@ -228,7 +287,15 @@ class AddLecture extends React.Component {
           eventRu,
           translationEn,
           translationRu,
+          transcriptionFilesEn,
+          transcriptionFilesRu,
+          summaryFilesEn,
+          summaryFilesRu,
           transcribe: lecture.editLecture.transcribe_required,
+          transArrayEn,
+          transArrayRu,
+          summArrayEn,
+          summArrayRu,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -264,6 +331,10 @@ class AddLecture extends React.Component {
       transcriptionUploading: false,
       summaryUploading: false,
       translationRequired: false,
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
     })
   }
 
@@ -294,6 +365,14 @@ class AddLecture extends React.Component {
       translationEn,
       translationRu,
       transcribe,
+      transArrayEn,
+      transArrayRu,
+      summArrayEn,
+      summArrayRu,
+      // transcriptionFilesRu,
+      // transcriptionFilesEn,
+      // summaryFilesEn,
+      // summaryFilesRu,
     } = this.state
     const { location } = router
     const { state } = location
@@ -321,6 +400,24 @@ class AddLecture extends React.Component {
     let editorTranscriptionRu = null
     let editorSummaryEn = null
     let editorSummaryRu = null
+
+    const transcriptionFilesEn = []
+    for (let i = 0; i < transArrayEn.length; i += 1) {
+      transcriptionFilesEn.push(transArrayEn[i].fileName)
+    }
+    const transcriptionFilesRu = []
+    for (let i = 0; i < transArrayRu.length; i += 1) {
+      transcriptionFilesRu.push(transArrayRu[i].fileName)
+    }
+
+    const summaryFilesEn = []
+    for (let i = 0; i < summArrayEn.length; i += 1) {
+      summaryFilesEn.push(summArrayEn[i].fileName)
+    }
+    const summaryFilesRu = []
+    for (let i = 0; i < summArrayRu.length; i += 1) {
+      summaryFilesRu.push(summArrayRu[i].fileName)
+    }
 
     editorTranscriptionEn = draftToHtml(
       convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
@@ -378,13 +475,13 @@ class AddLecture extends React.Component {
         title: titleEn,
         translation: translationEn,
         summary: {
-          attachment_link: '',
+          attachment_link: summaryFilesEn,
           attachment_name: '',
           text: editorSummaryEn,
         },
         transcription: {
           attachment_name: '',
-          attachment_link: transcriptionFiles,
+          attachment_link: transcriptionFilesEn,
           text: editorTranscriptionEn,
         },
       },
@@ -395,13 +492,13 @@ class AddLecture extends React.Component {
         title: titleRu,
         translation: translationRu,
         summary: {
-          attachment_link: summaryFiles,
+          attachment_link: summaryFilesRu,
           attachment_name: '',
           text: editorSummaryRu,
         },
         transcription: {
           attachment_name: '',
-          attachment_link: '',
+          attachment_link: transcriptionFilesRu,
           text: editorTranscriptionRu,
         },
       },
@@ -502,9 +599,11 @@ class AddLecture extends React.Component {
       {
         audioUploading: true,
         uploading: false,
+        percentage: 0,
       },
       () => {
-        this.handleUploading(info)
+        // this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
@@ -513,10 +612,11 @@ class AddLecture extends React.Component {
     this.setState(
       {
         summaryUploading: true,
+        transcriptionUploading: false,
         uploading: false,
       },
       () => {
-        this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
@@ -525,13 +625,21 @@ class AddLecture extends React.Component {
     this.setState(
       {
         transcriptionUploading: true,
+        summaryUploading: false,
         uploading: false,
       },
       () => {
-        this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
+
+  // dummyRequest = info => {
+  //   this.handleUploading(info)
+  //   setTimeout(() => {
+  //     onSuccess('ok')
+  //   }, 0)
+  // }
 
   handleUploading = info => {
     if (info.file.status === 'uploading') {
@@ -541,64 +649,183 @@ class AddLecture extends React.Component {
       })
     }
     if (info.file.status === 'done') {
-      this.uploads3(info.file)
+      this.uploads3(info)
     }
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
-    $.ajax({
-      type: 'GET',
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
+    const {
+      transArrayEn,
+      transArrayRu,
+      language,
+      summArrayEn,
+      summArrayRu,
+      transcriptionUploading,
+      summaryUploading,
+    } = this.state
+
+    axios({
+      method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-      success: data => {
+    })
+      .then(response => {
+        const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        this.setUploadedFiles(finalUrl)
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-      },
-      error() {
+        // this.setUploadedFiles(finalUrl)
+
+        if (language) {
+          if (transcriptionUploading) {
+            for (let i = 0; i < transArrayEn.length; i += 1) {
+              if (transArrayEn[i].fileName === finalUrl) {
+                notification.warning({
+                  message: 'error',
+                  description: `You can't upload file with the same name.`,
+                })
+                return
+              }
+            }
+          }
+
+          if (summaryUploading) {
+            for (let i = 0; i < summArrayEn.length; i += 1) {
+              if (summArrayEn[i].fileName === finalUrl) {
+                notification.warning({
+                  message: 'error',
+                  description: `You can't upload file with the same name.`,
+                })
+                return
+              }
+            }
+          }
+        } else {
+          if (transcriptionUploading) {
+            for (let i = 0; i < transArrayRu.length; i += 1) {
+              if (transArrayRu[i].fileName === finalUrl) {
+                notification.warning({
+                  message: 'error',
+                  description: `You can't upload file with the same name.`,
+                })
+                return
+              }
+            }
+          }
+
+          if (summaryUploading) {
+            for (let i = 0; i < summArrayRu.length; i += 1) {
+              if (summArrayRu[i].fileName === finalUrl) {
+                notification.warning({
+                  message: 'error',
+                  description: `You can't upload file with the same name.`,
+                })
+                return
+              }
+            }
+          }
+        }
+
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
+      })
+      .catch(error => {
         notification.error({
-          message: 'Error',
-          description: 'Error occured during uploading, try again',
+          message: 'error',
+          description: `Some error occured. Please check your internet connection`,
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+    //   success: data => {
+    //     console.log('data===>',data)
+    //     const temp = data.presignedUrl.toString()
+    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+    //     this.setUploadedFiles(finalUrl)
+    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info.file)
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'Error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file) => {
-    $.ajax({
-      type: 'PUT',
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { onSuccess, onError, action, onProgress, file } = info
+    axios({
+      method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: info.file,
       headers: {
         'Content-Type': file.type,
-        reportProgress: true,
       },
-      processData: false,
-      success: data => {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
+      onUploadProgress: progressEvent => {
+        // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+
+        this.setUploadedFiles(finalUrl, percentCompleted)
+        this.setState({ percentage: percentCompleted })
       },
-      error() {
+    })
+      .then(response => {
+        // notification.success({
+        //   message: 'Success',
+        //   description: 'file has been uploaded successfully',
+        // })
+      })
+      .catch(err => {
         notification.warning({
           message: 'error',
           description: 'Error occured during uploading, try again',
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: presignedUrl,
+    //   data: file.originFileObj,
+    //   headers: {
+    //     'Content-Type': file.type,
+    //     reportProgress: true,
+    //   },
+    //   processData: false,
+    //   success: data => {
+    //     notification.success({
+    //       message: 'Success',
+    //       description: 'file has been uploaded successfully',
+    //     })
+    //   },
+    //   error() {
+    //     notification.warning({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  setUploadedFiles = finalUrl => {
+  setUploadedFiles = (finalUrl, percentCompleted) => {
     const {
       transcriptionFiles,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
+      language,
       summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
       audioUploading,
       transcriptionUploading,
       summaryUploading,
+      transArrayEn,
+      transArrayRu,
+      summArrayEn,
+      summArrayRu,
     } = this.state
+
     if (audioUploading) {
       this.setState({
         audioLink: finalUrl,
@@ -608,30 +835,122 @@ class AddLecture extends React.Component {
       })
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
+      const arrayEn = [...transcriptionFilesEn]
+      const arrayRu = [...transcriptionFilesRu]
+      const transEnTemp = [...transArrayEn]
+      const transRuTemp = [...transArrayRu]
+
+      if (language) {
+        arrayEn.push(finalUrl)
+
+        const objIndex = transEnTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          transEnTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectEn = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
+          }
+          transEnTemp.push(tempObjectEn)
+        }
+      } else {
+        arrayRu.push(finalUrl)
+
+        const objIndex = transRuTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          transRuTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectRu = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
+          }
+          transRuTemp.push(tempObjectRu)
+        }
+      }
       array.push(finalUrl)
+
+      if (percentCompleted === 100) {
+        notification.success({
+          message: 'Success',
+          description: 'file has been uploaded successfully',
+        })
+      }
+
       this.setState({
         transcriptionFiles: array,
-        transcriptionUploading: false,
+        transcriptionFilesEn: arrayEn,
+        transcriptionFilesRu: arrayRu,
+        transcriptionUploading: true,
         summaryUploading: false,
         audioUploading: false,
+        transArrayEn: transEnTemp,
+        transArrayRu: transRuTemp,
       })
     } else if (summaryUploading) {
       const newArray = [...summaryFiles]
+      const newArrayEn = [...summaryFilesEn]
+      const newArrayRu = [...summaryFilesRu]
+      const summEnTemp = [...summArrayEn]
+      const summRuTemp = [...summArrayRu]
+
+      if (language) {
+        newArrayEn.push(finalUrl)
+
+        const objIndex = summEnTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          summEnTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectEnSumm = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
+          }
+          summEnTemp.push(tempObjectEnSumm)
+        }
+      } else {
+        newArrayRu.push(finalUrl)
+
+        const objIndex = summRuTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          summRuTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectRuSumm = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
+          }
+          summRuTemp.push(tempObjectRuSumm)
+        }
+      }
       newArray.push(finalUrl)
+
+      if (percentCompleted === 100) {
+        notification.success({
+          message: 'Success',
+          description: 'file has been uploaded successfully',
+        })
+      }
+
       this.setState({
         summaryFiles: newArray,
+        summaryFilesEn: newArrayEn,
+        summaryFilesRu: newArrayRu,
         transcriptionUploading: false,
-        summaryUploading: false,
+        summaryUploading: true,
         audioUploading: false,
+        summArrayEn: summEnTemp,
+        summArrayRu: summRuTemp,
       })
     }
   }
 
-  dummyRequest = ({ file, onSuccess }) => {
-    setTimeout(() => {
-      onSuccess('ok')
-    }, 0)
-  }
+  // dummyRequest = ({ file, onSuccess }) => {
+  //   setTimeout(() => {
+  //     onSuccess('ok')
+  //   }, 0)
+  // }
 
   deleteFile = (item, type) => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
@@ -655,35 +974,121 @@ class AddLecture extends React.Component {
   }
 
   handelDeleteSetFiles = (item, type) => {
-    const { transcriptionFiles, summaryFiles } = this.state
+    const {
+      transcriptionFiles,
+      summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
+      language,
+      transArrayEn,
+      transArrayRu,
+      summArrayEn,
+      summArrayRu,
+    } = this.state
     if (type === 'audio') {
       this.setState({ audioLink: '' })
     }
     if (type === 'transcription') {
-      for (let i = 0; i < transcriptionFiles.length; i += 1) {
-        if (transcriptionFiles[i] === item) {
-          transcriptionFiles.splice(i, 1)
-          break
+      // for (let i = 0; i < transcriptionFiles.length; i += 1) {
+      //   if (transcriptionFiles[i] === item) {
+      //     transcriptionFiles.splice(i, 1)
+      //     break
+      //   }
+      // }
+      // this.setState({
+      //   transcriptionFiles,
+      // })
+
+      if (language) {
+        for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
+          if (transcriptionFilesEn[i] === item) {
+            transcriptionFilesEn.splice(i, 1)
+            break
+          }
         }
+        for (let i = 0; i < transArrayEn.length; i += 1) {
+          if (transArrayEn[i].fileName === item) {
+            transArrayEn.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          transcriptionFilesEn,
+          transArrayEn,
+        })
+      } else {
+        for (let i = 0; i < transcriptionFilesRu.length; i += 1) {
+          if (transcriptionFilesRu[i] === item) {
+            transcriptionFilesRu.splice(i, 1)
+            break
+          }
+        }
+
+        for (let i = 0; i < transArrayRu.length; i += 1) {
+          if (transArrayRu[i].fileName === item) {
+            transArrayRu.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          transcriptionFilesRu,
+          transArrayRu,
+        })
       }
-      this.setState({
-        transcriptionFiles,
-      })
     }
     if (type === 'summary') {
-      for (let i = 0; i < summaryFiles.length; i += 1) {
-        if (summaryFiles[i] === item) {
-          summaryFiles.splice(i, 1)
-          break
+      // for (let i = 0; i < summaryFiles.length; i += 1) {
+      //   if (summaryFiles[i] === item) {
+      //     summaryFiles.splice(i, 1)
+      //     break
+      //   }
+      // }
+      // this.setState({
+      //   summaryFiles,
+      // })
+
+      if (language) {
+        for (let i = 0; i < summaryFilesEn.length; i += 1) {
+          if (summaryFilesEn[i] === item) {
+            summaryFilesEn.splice(i, 1)
+            break
+          }
         }
+        for (let i = 0; i < summArrayEn.length; i += 1) {
+          if (summArrayEn[i].fileName === item) {
+            summArrayEn.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          summaryFilesEn,
+          summArrayEn,
+        })
+      } else {
+        for (let i = 0; i < summaryFilesRu.length; i += 1) {
+          if (summaryFilesRu[i] === item) {
+            summaryFilesRu.splice(i, 1)
+            break
+          }
+        }
+        for (let i = 0; i < summArrayRu.length; i += 1) {
+          if (summArrayRu[i].fileName === item) {
+            summArrayRu.splice(i, 1)
+            break
+          }
+        }
+        this.setState({
+          summaryFilesRu,
+          summArrayRu,
+        })
       }
-      this.setState({
-        summaryFiles,
-      })
     }
   }
 
   beforeUploadAudio = file => {
+    this.setState({ percentage: 0 })
     const isJPG = file.type === 'audio/mp3'
     if (!isJPG) {
       notification.error({
@@ -720,7 +1125,11 @@ class AddLecture extends React.Component {
       summaryUploading: false,
       audioUploading: false,
       transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
       summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
       language: true,
       translation: '',
       translationRequired: false,
@@ -864,7 +1273,11 @@ class AddLecture extends React.Component {
       language,
       audioLink,
       transcriptionFiles,
+      transcriptionFilesEn,
+      transcriptionFilesRu,
       summaryFiles,
+      summaryFilesEn,
+      summaryFilesRu,
       translationRequired,
       editorStateTranscriptionEn,
       editorStateTranscriptionRu,
@@ -883,8 +1296,24 @@ class AddLecture extends React.Component {
       switchDisabled,
       formElements,
       transcribe,
+      transcriptionUploading,
+      percentage,
+      transArrayEn,
+      transArrayRu,
+      summArrayEn,
+      summArrayRu,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    let customStyleTrans = {}
+    let customStyleSumm = {}
+
+    if (transArrayEn.length > 5 || transArrayRu.length > 5) {
+      customStyleTrans = { overflowY: 'auto', height: '250px' }
+    }
+    if (summArrayEn.length > 5 || summArrayRu.length > 5) {
+      customStyleSumm = { overflowY: 'auto', height: '250px' }
+    }
 
     return (
       <React.Fragment>
@@ -1427,7 +1856,7 @@ class AddLecture extends React.Component {
                         <FormItem label="Attachment">
                           {audioLink ? (
                             <ul>
-                              <li className="filesList">
+                              {/* <li className="filesList">
                                 {audioLink}
                                 &nbsp;&nbsp;
                                 <i
@@ -1436,6 +1865,30 @@ class AddLecture extends React.Component {
                                     this.deleteFile(audioLink, 'audio')
                                   }}
                                 />
+                              </li> */}
+
+                              <li className="filesList">
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {audioLink.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(audioLink, 'audio')
+                                    }}
+                                  />
+                                </div>
+                                {percentage !== 0 ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={percentage} />
+                                  </div>
+                                ) : null}
                               </li>
                             </ul>
                           ) : (
@@ -1450,8 +1903,8 @@ class AddLecture extends React.Component {
                               beforeUpload={this.beforeUploadAudio}
                               multiple={false}
                               showUploadList={false}
-                              customRequest={this.dummyRequest}
-                              onChange={this.handleFileChange}
+                              customRequest={this.handleFileChange}
+                              // onChange={this.handleFileChange}
                             >
                               <p className="ant-upload-drag-icon">
                                 <Icon type="inbox" />
@@ -1497,8 +1950,103 @@ class AddLecture extends React.Component {
                       )} */}
                     </FormItem>
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" style={customStyleSumm}>
                     <FormItem label="Attachment">
+                      <ul>
+                        {language
+                          ? // summaryFilesEn.length > 0 &&
+                            //   summaryFilesEn.map((item, index) => {
+                            //     if (item !== '') {
+                            //       return (
+                            //         <li className="filesList">
+                            //           {item} &nbsp;&nbsp;
+                            //           <i
+                            //             className="fa fa-close closeIcon"
+                            //             onClick={() => {
+                            //               this.deleteFile(item, 'transcription')
+                            //             }}
+                            //           />
+                            //         </li>
+                            //       )
+                            //     }
+                            //   })
+
+                            summArrayEn.length > 0 &&
+                            summArrayEn.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
+                                    }}
+                                  >
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'summary')
+                                      }}
+                                    />
+                                  </div>
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })
+                          : // summaryFilesRu.length > 0 &&
+                            //   summaryFilesRu.map((item, index) => {
+                            //     if (item !== '') {
+                            //       return (
+                            //         <li className="filesList">
+                            //           {item} &nbsp;&nbsp;
+                            //           <i
+                            //             className="fa fa-close closeIcon"
+                            //             onClick={() => {
+                            //               this.deleteFile(item, 'transcription')
+                            //             }}
+                            //           />
+                            //         </li>
+                            //       )
+                            //     }
+                            //   })
+                            summArrayRu.length > 0 &&
+                            summArrayRu.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
+                                    }}
+                                  >
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'summary')
+                                      }}
+                                    />
+                                  </div>
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })}
+                      </ul>
+                    </FormItem>
+
+                    {/* <FormItem label="Attachment">
                       <ul>
                         {summaryFiles && summaryFiles.length > 0
                           ? summaryFiles.map(item => {
@@ -1518,7 +2066,7 @@ class AddLecture extends React.Component {
                             })
                           : null}
                       </ul>
-                    </FormItem>
+                    </FormItem> */}
                   </div>
                   <div className="form-group">
                     <FormItem>
@@ -1526,8 +2074,9 @@ class AddLecture extends React.Component {
                         <Dragger
                           beforeUpload={this.beforeUpload}
                           showUploadList={false}
-                          customRequest={this.dummyRequest}
-                          onChange={this.handleSummaryFileChange}
+                          multiple
+                          customRequest={this.handleSummaryFileChange}
+                          // onChange={this.handleSummaryFileChange}
                         >
                           <p className="ant-upload-drag-icon">
                             <Icon type="inbox" />
@@ -1580,8 +2129,98 @@ class AddLecture extends React.Component {
                     )} */}
                   </FormItem>
                 </div>
-                <div className="form-group">
+                <div className="form-group" style={customStyleTrans}>
                   <FormItem label="Attachment">
+                    <ul>
+                      {language
+                        ? // transcriptionFilesEn.length > 0 &&
+                          //   transcriptionFilesEn.map((item, index) => {
+                          //     if (item !== '') {
+                          //       return (
+                          //         <li className="filesList">
+                          //           <i
+                          //             className="fa fa-trash closeIcon"
+                          //             onClick={() => {
+                          //               this.deleteFile(item, 'transcription')
+                          //             }}
+                          //           />
+                          //           <div
+                          //             style={{
+                          //               display: 'inline-block',
+                          //               width: '20rem',
+                          //               paddingLeft: '15px',
+                          //             }}
+                          //           >
+                          //             {item.split('/').pop(-1)}
+                          //           </div>
+                          //           <div style={{ display: 'inline-block', width: '20rem' }}>
+                          //             <Progress percent={percentage} />
+                          //           </div>
+                          //         </li>
+                          //       )
+                          //     }
+                          //   })
+                          transArrayEn.length > 0 &&
+                          transArrayEn.map((item, index) => {
+                            return (
+                              <li className="filesList" key={index}>
+                                {' '}
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {item.fileName && item.fileName.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item.fileName, 'transcription')
+                                    }}
+                                  />
+                                </div>
+                                {item.percentage !== 'zeroPercent' ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={item.percentage} />
+                                  </div>
+                                ) : null}
+                              </li>
+                            )
+                          })
+                        : transArrayRu.length > 0 &&
+                          transArrayRu.map((item, index) => {
+                            return (
+                              <li className="filesList" key={index}>
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {item.fileName && item.fileName.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item.fileName, 'transcription')
+                                    }}
+                                  />
+                                </div>
+                                {item.percentage !== 'zeroPercent' ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={item.percentage} />
+                                  </div>
+                                ) : null}
+                              </li>
+                            )
+                          })}
+                    </ul>
+                  </FormItem>
+
+                  {/* <FormItem label="Attachment">
                     <ul>
                       {transcriptionFiles && transcriptionFiles.length > 0
                         ? transcriptionFiles.map(item => {
@@ -1601,27 +2240,28 @@ class AddLecture extends React.Component {
                           })
                         : null}
                     </ul>
-                  </FormItem>
+                  </FormItem> */}
                 </div>
+                {/* <Progress percent={percentage} /> */}
                 <div className="form-group">
                   <FormItem>
-                    {form.getFieldDecorator('Files2')(
-                      <Dragger
-                        beforeUpload={this.beforeUpload}
-                        showUploadList={false}
-                        customRequest={this.dummyRequest}
-                        onChange={this.handleTranscriptionFileChange}
-                      >
-                        <p className="ant-upload-drag-icon">
-                          <Icon type="inbox" />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">
-                          Support for a single or bulk upload. Strictly prohibit from uploading
-                          company data or other band files
-                        </p>
-                      </Dragger>,
-                    )}
+                    {/* {form.getFieldDecorator('Files2')( */}
+                    <Dragger
+                      beforeUpload={this.beforeUpload}
+                      showUploadList={false}
+                      customRequest={this.handleTranscriptionFileChange}
+                      multiple
+                      // onChange={this.handleTranscriptionFileChange}
+                    >
+                      <p className="ant-upload-drag-icon">
+                        <Icon type="inbox" />
+                      </p>
+                      <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                      <p className="ant-upload-hint">
+                        Support for a single or bulk upload. Strictly prohibit from uploading
+                        company data or other band files
+                      </p>
+                    </Dragger>
                   </FormItem>
                 </div>
               </div>

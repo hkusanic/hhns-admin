@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React from 'react'
 import { Editor } from 'react-draft-wysiwyg'
+import axios from 'axios'
 import { uuidv4 } from '../../../services/custom'
 import { formInputElements } from '../../../utils/addBlogInput'
 import { checkValidation } from '../../../utils/checkValidation'
@@ -18,6 +19,7 @@ import {
   message,
   notification,
   DatePicker,
+  Progress,
 } from 'antd'
 import $ from 'jquery'
 import moment from 'moment'
@@ -93,14 +95,10 @@ class BlogAddPost extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { upoading } = this.state
-
-    console.log('nextProps===>', nextProps)
+    const { upoading, files } = this.state
 
     if (nextProps.blog.editBlog) {
       const { blog } = nextProps
-
-      console.log('blog===>', blog)
 
       const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : EditorState.createEmpty()
       const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : EditorState.createEmpty()
@@ -130,10 +128,26 @@ class BlogAddPost extends React.Component {
       const tagsEn = blog.editBlog ? blog.editBlog.tags_en : ''
       const tagsRu = blog.editBlog ? blog.editBlog.tags_ru : ''
 
+      let tempFilesArray = []
+      let tempFilesObject = {}
+      const tempFiles = blog.editBlog.files
+
+      if (files.length > 0) {
+        tempFilesArray = files
+      } else {
+        for (let i = 0; i < tempFiles.length; i += 1) {
+          tempFilesObject = {
+            fileName: blog.editBlog.files[i],
+            percentage: 'zeroPercent',
+          }
+          tempFilesArray.push(tempFilesObject)
+        }
+      }
+
       this.setState(
         {
           editingBlog: blog.editBlog,
-          files: blog.editBlog.files,
+          files: tempFilesArray,
           translationRequired: blog.editBlog.needs_translation,
           // editorState,
           bodyContentEn,
@@ -222,11 +236,16 @@ class BlogAddPost extends React.Component {
       return
     }
 
+    const tempFilesArray = []
+    for (let i = 0; i < files.length; i += 1) {
+      tempFilesArray.push(files[i].fileName)
+    }
+
     const body = {
       uuid: uuid || uuidv4(),
       language: languageField,
       author,
-      files,
+      files: tempFilesArray,
       needs_translation: translationRequired,
       date,
       publish_date: publishDate,
@@ -309,50 +328,136 @@ class BlogAddPost extends React.Component {
   uploads3 = file => {
     const fileName = file.name
     const fileType = file.type
-    $.ajax({
-      type: 'GET',
+
+    const { files } = this.state
+
+    axios({
+      method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-      success: data => {
+    })
+      .then(response => {
+        const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        const { files } = this.state
-        const array = [...files]
 
-        array.push(finalUrl)
-        this.setState({ files: array })
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-      },
-      error() {
+        for (let i = 0; i < files.length; i += 1) {
+          if (files[i].fileName === finalUrl) {
+            notification.warning({
+              message: 'error',
+              description: `You can't upload file with the same name.`,
+            })
+            return
+          }
+        }
+
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+      })
+      .catch(error => {
         notification.error({
           message: 'error',
-          description: 'Error occured during uploading, Please try again',
+          description: `Some error occured. Please check your internet connection`,
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+    //   success: data => {
+    //     const temp = data.presignedUrl.toString()
+    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+    //     const { files } = this.state
+    //     const array = [...files]
+
+    //     array.push(finalUrl)
+    //     this.setState({ files: array })
+    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, Please try again',
+    //     })
+    //   },
+    // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file) => {
-    $.ajax({
-      type: 'PUT',
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+    axios({
+      method: 'PUT',
       url: presignedUrl,
       data: file.originFileObj,
       headers: {
         'Content-Type': file.type,
-        reportProgress: true,
       },
-      processData: false,
-      success: data => {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+
+        this.setUploadedFiles(finalUrl, percentCompleted)
       },
-      error() {
-        notification.error({
+    })
+      .then(response => {
+        // notification.success({
+        //   message: 'Success',
+        //   description: 'file has been uploaded successfully',
+        // })
+      })
+      .catch(err => {
+        notification.warning({
           message: 'error',
-          description: 'Error occured during uploading, Please try again',
+          description: 'Error occured during uploading, try again',
         })
-      },
+      })
+
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: presignedUrl,
+    //   data: file.originFileObj,
+    //   headers: {
+    //     'Content-Type': file.type,
+    //     reportProgress: true,
+    //   },
+    //   processData: false,
+    //   success: data => {
+    //     notification.success({
+    //       message: 'Success',
+    //       description: 'file has been uploaded successfully',
+    //     })
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, Please try again',
+    //     })
+    //   },
+    // })
+  }
+
+  setUploadedFiles = (finalUrl, percentCompleted) => {
+    const { files } = this.state
+
+    const tempFilesArray = [...files]
+
+    const objIndex = tempFilesArray.findIndex(obj => obj.fileName === finalUrl)
+
+    if (objIndex > -1) {
+      tempFilesArray[objIndex].percentage = percentCompleted
+    } else {
+      const tempFilesObject = {
+        fileName: finalUrl,
+        percentage: percentCompleted,
+      }
+      tempFilesArray.push(tempFilesObject)
+    }
+
+    if (percentCompleted === 100) {
+      notification.success({
+        message: 'Success',
+        description: 'file has been uploaded successfully',
+      })
+    }
+
+    this.setState({
+      files: tempFilesArray,
     })
   }
 
@@ -362,7 +467,7 @@ class BlogAddPost extends React.Component {
     }, 0)
   }
 
-  delereFile = item => {
+  deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
     $.ajax({
       type: 'GET',
@@ -376,7 +481,7 @@ class BlogAddPost extends React.Component {
         const { files } = this.state
 
         for (let i = 0; i < files.length; i += 1) {
-          if (files[i] === item) {
+          if (files[i].fileName === item) {
             files.splice(i, 1)
             break
           }
@@ -537,6 +642,11 @@ class BlogAddPost extends React.Component {
       switchDisabled,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    let customStyle = {}
+    if (files.length > 5) {
+      customStyle = { overflowY: 'auto', height: '250px' }
+    }
 
     return (
       <div>
@@ -729,10 +839,10 @@ class BlogAddPost extends React.Component {
                         )} */}
                       </FormItem>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={customStyle}>
                       <FormItem label="Attachment">
                         <ul>
-                          {files && files.length > 0
+                          {/* {files && files.length > 0
                             ? files.map(item => {
                                 return (
                                   <li className="filesList">
@@ -740,13 +850,42 @@ class BlogAddPost extends React.Component {
                                     <i
                                       className="fa fa-close closeIcon"
                                       onClick={() => {
-                                        this.delereFile(item)
+                                        this.deleteFile(item)
                                       }}
                                     />
                                   </li>
                                 )
                               })
-                            : null}
+                            : null} */}
+
+                          {files.length > 0 &&
+                            files.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
+                                    }}
+                                  >
+                                    {item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName)
+                                      }}
+                                    />
+                                  </div>
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })}
                         </ul>
                       </FormItem>
                     </div>

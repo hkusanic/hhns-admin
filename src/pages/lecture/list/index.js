@@ -105,6 +105,13 @@ class ProductsList extends React.Component {
         transcribe: event.target.checked,
       })
     }, 0)
+
+    const { dispatch } = this.props
+    dispatch({
+      type: 'lecture/GET_LECTURES',
+      page: 1,
+      transcribe_required: event.target.checked,
+    })
   }
 
   render() {
@@ -186,12 +193,13 @@ class ProductsList extends React.Component {
               <Option value="desc">Descending</Option>
             </Select>
             &nbsp;&nbsp;&nbsp;
-            {/* <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
+            <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
               &nbsp; Transcribe ?
-            </Checkbox> */}
+            </Checkbox>
           </div>
           <div className="card-body">
             <Table
+              rowKey={record => record.uuid}
               // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
