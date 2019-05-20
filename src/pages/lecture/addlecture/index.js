@@ -599,9 +599,11 @@ class AddLecture extends React.Component {
       {
         audioUploading: true,
         uploading: false,
+        percentage: 0,
       },
       () => {
-        this.handleUploading(info)
+        // this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
@@ -614,7 +616,7 @@ class AddLecture extends React.Component {
         uploading: false,
       },
       () => {
-        this.handleUploading(info)
+        this.uploads3(info)
       },
     )
   }
@@ -639,17 +641,17 @@ class AddLecture extends React.Component {
   //   }, 0)
   // }
 
-  // handleUploading = info => {
-  //   if (info.file.status === 'uploading') {
-  //     notification.success({
-  //       message: 'Uploading Started',
-  //       description: 'File uploading is started',
-  //     })
-  //   }
-  //   if (info.file.status === 'done') {
-  //     this.uploads3(info)
-  //   }
-  // }
+  handleUploading = info => {
+    if (info.file.status === 'uploading') {
+      notification.success({
+        message: 'Uploading Started',
+        description: 'File uploading is started',
+      })
+    }
+    if (info.file.status === 'done') {
+      this.uploads3(info)
+    }
+  }
 
   uploads3 = info => {
     const fileName = info.file.name
@@ -896,31 +898,31 @@ class AddLecture extends React.Component {
       if (language) {
         newArrayEn.push(finalUrl)
 
-        for (let i = 0; i < summEnTemp.length; i += 1) {
-          if (summEnTemp[i].fileName === finalUrl) {
-            summEnTemp.splice(i, 1)
-            break
+        const objIndex = summEnTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          summEnTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectEnSumm = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
           }
+          summEnTemp.push(tempObjectEnSumm)
         }
-        const tempObjectEnSumm = {
-          fileName: finalUrl,
-          percentage: percentCompleted,
-        }
-        summEnTemp.push(tempObjectEnSumm)
       } else {
         newArrayRu.push(finalUrl)
 
-        for (let i = 0; i < summRuTemp.length; i += 1) {
-          if (summRuTemp[i].fileName === finalUrl) {
-            summRuTemp.splice(i, 1)
-            break
+        const objIndex = summRuTemp.findIndex(obj => obj.fileName === finalUrl)
+
+        if (objIndex > -1) {
+          summRuTemp[objIndex].percentage = percentCompleted
+        } else {
+          const tempObjectRuSumm = {
+            fileName: finalUrl,
+            percentage: percentCompleted,
           }
+          summRuTemp.push(tempObjectRuSumm)
         }
-        const tempObjectRuSumm = {
-          fileName: finalUrl,
-          percentage: percentCompleted,
-        }
-        summRuTemp.push(tempObjectRuSumm)
       }
       newArray.push(finalUrl)
 
@@ -1302,6 +1304,16 @@ class AddLecture extends React.Component {
       summArrayRu,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    let customStyleTrans = {}
+    let customStyleSumm = {}
+
+    if (transArrayEn.length > 5 || transArrayRu.length > 5) {
+      customStyleTrans = { overflowY: 'auto', height: '250px' }
+    }
+    if (summArrayEn.length > 5 || summArrayRu.length > 5) {
+      customStyleSumm = { overflowY: 'auto', height: '250px' }
+    }
 
     return (
       <React.Fragment>
@@ -1871,7 +1883,7 @@ class AddLecture extends React.Component {
                                 >
                                   {audioLink.split('/').pop(-1)}
                                 </div>
-                                {percentage !== 0 ? (
+                                {percentage !== 0 && percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={percentage} />
                                   </div>
@@ -1937,7 +1949,7 @@ class AddLecture extends React.Component {
                       )} */}
                     </FormItem>
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" style={customStyleSumm}>
                     <FormItem label="Attachment">
                       <ul>
                         {language
@@ -1977,7 +1989,7 @@ class AddLecture extends React.Component {
                                   >
                                     {item.fileName.split('/').pop(-1)}
                                   </div>
-                                  {item.percentage !== 'zeroPercent' ? (
+                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
@@ -2020,7 +2032,7 @@ class AddLecture extends React.Component {
                                   >
                                     {item.fileName.split('/').pop(-1)}
                                   </div>
-                                  {item.percentage !== 'zeroPercent' ? (
+                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
@@ -2059,6 +2071,7 @@ class AddLecture extends React.Component {
                         <Dragger
                           beforeUpload={this.beforeUpload}
                           showUploadList={false}
+                          multiple
                           customRequest={this.handleSummaryFileChange}
                           // onChange={this.handleSummaryFileChange}
                         >
@@ -2113,7 +2126,7 @@ class AddLecture extends React.Component {
                     )} */}
                   </FormItem>
                 </div>
-                <div className="form-group">
+                <div className="form-group" style={customStyleTrans}>
                   <FormItem label="Attachment">
                     <ul>
                       {language
@@ -2163,7 +2176,7 @@ class AddLecture extends React.Component {
                                 >
                                   {item.fileName.split('/').pop(-1)}
                                 </div>
-                                {item.percentage !== 'zeroPercent' ? (
+                                {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={item.percentage} />
                                   </div>
@@ -2190,7 +2203,7 @@ class AddLecture extends React.Component {
                                 >
                                   {item.fileName.split('/').pop(-1)}
                                 </div>
-                                {item.percentage !== 'zeroPercent' ? (
+                                {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={item.percentage} />
                                   </div>
