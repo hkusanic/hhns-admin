@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
@@ -20,10 +22,12 @@ import {
   Button,
   Switch,
   Tabs,
+  Progress,
 } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Editor } from 'react-draft-wysiwyg'
+import axios from 'axios'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { EditorState, convertToRaw } from 'draft-js'
@@ -102,14 +106,27 @@ class CreateGallery extends React.Component {
       const { gallery } = nextProps
       const { editGallery } = gallery
 
-      const titleEn = gallery.editGallery ? gallery.editGallery.title_en : ''
-      const titleRu = gallery.editGallery ? gallery.editGallery.title_ru : ''
+      const titleEn = gallery.editGallery.title_en
+
+      const titleRu = gallery.editGallery.title_ru
+
+      const tempPhotoFiles = []
+      let tempPhotoObject = {}
+      const tempPhotos = editGallery.photos || []
+
+      for (let i = 0; i < tempPhotos.length; i += 1) {
+        tempPhotoObject = {
+          fileName: tempPhotos[i],
+          percentage: 'zeroPercent',
+        }
+        tempPhotoFiles.push(tempPhotoObject)
+      }
 
       this.setState(
         {
           editGallery,
           gallery: editGallery.gallery || '2019',
-          photoFiles: editGallery.photos || [],
+          photoFiles: tempPhotoFiles,
           createDate: editGallery.date || '',
           publishDate: editGallery.publish_date || '',
           translationRequired: editGallery.translation_required,
@@ -117,9 +134,7 @@ class CreateGallery extends React.Component {
           titleRu,
         },
         () => {
-          if (!this.onFieldValueChange()) {
-            this.setState({ switchDisabled: false })
-          }
+          this.onFieldValueChange()
         },
       )
     }
@@ -151,11 +166,9 @@ class CreateGallery extends React.Component {
   }
 
   handleCheckbox = event => {
-    setTimeout(() => {
-      this.setState({
-        translationRequired: event.target.checked,
-      })
-    }, 0)
+    this.setState({
+      translationRequired: event.target.checked,
+    })
   }
 
   onEditorStateChange: Function = editorState => {
@@ -180,7 +193,7 @@ class CreateGallery extends React.Component {
   }
 
   dummyRequest = ({ file, onSuccess }) => {
-    console.info(file)
+    // console.info(file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -199,22 +212,23 @@ class CreateGallery extends React.Component {
         uploading: false,
       },
       () => {
-        this.handleUploading(info)
+        // this.handleUploading(info)
+        this.uploads3(info.file)
       },
     )
   }
 
-  handleUploading = info => {
-    if (info.file.status === 'uploading') {
-      notification.success({
-        message: 'Uploading Started',
-        description: 'File uploading is started',
-      })
-    }
-    if (info.file.status === 'done') {
-      this.uploads3(info.file)
-    }
-  }
+  // handleUploading = info => {
+  //   if (info.file.status === 'uploading') {
+  //     notification.success({
+  //       message: 'Uploading Started',
+  //       description: 'File uploading is started',
+  //     })
+  //   }
+  //   if (info.file.status === 'done') {
+  //     this.uploads3(info.file)
+  //   }
+  // }
 
   getBase64 = (img, callback) => {
     const reader = new FileReader()
@@ -225,63 +239,132 @@ class CreateGallery extends React.Component {
   uploads3 = file => {
     const fileName = file.name
     const fileType = file.type
-    $.ajax({
-      type: 'GET',
+
+    const { photoFiles } = this.state
+
+    axios({
+      method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-      success: data => {
-        const temp = data.presignedUrl.toString()
-        const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        setTimeout(() => {
-          this.setUploadedFiles(finalUrl)
-        }, 0)
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-      },
-      error() {
-        notification.error({
-          message: 'Error',
-          description: 'Error occured during uploading, try again',
-        })
-      },
+    }).then(response => {
+      const { data } = response
+      const temp = data.presignedUrl.toString()
+      const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+
+      for (let i = 0; i < photoFiles.length; i += 1) {
+        if (photoFiles[i].fileName === finalUrl) {
+          notification.warning({
+            message: 'error',
+            description: `You can't upload file with the same name.`,
+          })
+          return
+        }
+      }
+
+      this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
     })
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+    //   success: data => {
+    //     const temp = data.presignedUrl.toString()
+    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+    //     setTimeout(() => {
+    //       this.setUploadedFiles(finalUrl)
+    //     }, 0)
+    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'Error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file) => {
-    $.ajax({
-      type: 'PUT',
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+    axios({
+      method: 'PUT',
       url: presignedUrl,
       data: file.originFileObj,
       headers: {
         'Content-Type': file.type,
-        reportProgress: true,
       },
-      processData: false,
-      success: () => {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+
+        this.setUploadedFiles(finalUrl, percentCompleted)
       },
-      error() {
+    })
+      .then(response => {
+        // notification.success({
+        //   message: 'Success',
+        //   description: 'file has been uploaded successfully',
+        // })
+      })
+      .catch(err => {
         notification.warning({
           message: 'error',
           description: 'Error occured during uploading, try again',
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: presignedUrl,
+    //   data: file.originFileObj,
+    //   headers: {
+    //     'Content-Type': file.type,
+    //     reportProgress: true,
+    //   },
+    //   processData: false,
+    //   success: () => {
+    //     notification.success({
+    //       message: 'Success',
+    //       description: 'file has been uploaded successfully',
+    //     })
+    //   },
+    //   error() {
+    //     notification.warning({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  setUploadedFiles = finalUrl => {
+  setUploadedFiles = (finalUrl, percentCompleted) => {
     const { photoFiles } = this.state
-    let array
-    if (photoFiles && photoFiles.length > 0) {
-      array = [...photoFiles]
+
+    const tempPhotoFiles = [...photoFiles]
+
+    const objIndex = tempPhotoFiles.findIndex(obj => obj.fileName === finalUrl)
+
+    if (objIndex > -1) {
+      tempPhotoFiles[objIndex].percentage = percentCompleted
     } else {
-      array = []
+      const tempPhotoObject = {
+        fileName: finalUrl,
+        percentage: percentCompleted,
+      }
+      tempPhotoFiles.push(tempPhotoObject)
     }
-    array.push(finalUrl)
+
     this.setState({
-      photoFiles: array,
+      photoFiles: tempPhotoFiles,
     })
+
+    // let array
+    // if (photoFiles && photoFiles.length > 0) {
+    //   array = [...photoFiles]
+    // } else {
+    //   array = []
+    // }
+    // array.push(finalUrl)
+    // this.setState({
+    //   photoFiles: array,
+    // })
   }
 
   handleCreateDate = (date, dateString) => {
@@ -332,13 +415,20 @@ class CreateGallery extends React.Component {
 
     const bodyEn = draftToHtml(convertToRaw(galleryBody.getCurrentContent()))
 
-    if (titleEn === '') {
+    if (titleEn === '' || titleEn === undefined || titleEn === null) {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
       })
 
       return
+    }
+
+    console.log('translationRequired===>', translationRequired)
+
+    const tempPhotoFiles = []
+    for (let i = 0; i < photoFiles.length; i += 1) {
+      tempPhotoFiles.push(photoFiles[i].fileName)
     }
 
     // form.validateFields(['title', 'create_date', 'publish_date'], (err, values) => {
@@ -349,7 +439,7 @@ class CreateGallery extends React.Component {
       gallery,
       date: createDate,
       publish_date: publishDate,
-      photos: photoFiles,
+      photos: tempPhotoFiles,
       body: bodyEn,
       translation_required: translationRequired,
       title_en: titleEn,
@@ -415,7 +505,7 @@ class CreateGallery extends React.Component {
     const { photoFiles } = this.state
 
     for (let i = 0; i < photoFiles.length; i += 1) {
-      if (photoFiles[i] === item) {
+      if (photoFiles[i].fileName === item) {
         photoFiles.splice(i, 1)
         break
       }
@@ -473,13 +563,13 @@ class CreateGallery extends React.Component {
   onFieldValueChange = () => {
     const { titleEn } = this.state
 
-    if (titleEn !== '') {
-      this.setState({ switchDisabled: false })
-      return false
+    if (titleEn === '' || titleEn === undefined) {
+      this.setState({ switchDisabled: true })
+      return true
     }
 
-    this.setState({ switchDisabled: true })
-    return true
+    this.setState({ switchDisabled: false })
+    return false
   }
 
   render() {
@@ -499,6 +589,12 @@ class CreateGallery extends React.Component {
       switchDisabled,
       formElements,
     } = this.state
+
+    let customStyle = {}
+    if (photoFiles.length > 5) {
+      customStyle = { overflowY: 'auto', height: '250px' }
+    }
+
     return (
       <div>
         <BackNavigation link="/gallery/list" title="Gallery List" />
@@ -602,13 +698,10 @@ class CreateGallery extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem>
-                        {form.getFieldDecorator('translation', {
-                          initialValue: translationRequired,
-                        })(
-                          <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                            Need Translation ?
-                          </Checkbox>,
-                        )}
+                        <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                          Need Translation ?
+                        </Checkbox>
+                        ,
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -643,10 +736,10 @@ class CreateGallery extends React.Component {
                         })(<DatePicker disabled onChange={this.handlePublishDate} />)}
                       </FormItem>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={customStyle}>
                       <FormItem label="Uploaded Photos">
                         <ul>
-                          {photoFiles && photoFiles.length > 0
+                          {/* {photoFiles && photoFiles.length > 0
                             ? photoFiles.map(item => {
                                 if (item !== '') {
                                   return (
@@ -662,7 +755,36 @@ class CreateGallery extends React.Component {
                                   )
                                 }
                               })
-                            : null}
+                            : null} */}
+
+                          {photoFiles.length > 0 &&
+                            photoFiles.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
+                                    }}
+                                  >
+                                    {item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName)
+                                      }}
+                                    />
+                                  </div>
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })}
                         </ul>
                       </FormItem>
                     </div>
