@@ -19,10 +19,12 @@ import {
   Tabs,
   Upload,
   notification,
+  Progress,
 } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Editor } from 'react-draft-wysiwyg'
+import axios from 'axios'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
@@ -64,6 +66,7 @@ class AddKirtan extends React.Component {
     formElements: formInputElements,
     bodyContentEn: EditorState.createEmpty(),
     bodyContentRu: EditorState.createEmpty(),
+    percentage: 0,
   }
 
   componentDidMount() {
@@ -244,62 +247,109 @@ class AddKirtan extends React.Component {
   }
 
   handleUploading = info => {
-    if (info.file.status === 'uploading') {
-      notification.success({
-        message: 'Uploading Started',
-        description: 'File uploading is started',
-      })
-    }
-    if (info.file.status === 'done') {
+    this.setState({ percentage: 0 }, () => {
       this.uploads3(info.file)
-    }
+    })
+    // if (info.file.status === 'uploading') {
+    //   notification.success({
+    //     message: 'Uploading Started',
+    //     description: 'File uploading is started',
+    //   })
+    // }
+    // if (info.file.status === 'done') {
+    //   this.uploads3(info.file)
+    // }
   }
 
   uploads3 = file => {
     const fileName = file.name
     const fileType = file.type
-    $.ajax({
-      type: 'GET',
+
+    axios({
+      method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-      success: data => {
+    })
+      .then(response => {
+        const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        this.setUploadedFiles(finalUrl)
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-      },
-      error() {
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+      })
+      .catch(error => {
         notification.error({
-          message: 'Error',
-          description: 'Error occured during uploading, try again',
+          message: 'error',
+          description: `Some error occured. Please check your internet connection`,
         })
-      },
-    })
+      })
+
+    // $.ajax({
+    //   type: 'GET',
+    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
+    //   success: data => {
+    //     const temp = data.presignedUrl.toString()
+    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
+    //     // this.setUploadedFiles(finalUrl)
+    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+    //   },
+    //   error() {
+    //     notification.error({
+    //       message: 'Error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file) => {
-    $.ajax({
-      type: 'PUT',
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+    axios({
+      method: 'PUT',
       url: presignedUrl,
       data: file.originFileObj,
       headers: {
         'Content-Type': file.type,
-        reportProgress: true,
       },
-      processData: false,
-      success: data => {
-        console.info(data)
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
-      },
-      error() {
-        notification.warning({
-          message: 'error',
-          description: 'Error occured during uploading, try again',
-        })
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+
+        this.setUploadedFiles(finalUrl, percentCompleted)
       },
     })
+      .then(response => {
+        // notification.success({
+        //   message: 'Success',
+        //   description: 'file has been uploaded successfully',
+        // })
+      })
+      .catch(err => {
+        // notification.warning({
+        //   message: 'error',
+        //   description: 'Error occured during uploading, try again',
+        // })
+      })
+
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: presignedUrl,
+    //   data: file.originFileObj,
+    //   headers: {
+    //     'Content-Type': file.type,
+    //     reportProgress: true,
+    //   },
+    //   processData: false,
+    //   success: data => {
+    //     console.info(data)
+    //     notification.success({
+    //       message: 'Success',
+    //       description: 'file has been uploaded successfully',
+    //     })
+    //   },
+    //   error() {
+    //     notification.warning({
+    //       message: 'error',
+    //       description: 'Error occured during uploading, try again',
+    //     })
+    //   },
+    // })
   }
 
   deleteFile = item => {
@@ -325,6 +375,7 @@ class AddKirtan extends React.Component {
   }
 
   beforeUploadAudio = file => {
+    this.setState({ percentage: 0 })
     const isJPG = file.type === 'audio/mp3'
     if (!isJPG) {
       notification.error({
@@ -339,9 +390,10 @@ class AddKirtan extends React.Component {
     this.setState({ audioLink: '' })
   }
 
-  setUploadedFiles = finalUrl => {
+  setUploadedFiles = (finalUrl, percentCompleted) => {
     this.setState({
       audioLink: finalUrl,
+      percentage: percentCompleted,
     })
   }
 
@@ -575,10 +627,9 @@ class AddKirtan extends React.Component {
       formElements,
       bodyContentEn,
       bodyContentRu,
+      percentage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
-
-    console.log('lecture ===>', lecture)
 
     return (
       <React.Fragment>
@@ -914,7 +965,7 @@ class AddKirtan extends React.Component {
                         <FormItem label="Attachment">
                           {audioLink ? (
                             <ul>
-                              <li className="filesList">
+                              {/* <li className="filesList">
                                 {audioLink}
                                 &nbsp;&nbsp;
                                 <i
@@ -923,6 +974,29 @@ class AddKirtan extends React.Component {
                                     this.deleteFile(audioLink, 'audio')
                                   }}
                                 />
+                              </li> */}
+
+                              <li className="filesList">
+                                <i
+                                  className="fa fa-trash closeIcon"
+                                  onClick={() => {
+                                    this.deleteFile(audioLink, 'audio')
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    display: 'inline-block',
+                                    width: '20rem',
+                                    paddingLeft: '15px',
+                                  }}
+                                >
+                                  {audioLink.split('/').pop(-1)}
+                                </div>
+                                {percentage !== 0 && percentage !== 100 ? (
+                                  <div style={{ display: 'inline-block', width: '20rem' }}>
+                                    <Progress percent={percentage} />
+                                  </div>
+                                ) : null}
                               </li>
                             </ul>
                           ) : (
