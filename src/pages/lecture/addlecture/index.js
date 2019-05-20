@@ -2020,7 +2020,7 @@ class AddLecture extends React.Component {
                                   <i
                                     className="fa fa-trash closeIcon"
                                     onClick={() => {
-                                      this.deleteFile(item.fileName, 'transcription')
+                                      this.deleteFile(item.fileName, 'summary')
                                     }}
                                   />
                                   <div

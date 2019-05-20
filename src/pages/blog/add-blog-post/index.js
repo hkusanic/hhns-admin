@@ -129,7 +129,7 @@ class BlogAddPost extends React.Component {
       const tagsRu = blog.editBlog ? blog.editBlog.tags_ru : ''
 
       const tempFilesArray = []
-      const tempFilesObject = {}
+      let tempFilesObject = {}
       const tempFiles = blog.editBlog.files
 
       for (let i = 0; i < tempFiles.length; i += 1) {
@@ -477,7 +477,7 @@ class BlogAddPost extends React.Component {
         const { files } = this.state
 
         for (let i = 0; i < files.length; i += 1) {
-          if (files[i] === item) {
+          if (files[i].fileName === item) {
             files.splice(i, 1)
             break
           }
