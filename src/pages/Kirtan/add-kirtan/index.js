@@ -109,7 +109,7 @@ class AddKirtan extends React.Component {
     if (nextProps.kirtan.editKirtan !== '') {
       const { kirtan } = nextProps
       const { editKirtan } = kirtan
-      const { language, audioLink } = this.state
+      const { language } = this.state
       this.handleUpdateBody(language, editKirtan)
 
       const titleEn = editKirtan ? editKirtan.en.title : ''
@@ -182,6 +182,17 @@ class AddKirtan extends React.Component {
       translationRequired: false,
       editingKirtan: '',
       editorState: EditorState.createEmpty(),
+      titleEn: '',
+      titleRu: '',
+      eventEn: '',
+      eventRu: '',
+      locationEn: '',
+      locationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      percentage: 0,
     })
   }
 
@@ -525,10 +536,22 @@ class AddKirtan extends React.Component {
     this.setState({
       language: true,
       audioLink: '',
-      createDate: '',
-      publishDate: '',
+      createDate: new Date(),
+      publishDate: new Date(),
       translationRequired: false,
+      editingKirtan: '',
       editorState: EditorState.createEmpty(),
+      titleEn: '',
+      titleRu: '',
+      eventEn: '',
+      eventRu: '',
+      locationEn: '',
+      locationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      percentage: 0,
     })
   }
 
@@ -993,7 +1016,7 @@ class AddKirtan extends React.Component {
                                     }}
                                   />
                                 </div>
-                                {percentage !== 0 && percentage !== 100 ? (
+                                {percentage !== 0 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={percentage} />
                                   </div>

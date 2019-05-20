@@ -106,8 +106,9 @@ class CreateGallery extends React.Component {
       const { gallery } = nextProps
       const { editGallery } = gallery
 
-      const titleEn = gallery.editGallery ? gallery.editGallery.title_en : ''
-      const titleRu = gallery.editGallery ? gallery.editGallery.title_ru : ''
+      const titleEn = gallery.editGallery.title_en
+
+      const titleRu = gallery.editGallery.title_ru
 
       const tempPhotoFiles = []
       let tempPhotoObject = {}
@@ -165,11 +166,9 @@ class CreateGallery extends React.Component {
   }
 
   handleCheckbox = event => {
-    setTimeout(() => {
-      this.setState({
-        translationRequired: event.target.checked,
-      })
-    }, 0)
+    this.setState({
+      translationRequired: event.target.checked,
+    })
   }
 
   onEditorStateChange: Function = editorState => {
@@ -194,7 +193,7 @@ class CreateGallery extends React.Component {
   }
 
   dummyRequest = ({ file, onSuccess }) => {
-    console.info(file)
+    // console.info(file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -416,7 +415,7 @@ class CreateGallery extends React.Component {
 
     const bodyEn = draftToHtml(convertToRaw(galleryBody.getCurrentContent()))
 
-    if (titleEn === '') {
+    if (titleEn === '' || titleEn === undefined || titleEn === null) {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
@@ -424,6 +423,8 @@ class CreateGallery extends React.Component {
 
       return
     }
+
+    console.log('translationRequired===>', translationRequired)
 
     const tempPhotoFiles = []
     for (let i = 0; i < photoFiles.length; i += 1) {
@@ -697,13 +698,10 @@ class CreateGallery extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem>
-                        {form.getFieldDecorator('translation', {
-                          initialValue: translationRequired,
-                        })(
-                          <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                            Need Translation ?
-                          </Checkbox>,
-                        )}
+                        <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                          Need Translation ?
+                        </Checkbox>
+                        ,
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -779,7 +777,7 @@ class CreateGallery extends React.Component {
                                       }}
                                     />
                                   </div>
-                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                  {item.percentage !== 'zeroPercent' ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>

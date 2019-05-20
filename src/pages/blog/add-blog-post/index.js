@@ -878,7 +878,7 @@ class BlogAddPost extends React.Component {
                                       }}
                                     />
                                   </div>
-                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                  {item.percentage !== 'zeroPercent' ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>

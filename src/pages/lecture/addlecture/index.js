@@ -1884,7 +1884,7 @@ class AddLecture extends React.Component {
                                     }}
                                   />
                                 </div>
-                                {percentage !== 0 && percentage !== 100 ? (
+                                {percentage !== 0 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={percentage} />
                                   </div>
@@ -1991,7 +1991,7 @@ class AddLecture extends React.Component {
                                       }}
                                     />
                                   </div>
-                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                  {item.percentage !== 'zeroPercent' ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
@@ -2035,7 +2035,7 @@ class AddLecture extends React.Component {
                                       }}
                                     />
                                   </div>
-                                  {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                  {item.percentage !== 'zeroPercent' ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
@@ -2181,7 +2181,7 @@ class AddLecture extends React.Component {
                                     }}
                                   />
                                 </div>
-                                {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                {item.percentage !== 'zeroPercent' ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={item.percentage} />
                                   </div>
@@ -2209,7 +2209,7 @@ class AddLecture extends React.Component {
                                     }}
                                   />
                                 </div>
-                                {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
+                                {item.percentage !== 'zeroPercent' ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={item.percentage} />
                                   </div>
