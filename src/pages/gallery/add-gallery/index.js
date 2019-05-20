@@ -589,6 +589,11 @@ class CreateGallery extends React.Component {
       formElements,
     } = this.state
 
+    let customStyle = {}
+    if (photoFiles.length > 5) {
+      customStyle = { overflowY: 'auto', height: '250px' }
+    }
+
     return (
       <div>
         <BackNavigation link="/gallery/list" title="Gallery List" />
@@ -733,7 +738,7 @@ class CreateGallery extends React.Component {
                         })(<DatePicker disabled onChange={this.handlePublishDate} />)}
                       </FormItem>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" style={customStyle}>
                       <FormItem label="Uploaded Photos">
                         <ul>
                           {/* {photoFiles && photoFiles.length > 0
@@ -758,12 +763,6 @@ class CreateGallery extends React.Component {
                             photoFiles.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'transcription')
-                                    }}
-                                  />
                                   <div
                                     style={{
                                       display: 'inline-block',
@@ -772,6 +771,13 @@ class CreateGallery extends React.Component {
                                     }}
                                   >
                                     {item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName)
+                                      }}
+                                    />
                                   </div>
                                   {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>

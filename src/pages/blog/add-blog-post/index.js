@@ -95,7 +95,7 @@ class BlogAddPost extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { upoading } = this.state
+    const { upoading, files } = this.state
 
     if (nextProps.blog.editBlog) {
       const { blog } = nextProps
@@ -128,16 +128,20 @@ class BlogAddPost extends React.Component {
       const tagsEn = blog.editBlog ? blog.editBlog.tags_en : ''
       const tagsRu = blog.editBlog ? blog.editBlog.tags_ru : ''
 
-      const tempFilesArray = []
+      let tempFilesArray = []
       let tempFilesObject = {}
       const tempFiles = blog.editBlog.files
 
-      for (let i = 0; i < tempFiles.length; i += 1) {
-        tempFilesObject = {
-          fileName: blog.editBlog.files[i],
-          percentage: 'zeroPercent',
+      if (files.length > 0) {
+        tempFilesArray = files
+      } else {
+        for (let i = 0; i < tempFiles.length; i += 1) {
+          tempFilesObject = {
+            fileName: blog.editBlog.files[i],
+            percentage: 'zeroPercent',
+          }
+          tempFilesArray.push(tempFilesObject)
         }
-        tempFilesArray.push(tempFilesObject)
       }
 
       this.setState(
@@ -858,12 +862,6 @@ class BlogAddPost extends React.Component {
                             files.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'transcription')
-                                    }}
-                                  />
                                   <div
                                     style={{
                                       display: 'inline-block',
@@ -872,6 +870,13 @@ class BlogAddPost extends React.Component {
                                     }}
                                   >
                                     {item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName)
+                                      }}
+                                    />
                                   </div>
                                   {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>

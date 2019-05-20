@@ -109,7 +109,7 @@ class AddKirtan extends React.Component {
     if (nextProps.kirtan.editKirtan !== '') {
       const { kirtan } = nextProps
       const { editKirtan } = kirtan
-      const { language } = this.state
+      const { language, audioLink } = this.state
       this.handleUpdateBody(language, editKirtan)
 
       const titleEn = editKirtan ? editKirtan.en.title : ''
@@ -147,7 +147,7 @@ class AddKirtan extends React.Component {
       this.setState(
         {
           editingKirtan: editKirtan,
-          audioLink: editKirtan ? editKirtan.audio_link : '',
+          audioLink: editKirtan.audio_link,
           createDate: editKirtan ? editKirtan.created_date : '',
           publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
           translationRequired: editKirtan ? editKirtan.translation_required : false,
@@ -358,7 +358,7 @@ class AddKirtan extends React.Component {
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: data => {
-        console.info(data)
+        // console.info(data)
         notification.success({
           message: 'File Deleted',
           description: 'File has been successfully deleted',
@@ -398,7 +398,7 @@ class AddKirtan extends React.Component {
   }
 
   dummyRequest = ({ file, onSuccess }) => {
-    console.info(file)
+    // console.info(file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -977,12 +977,6 @@ class AddKirtan extends React.Component {
                               </li> */}
 
                               <li className="filesList">
-                                <i
-                                  className="fa fa-trash closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
                                 <div
                                   style={{
                                     display: 'inline-block',
@@ -991,6 +985,13 @@ class AddKirtan extends React.Component {
                                   }}
                                 >
                                   {audioLink.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(audioLink)
+                                    }}
+                                  />
                                 </div>
                                 {percentage !== 0 && percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>

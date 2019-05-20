@@ -252,7 +252,7 @@ class AddLecture extends React.Component {
 
       for (let i = 0; i < summaryFilesEn.length; i += 1) {
         tempObjectEnSumm = {
-          fileName: transcriptionFilesEn[i],
+          fileName: summaryFilesEn[i],
           percentage: 'zeroPercent',
         }
         summArrayEn.push(tempObjectEnSumm)
@@ -1868,12 +1868,6 @@ class AddLecture extends React.Component {
                               </li> */}
 
                               <li className="filesList">
-                                <i
-                                  className="fa fa-trash closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
                                 <div
                                   style={{
                                     display: 'inline-block',
@@ -1882,6 +1876,13 @@ class AddLecture extends React.Component {
                                   }}
                                 >
                                   {audioLink.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(audioLink, 'audio')
+                                    }}
+                                  />
                                 </div>
                                 {percentage !== 0 && percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
@@ -1974,12 +1975,6 @@ class AddLecture extends React.Component {
                             summArrayEn.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'summary')
-                                    }}
-                                  />
                                   <div
                                     style={{
                                       display: 'inline-block',
@@ -1987,7 +1982,14 @@ class AddLecture extends React.Component {
                                       paddingLeft: '15px',
                                     }}
                                   >
-                                    {item.fileName.split('/').pop(-1)}
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'summary')
+                                      }}
+                                    />
                                   </div>
                                   {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
@@ -2017,12 +2019,6 @@ class AddLecture extends React.Component {
                             summArrayRu.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'summary')
-                                    }}
-                                  />
                                   <div
                                     style={{
                                       display: 'inline-block',
@@ -2030,7 +2026,14 @@ class AddLecture extends React.Component {
                                       paddingLeft: '15px',
                                     }}
                                   >
-                                    {item.fileName.split('/').pop(-1)}
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'summary')
+                                      }}
+                                    />
                                   </div>
                                   {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
@@ -2161,12 +2164,7 @@ class AddLecture extends React.Component {
                           transArrayEn.map((item, index) => {
                             return (
                               <li className="filesList" key={index}>
-                                <i
-                                  className="fa fa-trash closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(item.fileName, 'transcription')
-                                  }}
-                                />
+                                {' '}
                                 <div
                                   style={{
                                     display: 'inline-block',
@@ -2174,7 +2172,14 @@ class AddLecture extends React.Component {
                                     paddingLeft: '15px',
                                   }}
                                 >
-                                  {item.fileName.split('/').pop(-1)}
+                                  {item.fileName && item.fileName.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item.fileName, 'transcription')
+                                    }}
+                                  />
                                 </div>
                                 {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
@@ -2188,12 +2193,6 @@ class AddLecture extends React.Component {
                           transArrayRu.map((item, index) => {
                             return (
                               <li className="filesList" key={index}>
-                                <i
-                                  className="fa fa-trash closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(item.fileName, 'transcription')
-                                  }}
-                                />
                                 <div
                                   style={{
                                     display: 'inline-block',
@@ -2201,7 +2200,14 @@ class AddLecture extends React.Component {
                                     paddingLeft: '15px',
                                   }}
                                 >
-                                  {item.fileName.split('/').pop(-1)}
+                                  {item.fileName && item.fileName.split('/').pop(-1)}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <i
+                                    className="fa fa-trash closeIcon"
+                                    onClick={() => {
+                                      this.deleteFile(item.fileName, 'transcription')
+                                    }}
+                                  />
                                 </div>
                                 {item.percentage !== 'zeroPercent' && item.percentage !== 100 ? (
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
