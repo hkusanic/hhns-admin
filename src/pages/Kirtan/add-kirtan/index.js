@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
@@ -315,7 +316,7 @@ class AddKirtan extends React.Component {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: file,
       headers: {
         'Content-Type': file.type,
       },
@@ -402,10 +403,20 @@ class AddKirtan extends React.Component {
   }
 
   setUploadedFiles = (finalUrl, percentCompleted) => {
-    this.setState({
-      audioLink: finalUrl,
-      percentage: percentCompleted,
-    })
+    this.setState(
+      {
+        audioLink: finalUrl,
+        percentage: percentCompleted,
+      },
+      () => {
+        if (this.state.percentage === 100) {
+          notification.success({
+            message: 'Success',
+            description: 'file has been uploaded successfully',
+          })
+        }
+      },
+    )
   }
 
   dummyRequest = ({ file, onSuccess }) => {
@@ -1035,8 +1046,8 @@ class AddKirtan extends React.Component {
                               beforeUpload={this.beforeUploadAudio}
                               multiple={false}
                               showUploadList={false}
-                              customRequest={this.dummyRequest}
-                              onChange={this.handleUploading}
+                              customRequest={this.handleUploading}
+                              // onChange={this.handleUploading}
                             >
                               <p className="ant-upload-drag-icon">
                                 <Icon type="inbox" />

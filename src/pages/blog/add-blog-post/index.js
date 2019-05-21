@@ -318,11 +318,13 @@ class BlogAddPost extends React.Component {
   }
 
   handleFileChange = info => {
-    if (info.file.status === 'done') {
-      this.setState({ upoading: false }, () => {
-        this.uploads3(info.file)
-      })
-    }
+    // if (info.file.status === 'done') {
+    //   this.setState({ upoading: false }, () => {
+    //     this.uploads3(info.file)
+    //   })
+    // }
+
+    this.uploads3(info.file)
   }
 
   uploads3 = file => {
@@ -385,7 +387,7 @@ class BlogAddPost extends React.Component {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: file,
       headers: {
         'Content-Type': file.type,
       },
@@ -449,10 +451,24 @@ class BlogAddPost extends React.Component {
       tempFilesArray.push(tempFilesObject)
     }
 
-    if (percentCompleted === 100) {
+    const valueArray = tempFilesArray.map(function(item) {
+      return item.percentage
+    })
+
+    const result = valueArray.every((val, index, arr) => {
+      if (val === 100 || val === 'zeroPercent') {
+        if (val === arr[0] || arr[0] === 'zeroPercent') {
+          return true
+        }
+        // return false
+      }
+      return false
+    })
+
+    if (result) {
       notification.success({
         message: 'Success',
-        description: 'file has been uploaded successfully',
+        description: 'All file has been uploaded successfully',
       })
     }
 
@@ -894,8 +910,8 @@ class BlogAddPost extends React.Component {
                         {form.getFieldDecorator('Files')(
                           <Dragger
                             showUploadList={false}
-                            customRequest={this.dummyRequest}
-                            onChange={this.handleFileChange}
+                            customRequest={this.handleFileChange}
+                            // onChange={this.handleFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />

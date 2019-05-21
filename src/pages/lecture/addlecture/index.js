@@ -831,8 +831,15 @@ class AddLecture extends React.Component {
         audioLink: finalUrl,
         transcriptionUploading: false,
         summaryUploading: false,
-        audioUploading: false,
+        audioUploading: true,
       })
+
+      if (percentCompleted === 100) {
+        notification.success({
+          message: 'Success',
+          description: 'File has been uploaded successfully',
+        })
+      }
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
       const arrayEn = [...transcriptionFilesEn]
@@ -854,6 +861,27 @@ class AddLecture extends React.Component {
           }
           transEnTemp.push(tempObjectEn)
         }
+
+        const valueArray = transEnTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: 'All file has been uploaded successfully',
+          })
+        }
       } else {
         arrayRu.push(finalUrl)
 
@@ -868,15 +896,29 @@ class AddLecture extends React.Component {
           }
           transRuTemp.push(tempObjectRu)
         }
+
+        const valueArray = transRuTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: 'All file has been uploaded successfully',
+          })
+        }
       }
       array.push(finalUrl)
-
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
-      }
 
       this.setState({
         transcriptionFiles: array,
@@ -909,6 +951,27 @@ class AddLecture extends React.Component {
           }
           summEnTemp.push(tempObjectEnSumm)
         }
+
+        const valueArray = summEnTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            return false
+          }
+          return false
+        })
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: 'All file has been uploaded successfully',
+          })
+        }
       } else {
         newArrayRu.push(finalUrl)
 
@@ -923,15 +986,29 @@ class AddLecture extends React.Component {
           }
           summRuTemp.push(tempObjectRuSumm)
         }
+
+        const valueArray = summRuTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            return false
+          }
+          return false
+        })
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: 'All file has been uploaded successfully',
+          })
+        }
       }
       newArray.push(finalUrl)
-
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
-      }
 
       this.setState({
         summaryFiles: newArray,
