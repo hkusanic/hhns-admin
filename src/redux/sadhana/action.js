@@ -1,0 +1,14 @@
+const actions = {
+  SET_STATE: 'sadhana/SET_STATE',
+  GET_SADHANAS: 'sadhana/GET_SADHANAS',
+  GET_TOPICS: 'sadhana/GET_TOPICS',
+  GET_EVENTS: 'sadhana/GET_EVENTS',
+  GET_LOCATIONS: 'sadhana/GET_LOCATIONS',
+  GET_TRANSLATIONS: 'sadhana/GET_TRANSLATIONS',
+  CREATE_SADHANA: 'sadhana/CREATE_SADHANA',
+  DELETE_SADHANA: 'sadhana/DELETE_SADHANA',
+  UPDATE_SADHANA: 'sadhana/UPDATE_SADHANA',
+  GET_SADHANA_BY_ID: 'sadhana/GET_SADHANA_BY_ID',
+}
+
+export default actions

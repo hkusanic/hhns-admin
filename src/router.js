@@ -304,6 +304,18 @@ const routes = [
     exact: true,
   },
 
+  {
+    path: '/sadhana/list',
+    component: loadable(() => import('pages/sadhana/list')),
+    exact: true,
+  },
+
+  {
+    path: '/sadhana/add',
+    component: loadable(() => import('pages/sadhana/add')),
+    exact: true,
+  },
+
   // YouTube
   // {
   //   path: '/youtube/feed',
