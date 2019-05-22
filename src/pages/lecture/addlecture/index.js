@@ -961,7 +961,7 @@ class AddLecture extends React.Component {
             if (val === arr[0] || arr[0] === 'zeroPercent') {
               return true
             }
-            return false
+            // return false
           }
           return false
         })
@@ -996,7 +996,7 @@ class AddLecture extends React.Component {
             if (val === arr[0] || arr[0] === 'zeroPercent') {
               return true
             }
-            return false
+            // return false
           }
           return false
         })
