@@ -465,10 +465,17 @@ class BlogAddPost extends React.Component {
       return false
     })
 
+    let arrayLength = 0
+    for (let i = 0; i < valueArray.length; i += 1) {
+      if (valueArray[i] !== 'zeroPercent') {
+        arrayLength += 1
+      }
+    }
+
     if (result) {
       notification.success({
         message: 'Success',
-        description: 'All file has been uploaded successfully',
+        description: `${arrayLength} file(s) have been uploaded successfully`,
       })
     }
 
@@ -485,13 +492,16 @@ class BlogAddPost extends React.Component {
 
   deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: data => {
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
 
         const { files } = this.state

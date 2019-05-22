@@ -366,6 +366,9 @@ class AddKirtan extends React.Component {
 
   deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
@@ -373,7 +376,7 @@ class AddKirtan extends React.Component {
         // console.info(data)
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
         this.handelDeleteSetFiles()
       },
@@ -412,7 +415,7 @@ class AddKirtan extends React.Component {
         if (this.state.percentage === 100) {
           notification.success({
             message: 'Success',
-            description: 'file has been uploaded successfully',
+            description: 'File has been uploaded successfully',
           })
         }
       },
