@@ -58,17 +58,37 @@ class AddSadhana extends React.Component {
 
   render() {
     const { language, editSadhana } = this.state
+
+    let fullName = ''
+
+    if (Object.keys(editSadhana).length > 0) {
+      fullName = `${editSadhana.firstName} ${editSadhana.lastName}`
+    }
+
     return (
       <React.Fragment>
-        <BackNavigation link="/sadhana/list" title="Sadhana List" />
-        <Switch
-          defaultChecked
-          checkedChildren={language ? 'en' : 'ru'}
-          unCheckedChildren={language ? 'en' : 'ru'}
-          onChange={this.handleLanguage}
-          className="toggle"
-          style={{ width: '100px', marginLeft: '10px' }}
-        />
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-2 ml-1 text-center">
+              <span className="font-weight-bold">{editSadhana.date}</span>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-2">
+              <BackNavigation link="/sadhana/list" title="Sadhana List" />
+            </div>
+            <div className="col-lg-2">
+              <Switch
+                defaultChecked
+                checkedChildren={language ? 'en' : 'ru'}
+                unCheckedChildren={language ? 'en' : 'ru'}
+                onChange={this.handleLanguage}
+                className="toggle"
+                style={{ width: '100px', marginLeft: '10px' }}
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="mt-4">
           <Helmet title="Add Sadhana" />
@@ -78,12 +98,7 @@ class AddSadhana extends React.Component {
                 <Form className="mt-3">
                   <div className="form-group">
                     <FormItem label={language ? 'Name' : 'Name'}>
-                      <Input
-                        disabled
-                        value={`${editSadhana.firstName} ${editSadhana.lastName}`}
-                        placeholder="Name"
-                        name="name"
-                      />
+                      <Input disabled value={fullName} placeholder="Name" name="name" />
                     </FormItem>
                   </div>
                   <div className="form-group">
