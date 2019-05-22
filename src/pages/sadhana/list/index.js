@@ -246,14 +246,14 @@ class SadhanaList extends React.Component {
               </div>
 
               <div
-                className="leftArrowDiv col-lg-2 justify-content-center align-self-center"
+                className="leftArrowDiv col-lg-1 justify-content-center align-self-center"
                 style={customStyleLeft}
               >
                 <Icon className="leftArrow" type="left" onClick={this.newSadhanas} />
               </div>
 
               <div
-                className="rightArrowDiv col-lg-2 justify-content-center align-self-center"
+                className="rightArrowDiv col-lg-1 justify-content-center align-self-center"
                 style={customStyleRight}
               >
                 <Icon className="rightArrow" type="right" onClick={this.oldSadhanas} />
