@@ -4,13 +4,13 @@ import { getSadhanaList, getSadhanaByUuid } from 'services/sadhana'
 import actions from './action'
 
 export function* getSadhanaListSaga(payload) {
-  console.log('payload===>', payload)
-
   try {
     const { page } = payload
     const { date } = payload
     const { createdDateSort } = payload
-    const result = yield call(getSadhanaList, page, date, createdDateSort)
+    const { email } = payload
+    const result = yield call(getSadhanaList, page, date, createdDateSort, email)
+
     const { data } = result
     const { sadhana } = data
 

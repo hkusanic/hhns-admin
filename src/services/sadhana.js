@@ -2,7 +2,7 @@ import axios from 'axios'
 import serverAddress from './config'
 /* eslint-disable */
 
-export async function getSadhanaList(page, date, createdDateSort) {
+export async function getSadhanaList(page, date, createdDateSort, email) {
   const pageNumber = page || 1
   const dateNow = date || null
   const createdDateSorting = createdDateSort || null
@@ -11,7 +11,8 @@ export async function getSadhanaList(page, date, createdDateSort) {
     '/api/sadhana?page=' +
     pageNumber +
     (dateNow ? '&date=' + date : '') +
-    (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '')
+    (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '') +
+    (email ? '&email=' + email : '')
   return axios
     .get(url)
     .then(response => {
@@ -56,7 +57,6 @@ export async function deleteLectureByUuid(uuid) {
 }
 
 export async function updateLecture(uuid, body) {
-  console.log('value in api ====>>>', body, uuid)
   const url = `${serverAddress}/api/lecture/${uuid}/update`
   return axios
     .post(url, body)

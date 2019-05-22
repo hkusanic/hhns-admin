@@ -228,7 +228,6 @@ export function* getLocations() {
 export function* getLectureByUuidSaga(body) {
   try {
     const result = yield call(getLectureByUuid, body)
-    console.log('result =====>>>>', result)
     const { data } = result
     if (result.status === 200) {
       yield put({

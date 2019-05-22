@@ -1,14 +1,38 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
-import { Form, Input, Switch } from 'antd'
+import { Form, Input, Switch, Icon } from 'antd'
 
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
+import './index.css'
 
 const FormItem = Form.Item
 
 const { TextArea } = Input
+
+function formatDate(date) {
+  const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0]
+
+  return dateString
+}
+
+function getPreviousDate(date) {
+  const previous = new Date()
+  previous.setDate(date.getDate() - 1)
+  const previousDate = formatDate(previous)
+  return previousDate
+}
+
+function getNextDate(date) {
+  const next = new Date()
+  next.setDate(date.getDate() + 1)
+  const nextDate = formatDate(next)
+  return nextDate
+}
 
 @Form.create()
 @connect(({ sadhana, router }) => ({ sadhana, router }))
@@ -18,7 +42,9 @@ class AddSadhana extends React.Component {
 
     this.state = {
       language: true,
+      // editSadhana: {},
       editSadhana: {},
+      currentDate: '',
     }
   }
 
@@ -44,8 +70,16 @@ class AddSadhana extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.sadhana.sadhanas.length === 1) {
+      return {
+        editSadhana: nextProps.sadhana.sadhanas[0],
+      }
+    }
+
     if (nextProps.sadhana.editSadhana !== prevState.editSadhana) {
-      return { editSadhana: nextProps.sadhana.editSadhana }
+      return {
+        editSadhana: nextProps.sadhana.editSadhana,
+      }
     }
     return null
   }
@@ -56,13 +90,65 @@ class AddSadhana extends React.Component {
     this.setState({ language: !language })
   }
 
+  nextSadhana = () => {
+    const { editSadhana } = this.state
+    const { dispatch } = this.props
+
+    // if (Object.keys(editSadhana).length > 0) {
+    const nextDate = getNextDate(new Date(editSadhana.date))
+
+    this.setState(
+      {
+        currentDate: nextDate,
+      },
+      () => {
+        dispatch({
+          type: 'sadhana/GET_SADHANAS',
+          page: 1,
+          date: this.state.currentDate,
+          email: editSadhana.email,
+        })
+      },
+    )
+    // }
+  }
+
+  previousSadhana = () => {
+    const { editSadhana } = this.state
+    const { dispatch } = this.props
+
+    // if (Object.keys(editSadhana).length > 0) {
+    const previousDate = getPreviousDate(new Date(editSadhana.date))
+
+    this.setState(
+      {
+        currentDate: previousDate,
+      },
+      () => {
+        dispatch({
+          type: 'sadhana/GET_SADHANAS',
+          page: 1,
+          date: this.state.currentDate,
+          email: editSadhana.email,
+        })
+      },
+    )
+    // }
+  }
+
   render() {
     const { language, editSadhana } = this.state
 
     let fullName = ''
-
+    let customStyleLeft = {}
+    let customStyleRight = {}
     if (Object.keys(editSadhana).length > 0) {
       fullName = `${editSadhana.firstName} ${editSadhana.lastName}`
+    }
+
+    if (Object.keys(editSadhana).length === 0) {
+      customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
+      customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
     }
 
     return (
@@ -86,6 +172,19 @@ class AddSadhana extends React.Component {
                 className="toggle"
                 style={{ width: '100px', marginLeft: '10px' }}
               />
+            </div>
+            <div
+              className="leftArrowDiv col-lg-1 justify-content-center align-self-center"
+              style={customStyleLeft}
+            >
+              <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
+            </div>
+
+            <div
+              className="rightArrowDiv col-lg-1 justify-content-center align-self-center"
+              style={customStyleRight}
+            >
+              <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
             </div>
           </div>
         </div>

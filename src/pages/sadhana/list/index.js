@@ -251,7 +251,9 @@ class SadhanaList extends React.Component {
               >
                 <Icon className="leftArrow" type="left" onClick={this.newSadhanas} />
               </div>
-
+              <div className="col-lg-2 justify-content-center align-self-center">
+                <span>{this.state.currentDate}</span>
+              </div>
               <div
                 className="rightArrowDiv col-lg-1 justify-content-center align-self-center"
                 style={customStyleRight}
