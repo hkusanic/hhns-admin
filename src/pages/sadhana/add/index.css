@@ -1,3 +1,13 @@
-.leftArrow:hover, .rightArrow:hover {
+.leftArrow:hover,
+.rightArrow:hover {
   cursor: pointer;
+}
+
+.customContainer {
+  width: 16rem;
+  display: flex;
+}
+
+.customContainer > div {
+  flex: auto;
 }

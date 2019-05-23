@@ -347,9 +347,25 @@ export async function getLeftMenuData() {
           url: '/sadhana/list',
         },
         {
-          title: 'ADD SADHANA',
+          title: 'SADHANA SHEET',
           key: 'addSadhana',
           url: '/sadhana/add',
+        },
+      ],
+    },
+    {
+      title: 'USER',
+      key: 'user',
+      children: [
+        {
+          title: 'LIST',
+          key: 'userList',
+          url: '/userDetails/list',
+        },
+        {
+          title: 'ADD USER',
+          key: 'addUser',
+          url: '/userDetails/add',
         },
       ],
     },
@@ -754,9 +770,25 @@ export async function getTopMenuData() {
           url: '/sadhana/list',
         },
         {
-          title: 'ADD SADHANA',
+          title: 'SADHANA SHEET',
           key: 'addSadhana',
           url: '/sadhana/add',
+        },
+      ],
+    },
+    {
+      title: 'USER',
+      key: 'user',
+      children: [
+        {
+          title: 'LIST',
+          key: 'userList',
+          url: '/userDetails/list',
+        },
+        {
+          title: 'ADD USER',
+          key: 'addUser',
+          url: '/userDetails/add',
         },
       ],
     },

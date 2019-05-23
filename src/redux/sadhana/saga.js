@@ -4,6 +4,7 @@ import { getSadhanaList, getSadhanaByUuid } from 'services/sadhana'
 import actions from './action'
 
 export function* getSadhanaListSaga(payload) {
+  // console.log('payload===>',payload)
   try {
     const { page } = payload
     const { date } = payload

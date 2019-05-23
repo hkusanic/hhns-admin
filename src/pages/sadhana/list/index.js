@@ -65,20 +65,6 @@ class SadhanaList extends React.Component {
     }
   }
 
-  // getPreviousDate = date => {
-  //   const previous = new Date()
-  //   previous.setDate(date.getDate() - 1)
-  //   const previousDate = this.formatDate(previous)
-  //   return previousDate
-  // }
-
-  // getNextDate = date => {
-  //   const next = new Date()
-  //   next.setDate(date.getDate() + 1)
-  //   const nextDate = this.formatDate(next)
-  //   return nextDate
-  // }
-
   showing100Characters = sentence => {
     let result = sentence
     let resultArray = result.split(' ')
@@ -104,14 +90,6 @@ class SadhanaList extends React.Component {
       page,
     })
   }
-
-  // formatDate = date => {
-  //   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-  //     .toISOString()
-  //     .split('T')[0]
-
-  //   return dateString
-  // }
 
   oldSadhanas = () => {
     const { currentDate } = this.state
@@ -179,7 +157,7 @@ class SadhanaList extends React.Component {
       customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    if (sadhanas.length === 0) {
+    if (sadhanas.length === 0 && !checkDate) {
       customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
     }
 

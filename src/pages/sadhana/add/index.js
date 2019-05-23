@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable for-direction */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Form, Input, Switch, Icon } from 'antd'
@@ -42,9 +46,15 @@ class AddSadhana extends React.Component {
 
     this.state = {
       language: true,
-      // editSadhana: {},
       editSadhana: {},
+      editSadhanaAll: [],
+      editSadhanaAllNext: [],
+      editSadhanaAllBackup: [],
       currentDate: '',
+      currentEmail: '',
+      oldClickCounter: 0,
+      nextSadhanaDate: '',
+      nextSadhanaEmail: '',
     }
   }
 
@@ -69,19 +79,30 @@ class AddSadhana extends React.Component {
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.sadhana.sadhanas.length === 1) {
-      return {
-        editSadhana: nextProps.sadhana.sadhanas[0],
-      }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.sadhana.editSadhana !== this.state.editSadhana) {
+      this.setState({
+        editSadhana: nextProps.sadhana.editSadhana,
+        nextSadhanaDate: nextProps.sadhana.editSadhana.date,
+        nextSadhanaEmail: nextProps.sadhana.editSadhana.email,
+      })
     }
 
-    if (nextProps.sadhana.editSadhana !== prevState.editSadhana) {
-      return {
-        editSadhana: nextProps.sadhana.editSadhana,
-      }
+    if (nextProps.sadhana.sadhanas.length === 1) {
+      this.setState({
+        editSadhana: nextProps.sadhana.sadhanas[0],
+        nextSadhanaDate: nextProps.sadhana.sadhanas[0].date,
+        nextSadhanaEmail: nextProps.sadhana.sadhanas[0].email,
+      })
     }
-    return null
+
+    if (nextProps.sadhana.sadhanas.length > 1) {
+      this.setState({
+        editSadhanaAll: nextProps.sadhana.sadhanas,
+        editSadhanaAllNext: nextProps.sadhana.sadhanas,
+        editSadhanaAllBackup: nextProps.sadhana.sadhanas,
+      })
+    }
   }
 
   handleLanguage = () => {
@@ -91,79 +112,203 @@ class AddSadhana extends React.Component {
   }
 
   nextSadhana = () => {
-    const { editSadhana } = this.state
+    const { nextSadhanaDate, nextSadhanaEmail, currentDate } = this.state
     const { dispatch } = this.props
 
-    // if (Object.keys(editSadhana).length > 0) {
-    const nextDate = getNextDate(new Date(editSadhana.date))
+    if (nextSadhanaDate) {
+      const nextDate = getNextDate(new Date(nextSadhanaDate))
 
-    this.setState(
-      {
-        currentDate: nextDate,
-      },
-      () => {
-        dispatch({
-          type: 'sadhana/GET_SADHANAS',
-          page: 1,
-          date: this.state.currentDate,
-          email: editSadhana.email,
-        })
-      },
-    )
-    // }
+      this.setState(
+        {
+          currentDate: nextDate,
+          currentEmail: nextSadhanaEmail,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            date: this.state.currentDate,
+            email: nextSadhanaEmail,
+          })
+        },
+      )
+    } else {
+      const nextDate = getNextDate(new Date(currentDate))
+
+      this.setState(
+        {
+          currentDate: nextDate,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            date: this.state.currentDate,
+            email: this.state.currentEmail,
+          })
+        },
+      )
+    }
   }
 
   previousSadhana = () => {
-    const { editSadhana } = this.state
+    const { nextSadhanaDate, nextSadhanaEmail, currentDate } = this.state
     const { dispatch } = this.props
 
-    // if (Object.keys(editSadhana).length > 0) {
-    const previousDate = getPreviousDate(new Date(editSadhana.date))
+    if (nextSadhanaDate) {
+      const nextDate = getPreviousDate(new Date(nextSadhanaDate))
 
-    this.setState(
-      {
-        currentDate: previousDate,
-      },
-      () => {
-        dispatch({
-          type: 'sadhana/GET_SADHANAS',
-          page: 1,
-          date: this.state.currentDate,
-          email: editSadhana.email,
-        })
-      },
-    )
-    // }
+      this.setState(
+        {
+          currentDate: nextDate,
+          currentEmail: nextSadhanaEmail,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            date: this.state.currentDate,
+            email: nextSadhanaEmail,
+          })
+        },
+      )
+    } else {
+      const nextDate = getPreviousDate(new Date(currentDate))
+
+      this.setState(
+        {
+          currentDate: nextDate,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            date: this.state.currentDate,
+            email: this.state.currentEmail,
+          })
+        },
+      )
+    }
+  }
+
+  oldSadhanas = () => {
+    const { editSadhana, editSadhanaAll, oldClickCounter } = this.state
+
+    if (this.state.editSadhanaAllNext.length === 1) {
+      this.setState({
+        editSadhanaAllNext: this.state.editSadhanaAllBackup,
+      })
+    }
+
+    let temp = {}
+    let clickCounter = oldClickCounter
+    const tempEditSadhanaAll = editSadhanaAll.filter((item, index) => {
+      if (editSadhana.email === item.email) {
+        return null
+      }
+      return item
+    })
+
+    for (let i = 0; i <= tempEditSadhanaAll.length; i += 1) {
+      temp = { ...tempEditSadhanaAll[0] }
+
+      if (clickCounter >= tempEditSadhanaAll.length) {
+        clickCounter = 0
+      } else {
+        clickCounter += i
+      }
+
+      this.setState({
+        editSadhana: temp,
+        oldClickCounter: clickCounter,
+        editSadhanaAll: [...tempEditSadhanaAll],
+      })
+    }
+  }
+
+  newSadhanas = () => {
+    const { editSadhana, editSadhanaAllNext } = this.state
+
+    if (this.state.editSadhanaAll.length === 1) {
+      this.setState({
+        editSadhanaAll: this.state.editSadhanaAllBackup,
+      })
+    }
+
+    let temp = {}
+    let clickCounter = editSadhanaAllNext.length
+
+    const tempEditSadhanaAll = editSadhanaAllNext.filter((item, index) => {
+      if (editSadhana.email === item.email) {
+        return null
+      }
+      return item
+    })
+
+    clickCounter -= 1
+    this.setState({
+      oldClickCounterNext: clickCounter,
+    })
+
+    for (let i = editSadhanaAllNext.length; i >= 0; i -= 1) {
+      temp = { ...tempEditSadhanaAll[i] }
+      this.setState({
+        editSadhana: temp,
+        editSadhanaAllNext: [...tempEditSadhanaAll],
+      })
+    }
   }
 
   render() {
-    const { language, editSadhana } = this.state
+    const {
+      language,
+      editSadhana,
+      editSadhanaAll,
+      editSadhanaAllNext,
+      oldClickCounter,
+      currentDate,
+    } = this.state
 
     let fullName = ''
     let customStyleLeft = {}
     let customStyleRight = {}
+    let oldRight = {}
+    let oldLeft = {}
     if (Object.keys(editSadhana).length > 0) {
       fullName = `${editSadhana.firstName} ${editSadhana.lastName}`
     }
 
-    if (Object.keys(editSadhana).length === 0) {
+    const nowDate = new Date()
+    nowDate.setHours(0, 0, 0, 0)
+    const tempCurrentDate = new Date(currentDate)
+    tempCurrentDate.setHours(0, 0, 0, 0)
+
+    const checkDate = +nowDate === +tempCurrentDate
+
+    if (checkDate) {
       customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
+    }
+
+    if (Object.keys(editSadhana).length === 0 && !checkDate) {
       customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
+    }
+
+    if (editSadhanaAll.length === oldClickCounter) {
+      oldRight = { pointerEvents: 'none', opacity: '0.4' }
+    }
+
+    if (editSadhanaAllNext.length === 1) {
+      oldLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
     return (
       <React.Fragment>
         <div className="container">
           <div className="row">
-            <div className="col-lg-2 ml-1 text-center">
-              <span className="font-weight-bold">{editSadhana.date}</span>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-2">
+            <div className="col-lg-3">
               <BackNavigation link="/sadhana/list" title="Sadhana List" />
             </div>
-            <div className="col-lg-2">
+            <div className="col-lg-3">
               <Switch
                 defaultChecked
                 checkedChildren={language ? 'en' : 'ru'}
@@ -174,27 +319,38 @@ class AddSadhana extends React.Component {
               />
             </div>
             <div
-              className="leftArrowDiv col-lg-1 justify-content-center align-self-center"
-              style={customStyleLeft}
+              // className="leftArrowDiv col-lg-1 justify-content-center align-self-center
+              // justify-content-center align-self-center"
+              className="leftArrowDiv col-lg-1"
+              style={oldLeft}
             >
-              <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
+              <Icon className="leftArrow" type="left" onClick={this.newSadhanas} />
             </div>
 
-            <div
-              className="rightArrowDiv col-lg-1 justify-content-center align-self-center"
-              style={customStyleRight}
-            >
-              <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
+            <div className="rightArrowDiv col-lg-1" style={oldRight}>
+              <Icon className="rightArrow" type="right" onClick={this.oldSadhanas} />
             </div>
           </div>
         </div>
 
         <div className="mt-4">
-          <Helmet title="Add Sadhana" />
+          <Helmet title="Sadhana Sheet" />
           <section className="card">
             <div className="card-body">
               <div className={styles.addPost}>
-                <Form className="mt-3">
+                <Form className="mt-2">
+                  <div className="customContainer">
+                    <div className="leftArrowDiv" style={customStyleLeft}>
+                      <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
+                    </div>
+                    <div className="">
+                      <span className="font-weight-bold">{editSadhana.date}</span>
+                    </div>
+                    <div className="rightArrowDiv" style={customStyleRight}>
+                      <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
+                    </div>
+                  </div>
+
                   <div className="form-group">
                     <FormItem label={language ? 'Name' : 'Name'}>
                       <Input disabled value={fullName} placeholder="Name" name="name" />

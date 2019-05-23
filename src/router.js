@@ -316,6 +316,18 @@ const routes = [
     exact: true,
   },
 
+  {
+    path: '/userDetails/list',
+    component: loadable(() => import('pages/userDetails/list')),
+    exact: true,
+  },
+
+  {
+    path: '/userDetails/add',
+    component: loadable(() => import('pages/userDetails/add')),
+    exact: true,
+  },
+
   // YouTube
   // {
   //   path: '/youtube/feed',
