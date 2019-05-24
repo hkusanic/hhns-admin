@@ -1,13 +1,11 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-unused-state */
 /* eslint-disable react/no-access-state-in-setstate */
-/* eslint-disable for-direction */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react'
-import { Form, Input, Switch, Icon } from 'antd'
+import { Form, Input, Icon, TimePicker } from 'antd'
 
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
+import moment from 'moment'
 import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 import './index.css'
@@ -47,19 +45,16 @@ class AddSadhana extends React.Component {
     this.state = {
       language: true,
       editSadhana: {},
-      editSadhanaAll: [],
-      editSadhanaAllNext: [],
-      editSadhanaAllBackup: [],
       currentDate: '',
       currentEmail: '',
-      oldClickCounter: 0,
       nextSadhanaDate: '',
       nextSadhanaEmail: '',
+      currentIndex: 0,
     }
   }
 
   componentDidMount() {
-    const { dispatch, router } = this.props
+    const { router } = this.props
     const { location } = router
     const { state } = location
 
@@ -67,42 +62,34 @@ class AddSadhana extends React.Component {
       const { uuid } = state
 
       if (uuid !== undefined) {
-        const body = {
-          uuid,
-        }
-
-        dispatch({
-          type: 'sadhana/GET_SADHANA_BY_ID',
-          payload: body,
-        })
+        this.setState(
+          {
+            currentIndex: uuid,
+          },
+          () => {
+            const tempObject = this.getSadhanaDetails(uuid)
+            this.setState({
+              editSadhana: tempObject,
+            })
+          },
+        )
       }
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.sadhana.editSadhana !== this.state.editSadhana) {
-      this.setState({
-        editSadhana: nextProps.sadhana.editSadhana,
-        nextSadhanaDate: nextProps.sadhana.editSadhana.date,
-        nextSadhanaEmail: nextProps.sadhana.editSadhana.email,
-      })
+  getSadhanaDetails = index => {
+    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
+
+    let tempObject = {}
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i <= tempArray.length; i++) {
+      if (index === tempArray[i].itemIndex) {
+        tempObject = { ...tempArray[i] }
+        break
+      }
     }
 
-    if (nextProps.sadhana.sadhanas.length === 1) {
-      this.setState({
-        editSadhana: nextProps.sadhana.sadhanas[0],
-        nextSadhanaDate: nextProps.sadhana.sadhanas[0].date,
-        nextSadhanaEmail: nextProps.sadhana.sadhanas[0].email,
-      })
-    }
-
-    if (nextProps.sadhana.sadhanas.length > 1) {
-      this.setState({
-        editSadhanaAll: nextProps.sadhana.sadhanas,
-        editSadhanaAllNext: nextProps.sadhana.sadhanas,
-        editSadhanaAllBackup: nextProps.sadhana.sadhanas,
-      })
-    }
+    return tempObject
   }
 
   handleLanguage = () => {
@@ -127,8 +114,10 @@ class AddSadhana extends React.Component {
           dispatch({
             type: 'sadhana/GET_SADHANAS',
             page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
             date: this.state.currentDate,
-            email: nextSadhanaEmail,
+            // eslint-disable-next-line react/destructuring-assignment
+            email: this.state.nextSadhanaEmail,
           })
         },
       )
@@ -143,7 +132,9 @@ class AddSadhana extends React.Component {
           dispatch({
             type: 'sadhana/GET_SADHANAS',
             page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
             date: this.state.currentDate,
+            // eslint-disable-next-line react/destructuring-assignment
             email: this.state.currentEmail,
           })
         },
@@ -167,8 +158,10 @@ class AddSadhana extends React.Component {
           dispatch({
             type: 'sadhana/GET_SADHANAS',
             page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
             date: this.state.currentDate,
-            email: nextSadhanaEmail,
+            // eslint-disable-next-line react/destructuring-assignment
+            email: this.state.nextSadhanaEmail,
           })
         },
       )
@@ -183,7 +176,9 @@ class AddSadhana extends React.Component {
           dispatch({
             type: 'sadhana/GET_SADHANAS',
             page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
             date: this.state.currentDate,
+            // eslint-disable-next-line react/destructuring-assignment
             email: this.state.currentEmail,
           })
         },
@@ -192,86 +187,48 @@ class AddSadhana extends React.Component {
   }
 
   oldSadhanas = () => {
-    const { editSadhana, editSadhanaAll, oldClickCounter } = this.state
+    const { currentIndex } = this.state
 
-    if (this.state.editSadhanaAllNext.length === 1) {
-      this.setState({
-        editSadhanaAllNext: this.state.editSadhanaAllBackup,
-      })
-    }
-
-    let temp = {}
-    let clickCounter = oldClickCounter
-    const tempEditSadhanaAll = editSadhanaAll.filter((item, index) => {
-      if (editSadhana.email === item.email) {
-        return null
-      }
-      return item
-    })
-
-    for (let i = 0; i <= tempEditSadhanaAll.length; i += 1) {
-      temp = { ...tempEditSadhanaAll[0] }
-
-      if (clickCounter >= tempEditSadhanaAll.length) {
-        clickCounter = 0
-      } else {
-        clickCounter += i
-      }
-
-      this.setState({
-        editSadhana: temp,
-        oldClickCounter: clickCounter,
-        editSadhanaAll: [...tempEditSadhanaAll],
-      })
-    }
+    this.setState(
+      {
+        currentIndex: currentIndex - 1,
+      },
+      () => {
+        const tempObject = this.getSadhanaDetails(this.state.currentIndex)
+        this.setState({
+          editSadhana: tempObject,
+        })
+      },
+    )
   }
 
   newSadhanas = () => {
-    const { editSadhana, editSadhanaAllNext } = this.state
+    const { currentIndex } = this.state
 
-    if (this.state.editSadhanaAll.length === 1) {
-      this.setState({
-        editSadhanaAll: this.state.editSadhanaAllBackup,
-      })
-    }
+    this.setState(
+      {
+        currentIndex: currentIndex + 1,
+      },
+      () => {
+        const tempObject = this.getSadhanaDetails(this.state.currentIndex)
 
-    let temp = {}
-    let clickCounter = editSadhanaAllNext.length
+        this.setState({
+          editSadhana: tempObject,
+        })
+      },
+    )
 
-    const tempEditSadhanaAll = editSadhanaAllNext.filter((item, index) => {
-      if (editSadhana.email === item.email) {
-        return null
-      }
-      return item
-    })
-
-    clickCounter -= 1
-    this.setState({
-      oldClickCounterNext: clickCounter,
-    })
-
-    for (let i = editSadhanaAllNext.length; i >= 0; i -= 1) {
-      temp = { ...tempEditSadhanaAll[i] }
-      this.setState({
-        editSadhana: temp,
-        editSadhanaAllNext: [...tempEditSadhanaAll],
-      })
-    }
+    // this.setState
   }
 
   render() {
-    const {
-      language,
-      editSadhana,
-      editSadhanaAll,
-      editSadhanaAllNext,
-      oldClickCounter,
-      currentDate,
-    } = this.state
+    const { language, editSadhana, currentDate, currentIndex } = this.state
+
+    const { form } = this.props
 
     let fullName = ''
-    let customStyleLeft = {}
-    let customStyleRight = {}
+    // let customStyleLeft = {}
+    // let customStyleRight = {}
     let oldRight = {}
     let oldLeft = {}
     if (Object.keys(editSadhana).length > 0) {
@@ -283,32 +240,23 @@ class AddSadhana extends React.Component {
     const tempCurrentDate = new Date(currentDate)
     tempCurrentDate.setHours(0, 0, 0, 0)
 
-    const checkDate = +nowDate === +tempCurrentDate
+    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
 
-    if (checkDate) {
-      customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
-    }
-
-    if (Object.keys(editSadhana).length === 0 && !checkDate) {
-      customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
-    }
-
-    if (editSadhanaAll.length === oldClickCounter) {
-      oldRight = { pointerEvents: 'none', opacity: '0.4' }
-    }
-
-    if (editSadhanaAllNext.length === 1) {
+    if (currentIndex === 0) {
       oldLeft = { pointerEvents: 'none', opacity: '0.4' }
+    }
+
+    console.log('check===>', currentIndex === tempArray.length - 1)
+
+    if (currentIndex === tempArray.length - 1) {
+      oldRight = { pointerEvents: 'none', opacity: '0.4' }
     }
 
     return (
       <React.Fragment>
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3">
-              <BackNavigation link="/sadhana/list" title="Sadhana List" />
-            </div>
-            <div className="col-lg-3">
+        <div className="container headerDiv">
+          <BackNavigation link="/sadhana/list" title="Sadhana List" />
+          {/* <div className="col-lg-3">
               <Switch
                 defaultChecked
                 checkedChildren={language ? 'en' : 'ru'}
@@ -317,19 +265,16 @@ class AddSadhana extends React.Component {
                 className="toggle"
                 style={{ width: '100px', marginLeft: '10px' }}
               />
-            </div>
-            <div
-              // className="leftArrowDiv col-lg-1 justify-content-center align-self-center
-              // justify-content-center align-self-center"
-              className="leftArrowDiv col-lg-1"
-              style={oldLeft}
-            >
-              <Icon className="leftArrow" type="left" onClick={this.newSadhanas} />
-            </div>
-
-            <div className="rightArrowDiv col-lg-1" style={oldRight}>
-              <Icon className="rightArrow" type="right" onClick={this.oldSadhanas} />
-            </div>
+            </div> */}
+          <div className="col-lg-3 pl-5">
+            <span>{editSadhana.date}</span>
+          </div>
+          <div className="leftArrowDiv" style={oldLeft}>
+            <Icon className="leftArrow" type="left" onClick={this.oldSadhanas} />
+          </div>
+          <span className="textDiv">{fullName}</span>
+          <div className="rightArrowDiv" style={oldRight}>
+            <Icon className="rightArrow" type="right" onClick={this.newSadhanas} />
           </div>
         </div>
 
@@ -339,7 +284,7 @@ class AddSadhana extends React.Component {
             <div className="card-body">
               <div className={styles.addPost}>
                 <Form className="mt-2">
-                  <div className="customContainer">
+                  {/* <div className="customContainer">
                     <div className="leftArrowDiv" style={customStyleLeft}>
                       <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
                     </div>
@@ -349,95 +294,140 @@ class AddSadhana extends React.Component {
                     <div className="rightArrowDiv" style={customStyleRight}>
                       <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
                     </div>
-                  </div>
+                  </div> */}
 
-                  <div className="form-group">
-                    <FormItem label={language ? 'Name' : 'Name'}>
-                      <Input disabled value={fullName} placeholder="Name" name="name" />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Email' : 'Email'}>
-                      <Input disabled value={editSadhana.email} placeholder="Email" name="email" />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Date' : 'Date'}>
-                      <Input disabled value={editSadhana.date} placeholder="Date" name="date" />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Time Rising' : 'Time Rising'}>
-                      <Input
-                        disabled
-                        value={editSadhana.time_rising}
-                        placeholder="Time Rising"
-                        name="time_rising"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Rounds' : 'Rounds'}>
-                      <Input
-                        disabled
-                        value={editSadhana.rounds}
-                        placeholder="Rounds"
-                        name="rounds"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Reading' : 'Reading'}>
-                      <Input
-                        disabled
-                        value={editSadhana.reading}
-                        placeholder="Reading"
-                        name="reading"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Association' : 'Association'}>
-                      <Input
-                        disabled
-                        value={editSadhana.association}
-                        placeholder="Association"
-                        name="association"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Comments' : 'Comments'}>
-                      <TextArea
-                        rows={4}
-                        disabled
-                        value={editSadhana.comments}
-                        placeholder="Comments"
-                        name="comments"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Lectures' : 'Lectures'}>
-                      <TextArea
-                        rows={4}
-                        disabled
-                        value={editSadhana.lectures}
-                        placeholder="Lectures"
-                        name="lectures"
-                      />
-                    </FormItem>
-                  </div>
-                  <div className="form-group">
-                    <FormItem label={language ? 'Additional Comments' : 'Additional Comments'}>
-                      <TextArea
-                        rows={4}
-                        disabled
-                        value={editSadhana.additional_comments}
-                        placeholder="Additional Comments"
-                        name="additional_comments"
-                      />
-                    </FormItem>
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Disciple Name' : 'Disciple Name'}>
+                            <Input
+                              disabled
+                              // value={fullName}
+                              placeholder="Disciple Name"
+                              name="name"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <FormItem label={language ? 'User Email' : 'User Email'}>
+                            <Input
+                              disabled
+                              value={editSadhana.email}
+                              placeholder="User Email"
+                              name="email"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <Form.Item label={language ? 'Time Rising' : 'Time Rising'}>
+                            {form.getFieldDecorator('time_rising', {
+                              initialValue: moment(editSadhana.time_rising, 'h:mm a'),
+                            })(
+                              <TimePicker
+                                disabled
+                                use12Hours
+                                format="h:mm a"
+                                onChange={this.onChange}
+                              />,
+                            )}
+                          </Form.Item>
+                        </div>
+                      </div>
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Rounds' : 'Rounds'}>
+                            <Input
+                              disabled
+                              value={editSadhana.rounds}
+                              placeholder="Rounds"
+                              name="rounds"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Reading' : 'Reading'}>
+                            <TextArea
+                              rows={4}
+                              disabled
+                              value={editSadhana.reading}
+                              placeholder="Reading"
+                              name="reading"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Association' : 'Association'}>
+                            <TextArea
+                              rows={4}
+                              disabled
+                              value={editSadhana.association}
+                              placeholder="Association"
+                              name="association"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-12">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Comments' : 'Comments'}>
+                            <TextArea
+                              rows={4}
+                              disabled
+                              value={editSadhana.comments}
+                              placeholder="Comments"
+                              name="comments"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-12">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Lectures' : 'Lectures'}>
+                            <TextArea
+                              rows={4}
+                              disabled
+                              value={editSadhana.lectures}
+                              placeholder="Lectures"
+                              name="lectures"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-12">
+                        <div className="form-group">
+                          <FormItem
+                            label={language ? 'Additional Comments' : 'Additional Comments'}
+                          >
+                            <TextArea
+                              rows={4}
+                              disabled
+                              value={editSadhana.additional_comments}
+                              placeholder="Additional Comments"
+                              name="additional_comments"
+                            />
+                          </FormItem>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </Form>
               </div>

@@ -1,16 +1,10 @@
-/* eslint-disable react/no-unused-state */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-unused-vars */
 import React from 'react'
-import { Table, DatePicker, Select, Switch, Checkbox, Button, Icon } from 'antd'
+import { Table, DatePicker, Icon } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
-import moment from 'moment'
 import './index.css'
-
-const { Option } = Select
 
 function formatDate(date) {
   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -39,8 +33,7 @@ class SadhanaList extends React.Component {
   state = {
     language: true,
     currentDate: formatDate(new Date()),
-    previousDate: '',
-    nextDate: '',
+    sadhanas: [],
   }
 
   componentDidMount() {
@@ -54,14 +47,32 @@ class SadhanaList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { dispatch } = this.props
-    const { currentDate } = this.state
-    if (nextProps.sadhana.isDeleted) {
-      dispatch({
-        type: 'sadhana/GET_SADHANAS',
-        page: 1,
-        date: currentDate,
-      })
+    const { sadhana } = nextProps
+
+    // eslint-disable-next-line react/destructuring-assignment
+    const sadhanasList = [...this.state.sadhanas]
+
+    const { sadhanas } = sadhana
+
+    if (sadhanas.length > 0) {
+      if (sadhanas !== sadhanasList) {
+        const tempSadhanas = []
+        let tempObject = {}
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < sadhanas.length; i++) {
+          tempObject = { ...sadhanas[i], itemIndex: i }
+          tempSadhanas.push(tempObject)
+        }
+
+        this.setState(
+          {
+            sadhanas: tempSadhanas,
+          },
+          () => {
+            localStorage.setItem('sadhanaArray', JSON.stringify(tempSadhanas))
+          },
+        )
+      }
     }
   }
 
@@ -84,10 +95,12 @@ class SadhanaList extends React.Component {
 
   handlePageChange = page => {
     const { dispatch } = this.props
+    const { currentDate } = this.state
 
     dispatch({
       type: 'sadhana/GET_SADHANAS',
       page,
+      date: currentDate,
     })
   }
 
@@ -105,6 +118,7 @@ class SadhanaList extends React.Component {
         dispatch({
           type: 'sadhana/GET_SADHANAS',
           page: 1,
+          // eslint-disable-next-line react/destructuring-assignment
           date: this.state.currentDate,
         })
       },
@@ -125,6 +139,7 @@ class SadhanaList extends React.Component {
         dispatch({
           type: 'sadhana/GET_SADHANAS',
           page: 1,
+          // eslint-disable-next-line react/destructuring-assignment
           date: this.state.currentDate,
         })
       },
@@ -133,6 +148,11 @@ class SadhanaList extends React.Component {
 
   onChangeDate = date => {
     const { dispatch } = this.props
+
+    this.setState({
+      currentDate: date.format('YYYY-MM-DD'),
+    })
+
     dispatch({
       type: 'sadhana/GET_SADHANAS',
       page: 1,
@@ -141,58 +161,58 @@ class SadhanaList extends React.Component {
   }
 
   render() {
-    const { language, currentDate } = this.state
-
-    const { sadhana } = this.props
-
-    const { sadhanas, totalSadhanas } = sadhana
+    const { language, currentDate, sadhanas } = this.state
+    const { totalSadhanas } = this.props
 
     const nowDate = formatDate(new Date())
 
     const checkDate = nowDate === currentDate
 
     let customStyleLeft = {}
+    // eslint-disable-next-line prefer-const
     let customStyleRight = {}
     if (checkDate) {
       customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    if (sadhanas.length === 0 && !checkDate) {
-      customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
-    }
+    console.log('sadhanas===>', sadhanas)
+
+    // if (sadhanas.length === 0 && !checkDate) {
+    //   customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
+    // }
 
     const columns = [
       {
         title: 'First Name',
         dataIndex: 'firstName',
-        render: (text, record, index) => (text ? renderHTML(this.showing100Characters(text)) : ''),
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Last Name',
         dataIndex: 'lastName',
-        render: (text, record, index) => (text ? renderHTML(this.showing100Characters(text)) : ''),
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Rounds',
         dataIndex: 'rounds',
-        render: (text, record, index) => (text ? renderHTML(this.showing100Characters(text)) : ''),
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Reading',
         dataIndex: 'reading',
-        render: (text, record, index) => (text ? renderHTML(this.showing100Characters(text)) : ''),
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Time Rising',
         dataIndex: 'time_rising',
-        render: (text, record, index) => (text ? renderHTML(this.showing100Characters(text)) : ''),
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Action',
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/sadhana/add', state: { uuid: record.uuid, language } }}>
+            <Link to={{ pathname: '/sadhana/add', state: { uuid: record.itemIndex, language } }}>
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
           </span>
@@ -208,14 +228,14 @@ class SadhanaList extends React.Component {
             <div className="row utils__title">
               <div className="col-lg-8">
                 <strong>Sadhana List</strong>
-                <Switch
+                {/* <Switch
                   defaultChecked
                   checkedChildren={language ? 'en' : 'ru'}
                   unCheckedChildren={language ? 'en' : 'ru'}
                   onChange={this.handleLanguage}
                   className="toggle"
                   style={{ width: '100px', marginLeft: '10px' }}
-                />
+                /> */}
               </div>
             </div>
             <div className="row">
@@ -230,7 +250,7 @@ class SadhanaList extends React.Component {
                 <Icon className="leftArrow" type="left" onClick={this.newSadhanas} />
               </div>
               <div className="col-lg-2 justify-content-center align-self-center">
-                <span>{this.state.currentDate}</span>
+                <span>{currentDate}</span>
               </div>
               <div
                 className="rightArrowDiv col-lg-1 justify-content-center align-self-center"

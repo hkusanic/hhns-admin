@@ -11,3 +11,16 @@
 .customContainer > div {
   flex: auto;
 }
+
+.headerDiv{
+  display: flex;
+  flex-direction: row;
+}
+
+.leftArrowDiv{
+  padding-right: 20px;
+}
+
+.rightArrowDiv{
+  padding-left: 20px;
+}
