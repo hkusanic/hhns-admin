@@ -613,6 +613,7 @@ class AddLecture extends React.Component {
       {
         summaryUploading: true,
         transcriptionUploading: false,
+        audioUploading: false,
         uploading: false,
       },
       () => {
@@ -626,6 +627,7 @@ class AddLecture extends React.Component {
       {
         transcriptionUploading: true,
         summaryUploading: false,
+        audioUploading: false,
         uploading: false,
       },
       () => {
@@ -827,11 +829,19 @@ class AddLecture extends React.Component {
     } = this.state
 
     if (audioUploading) {
+      if (percentCompleted === 100) {
+        notification.success({
+          message: 'Success',
+          description: 'File has been uploaded successfully',
+        })
+      }
+
       this.setState({
         audioLink: finalUrl,
         transcriptionUploading: false,
         summaryUploading: false,
-        audioUploading: false,
+        audioUploading: true,
+        percentage: 0,
       })
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
@@ -854,6 +864,41 @@ class AddLecture extends React.Component {
           }
           transEnTemp.push(tempObjectEn)
         }
+
+        // let arrayLength = 0
+        // for (let i = 0; i < transEnTemp.length; i += 1) {
+        //   if (transEnTemp[i].percentage !== 'zeroPercent') {
+        //     arrayLength += 1
+        //   }
+        // }
+
+        const valueArray = transEnTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        let arrayLength = 0
+        for (let i = 0; i < valueArray.length; i += 1) {
+          if (valueArray[i] !== 'zeroPercent') {
+            arrayLength += 1
+          }
+        }
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: `${arrayLength} file(s) have been uploaded successfully`,
+          })
+        }
       } else {
         arrayRu.push(finalUrl)
 
@@ -868,15 +913,36 @@ class AddLecture extends React.Component {
           }
           transRuTemp.push(tempObjectRu)
         }
+
+        const valueArray = transRuTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        let arrayLength = 0
+        for (let i = 0; i < valueArray.length; i += 1) {
+          if (valueArray[i] !== 'zeroPercent') {
+            arrayLength += 1
+          }
+        }
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: `${arrayLength} file(s) have been uploaded successfully`,
+          })
+        }
       }
       array.push(finalUrl)
-
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
-      }
 
       this.setState({
         transcriptionFiles: array,
@@ -909,6 +975,34 @@ class AddLecture extends React.Component {
           }
           summEnTemp.push(tempObjectEnSumm)
         }
+
+        const valueArray = summEnTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        let arrayLength = 0
+        for (let i = 0; i < valueArray.length; i += 1) {
+          if (valueArray[i] !== 'zeroPercent') {
+            arrayLength += 1
+          }
+        }
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: `${arrayLength} file(s) have been uploaded successfully`,
+          })
+        }
       } else {
         newArrayRu.push(finalUrl)
 
@@ -923,15 +1017,36 @@ class AddLecture extends React.Component {
           }
           summRuTemp.push(tempObjectRuSumm)
         }
+
+        const valueArray = summRuTemp.map(function(item) {
+          return item.percentage
+        })
+
+        const result = valueArray.every((val, index, arr) => {
+          if (val === 100 || val === 'zeroPercent') {
+            if (val === arr[0] || arr[0] === 'zeroPercent') {
+              return true
+            }
+            // return false
+          }
+          return false
+        })
+
+        let arrayLength = 0
+        for (let i = 0; i < valueArray.length; i += 1) {
+          if (valueArray[i] !== 'zeroPercent') {
+            arrayLength += 1
+          }
+        }
+
+        if (result) {
+          notification.success({
+            message: 'Success',
+            description: `${arrayLength} file(s) have been uploaded successfully`,
+          })
+        }
       }
       newArray.push(finalUrl)
-
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'file has been uploaded successfully',
-        })
-      }
 
       this.setState({
         summaryFiles: newArray,
@@ -954,13 +1069,16 @@ class AddLecture extends React.Component {
 
   deleteFile = (item, type) => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: data => {
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
         this.handelDeleteSetFiles(item, type)
       },
