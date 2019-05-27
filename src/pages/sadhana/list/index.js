@@ -321,13 +321,13 @@ class SadhanaList extends React.Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
-              onRow={record => {
-                return {
-                  onDoubleClick: () => {
-                    this.hanldeRedirect(record)
-                  },
-                }
-              }}
+              // onRow={record => {
+              //   return {
+              //     onDoubleClick: () => {
+              //       this.hanldeRedirect(record)
+              //     },
+              //   }
+              // }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}
