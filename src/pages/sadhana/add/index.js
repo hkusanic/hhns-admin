@@ -78,7 +78,7 @@ class AddSadhana extends React.Component {
   }
 
   getSadhanaDetails = index => {
-    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
+    const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
 
     let tempObject = {}
     // eslint-disable-next-line no-plusplus
@@ -240,13 +240,11 @@ class AddSadhana extends React.Component {
     const tempCurrentDate = new Date(currentDate)
     tempCurrentDate.setHours(0, 0, 0, 0)
 
-    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
+    const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
 
     if (currentIndex === 0) {
       oldLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
-
-    console.log('check===>', currentIndex === tempArray.length - 1)
 
     if (currentIndex === tempArray.length - 1) {
       oldRight = { pointerEvents: 'none', opacity: '0.4' }

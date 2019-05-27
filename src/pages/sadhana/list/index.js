@@ -69,7 +69,7 @@ class SadhanaList extends React.Component {
             sadhanas: tempSadhanas,
           },
           () => {
-            localStorage.setItem('sadhanaArray', JSON.stringify(tempSadhanas))
+            sessionStorage.setItem('sadhanaArray', JSON.stringify(tempSadhanas))
           },
         )
       }
