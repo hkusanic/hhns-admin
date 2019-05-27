@@ -353,22 +353,6 @@ export async function getLeftMenuData() {
         },
       ],
     },
-    {
-      title: 'USER',
-      key: 'user',
-      children: [
-        {
-          title: 'LIST',
-          key: 'userList',
-          url: '/userDetails/list',
-        },
-        {
-          title: 'ADD USER',
-          key: 'addUser',
-          url: '/userDetails/add',
-        },
-      ],
-    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
@@ -773,22 +757,6 @@ export async function getTopMenuData() {
           title: 'SADHANA SHEET',
           key: 'addSadhana',
           url: '/sadhana/add',
-        },
-      ],
-    },
-    {
-      title: 'USER',
-      key: 'user',
-      children: [
-        {
-          title: 'LIST',
-          key: 'userList',
-          url: '/userDetails/list',
-        },
-        {
-          title: 'ADD USER',
-          key: 'addUser',
-          url: '/userDetails/add',
         },
       ],
     },
