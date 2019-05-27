@@ -223,12 +223,12 @@ class SadhanaList extends React.Component {
     const columns = [
       {
         title: 'First Name',
-        dataIndex: 'userId.name.first',
+        dataIndex: 'user.name.first',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Last Name',
-        dataIndex: 'userId.name.last',
+        dataIndex: 'user.name.last',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {

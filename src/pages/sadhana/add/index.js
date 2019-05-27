@@ -237,7 +237,7 @@ class AddSadhana extends React.Component {
     let oldRight = {}
     let oldLeft = {}
     if (Object.keys(editSadhana).length > 0) {
-      fullName = `${editSadhana.userId.name.first} ${editSadhana.userId.name.last}`
+      fullName = `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
     }
 
     const nowDate = new Date()
@@ -321,11 +321,11 @@ class AddSadhana extends React.Component {
                     <div className="row">
                       <div className="col-lg-6">
                         <div className="form-group">
-                          {editSadhana.userId && editSadhana.userId.discipleName ? (
+                          {editSadhana.user && editSadhana.user.discipleName ? (
                             <FormItem label={language ? 'Disciple Name' : 'Disciple Name'}>
                               <Input
                                 disabled
-                                value={editSadhana.userId.discipleName}
+                                value={editSadhana.user.discipleName}
                                 placeholder="Disciple Name"
                                 name="discipleName"
                               />
@@ -335,8 +335,8 @@ class AddSadhana extends React.Component {
                               <Input
                                 disabled
                                 value={
-                                  editSadhana.userId &&
-                                  `${editSadhana.userId.name.first} ${editSadhana.userId.name.last}`
+                                  editSadhana.user &&
+                                  `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
                                 }
                                 placeholder="Name"
                                 name="name"
@@ -350,7 +350,7 @@ class AddSadhana extends React.Component {
                           <FormItem label={language ? 'User Email' : 'User Email'}>
                             <Input
                               disabled
-                              value={editSadhana.userId && editSadhana.userId.email}
+                              value={editSadhana.user && editSadhana.user.email}
                               placeholder="User Email"
                               name="email"
                             />
