@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
@@ -166,8 +167,14 @@ class MenuLeft extends React.Component {
       if (menuItem.children) {
         const subMenuTitle = (
           <span key={menuItem.key}>
-            <span className={styles.title}>{menuItem.title}</span>
-            {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+            {!this.props.isMenuCollapsed ? (
+              <span className={styles.title}>{menuItem.title}</span>
+            ) : (
+              <span style={{ minWidth: '150px' }}>{menuItem.title}</span>
+            )}
+            {this.props.isMenuCollapsed
+              ? menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />
+              : null}
           </span>
         )
         return (
