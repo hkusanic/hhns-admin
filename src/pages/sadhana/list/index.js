@@ -37,13 +37,37 @@ class SadhanaList extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
     const { currentDate } = this.state
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page: 1,
-      date: currentDate,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+
+    let browsingDate
+    if (state !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
+      browsingDate = state.browsingDate
+    }
+
+    if (browsingDate) {
+      this.setState(
+        {
+          currentDate: browsingDate,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
+            date: this.state.currentDate,
+          })
+        },
+      )
+    } else {
+      dispatch({
+        type: 'sadhana/GET_SADHANAS',
+        page: 1,
+        date: currentDate,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -73,6 +97,10 @@ class SadhanaList extends React.Component {
           },
         )
       }
+    } else {
+      this.setState({
+        sadhanas: [],
+      })
     }
   }
 
@@ -149,15 +177,19 @@ class SadhanaList extends React.Component {
   onChangeDate = date => {
     const { dispatch } = this.props
 
-    this.setState({
-      currentDate: date.format('YYYY-MM-DD'),
-    })
-
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page: 1,
-      date: date ? date.format('YYYY-MM-DD') : null,
-    })
+    this.setState(
+      {
+        currentDate: date.format('YYYY-MM-DD'),
+      },
+      () => {
+        dispatch({
+          type: 'sadhana/GET_SADHANAS',
+          page: 1,
+          // eslint-disable-next-line react/destructuring-assignment
+          date: this.state.currentDate,
+        })
+      },
+    )
   }
 
   render() {
@@ -174,8 +206,6 @@ class SadhanaList extends React.Component {
     if (checkDate) {
       customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
-
-    console.log('sadhanas===>', sadhanas)
 
     // if (sadhanas.length === 0 && !checkDate) {
     //   customStyleRight = { pointerEvents: 'none', opacity: '0.4' }

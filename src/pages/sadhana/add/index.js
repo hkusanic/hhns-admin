@@ -2,11 +2,12 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Form, Input, Icon, TimePicker } from 'antd'
+import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
-import BackNavigation from '../../../common/BackNavigation/index'
+// import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 import './index.css'
 
@@ -253,7 +254,24 @@ class AddSadhana extends React.Component {
     return (
       <React.Fragment>
         <div className="container headerDiv">
-          <BackNavigation link="/sadhana/list" title="Sadhana List" />
+          {/* <BackNavigation link="/sadhana/list" title="Sadhana List" /> */}
+
+          <Link
+            to={{
+              pathname: '/sadhana/list',
+              state: {
+                browsingDate: editSadhana.date,
+              },
+            }}
+          >
+            <span>
+              <Icon type="arrow-left" style={{ fontSize: '15px' }} />
+              <span style={{ fontSize: '15px', fontWeight: '400', paddingLeft: '10px' }}>
+                Sadhana List
+              </span>
+            </span>
+          </Link>
+
           {/* <div className="col-lg-3">
               <Switch
                 defaultChecked
