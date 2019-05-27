@@ -34,6 +34,8 @@ class SadhanaList extends React.Component {
     language: true,
     currentDate: formatDate(new Date()),
     sadhanas: [],
+    currentPage: 1,
+    perPage: 2,
   }
 
   componentDidMount() {
@@ -51,6 +53,7 @@ class SadhanaList extends React.Component {
       this.setState(
         {
           currentDate: browsingDate,
+          currentPage: state.paginationCurrentPage,
         },
         () => {
           dispatch({
@@ -121,14 +124,20 @@ class SadhanaList extends React.Component {
     })
   }
 
-  handlePageChange = page => {
-    const { dispatch } = this.props
-    const { currentDate } = this.state
+  // handlePageChange = page => {
+  //   const { dispatch } = this.props
+  //   const { currentDate } = this.state
 
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page,
-      date: currentDate,
+  //   dispatch({
+  //     type: 'sadhana/GET_SADHANAS',
+  //     page,
+  //     date: currentDate,
+  //   })
+  // }
+
+  handlePageChange = page => {
+    this.setState({
+      currentPage: page,
     })
   }
 
@@ -193,8 +202,8 @@ class SadhanaList extends React.Component {
   }
 
   render() {
-    const { language, currentDate, sadhanas } = this.state
-    const { totalSadhanas } = this.props
+    const { language, currentDate, sadhanas, perPage, currentPage } = this.state
+    // const { totalSadhanas } = this.props
 
     const nowDate = formatDate(new Date())
 
@@ -242,13 +251,29 @@ class SadhanaList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/sadhana/add', state: { uuid: record.itemIndex, language } }}>
+            <Link
+              to={{
+                pathname: '/sadhana/add',
+                state: { uuid: record.itemIndex, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
           </span>
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: sadhanas.length,
+      onChange: this.handlePageChange,
+    }
+
+    const indexOfLastData = currentPage * perPage
+    const indexOfFirstData = indexOfLastData - perPage
+    const currentDataArray = sadhanas.slice(indexOfFirstData, indexOfLastData)
 
     return (
       <div>
@@ -306,12 +331,8 @@ class SadhanaList extends React.Component {
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}
-              dataSource={sadhanas}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChange,
-                total: totalSadhanas,
-              }}
+              dataSource={currentDataArray}
+              pagination={paginationConfig}
             />
           </div>
         </div>

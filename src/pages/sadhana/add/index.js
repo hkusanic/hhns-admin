@@ -51,6 +51,7 @@ class AddSadhana extends React.Component {
       nextSadhanaDate: '',
       nextSadhanaEmail: '',
       currentIndex: 0,
+      currentPage: 0,
     }
   }
 
@@ -59,13 +60,16 @@ class AddSadhana extends React.Component {
     const { location } = router
     const { state } = location
 
+    console.log('this.props cdm===>', this.props)
+
     if (state !== undefined) {
-      const { uuid } = state
+      const { uuid, currentPage } = state
 
       if (uuid !== undefined) {
         this.setState(
           {
             currentIndex: uuid,
+            currentPage,
           },
           () => {
             const tempObject = this.getSadhanaDetails(uuid)
@@ -223,7 +227,7 @@ class AddSadhana extends React.Component {
   }
 
   render() {
-    const { language, editSadhana, currentDate, currentIndex } = this.state
+    const { language, editSadhana, currentDate, currentIndex, currentPage } = this.state
 
     const { form } = this.props
 
@@ -261,6 +265,7 @@ class AddSadhana extends React.Component {
               pathname: '/sadhana/list',
               state: {
                 browsingDate: editSadhana.date,
+                paginationCurrentPage: currentPage,
               },
             }}
           >
