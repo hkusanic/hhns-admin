@@ -251,7 +251,7 @@ class AddSadhana extends React.Component {
       oldLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    if (currentIndex === tempArray.length - 1) {
+    if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
       oldRight = { pointerEvents: 'none', opacity: '0.4' }
     }
 
