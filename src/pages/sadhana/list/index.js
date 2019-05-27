@@ -35,7 +35,7 @@ class SadhanaList extends React.Component {
     currentDate: formatDate(new Date()),
     sadhanas: [],
     currentPage: 1,
-    perPage: 2,
+    perPage: 20,
   }
 
   componentDidMount() {
@@ -223,12 +223,12 @@ class SadhanaList extends React.Component {
     const columns = [
       {
         title: 'First Name',
-        dataIndex: 'firstName',
+        dataIndex: 'userId.name.first',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Last Name',
-        dataIndex: 'lastName',
+        dataIndex: 'userId.name.last',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
