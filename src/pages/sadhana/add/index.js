@@ -60,8 +60,6 @@ class AddSadhana extends React.Component {
     const { location } = router
     const { state } = location
 
-    console.log('this.props cdm===>', this.props)
-
     if (state !== undefined) {
       const { uuid, currentPage } = state
 
@@ -84,13 +82,15 @@ class AddSadhana extends React.Component {
 
   getSadhanaDetails = index => {
     const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
-    console.log('tempArray===>***', tempArray)
     let tempObject = {}
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i <= tempArray.length; i++) {
-      if (index === tempArray[i].itemIndex) {
-        tempObject = { ...tempArray[i] }
-        break
+    if (tempArray.length > 0) {
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i <= tempArray.length; i++) {
+        if (index === tempArray[i].itemIndex) {
+          tempObject = { ...tempArray[i] }
+          break
+        }
       }
     }
 
@@ -236,6 +236,15 @@ class AddSadhana extends React.Component {
     // let customStyleRight = {}
     let oldRight = {}
     let oldLeft = {}
+
+    if (
+      editSadhana === null ||
+      editSadhana === undefined ||
+      Object.keys(editSadhana).length === 0
+    ) {
+      return <div>Data not found</div>
+    }
+
     if (Object.keys(editSadhana).length > 0) {
       fullName = `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
     }
@@ -251,8 +260,10 @@ class AddSadhana extends React.Component {
       oldLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
-      oldRight = { pointerEvents: 'none', opacity: '0.4' }
+    if (tempArray.length > 0) {
+      if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
+        oldRight = { pointerEvents: 'none', opacity: '0.4' }
+      }
     }
 
     return (
