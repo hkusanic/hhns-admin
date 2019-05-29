@@ -353,6 +353,17 @@ export async function getLeftMenuData() {
         },
       ],
     },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'usersProfile',
+          url: '/users/profile/basic',
+        },
+      ],
+    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
@@ -760,6 +771,120 @@ export async function getTopMenuData() {
         },
       ],
     },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'basic',
+          children: [
+            {
+              title: 'BASIC PROFILE',
+              key: 'basicProfile',
+              url: '/users/profile/basic',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'disciple',
+          children: [
+            {
+              title: 'DISCIPLE PROFILE',
+              key: 'discipleProfile',
+              url: '/users/profile/disciple',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'sadhana',
+          children: [
+            {
+              title: 'SADHANA SHEETS',
+              key: 'sadhanaSheets',
+              url: '/users/profile/sadhana',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'reports',
+          children: [
+            {
+              title: 'REPORTS',
+              key: 'reportDetails',
+              url: '/users/profile/reports',
+            },
+          ],
+        },
+      ],
+    },
+    // {
+    //   title: 'USERS',
+    //   key: 'basic',
+    //   children: [
+    //     {
+    //       title: 'BASIC PROFILE',
+    //       key: 'basicProfile',
+    //       url: '/users/profile/basic',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'disciple',
+    //   children: [
+    //     {
+    //       title: 'DISCIPLE PROFILE',
+    //       key: 'discipleProfile',
+    //       url: '/users/profile/disciple',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'sadhana',
+    //   children: [
+    //     {
+    //       title: 'SADHANA SHEETS',
+    //       key: 'sadhanaSheets',
+    //       url: '/users/profile/sadhana',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'reports',
+    //   children: [
+    //     {
+    //       title: 'REPORTS',
+    //       key: 'userReports',
+    //       url: '/users/profile/reports',
+    //     },
+    //   ],
+    // },
+
+    // *** old data ***
     //     {
     //       title: 'YouTube',
     //       key: 'youtube',
