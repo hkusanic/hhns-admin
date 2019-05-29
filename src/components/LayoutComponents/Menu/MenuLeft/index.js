@@ -211,6 +211,8 @@ class MenuLeft extends React.Component {
       <Sider
         {...menuSettings}
         className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
+        collapsedWidth={120}
+        width={220}
       >
         {/* <div className={styles.logo}> */}
         {/* <div className={styles.logoContainer}> */}
