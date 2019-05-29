@@ -321,6 +321,13 @@ const routes = [
   //   component: loadable(() => import('pages/usersProfile/profile/index.js')),
   //   exact: true,
   // },
+
+  {
+    path: '/users/list',
+    component: loadable(() => import('pages/usersProfile/list')),
+    exact: true,
+  },
+
   {
     path: '/users/profile/basic',
     component: loadable(() => import('pages/usersProfile/profile/index.js')),

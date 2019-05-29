@@ -31,7 +31,6 @@ export function* LOAD_CURRENT_ACCOUNT() {
     },
   })
   const response = yield call(currentAccount)
-  console.log('RESPONSE ======>', response)
   if (response) {
     yield put({
       type: 'user/SET_STATE',

@@ -1,9 +1,12 @@
+/* eslint-disable react/no-unused-state */
 import React, { Component, Fragment } from 'react'
 import { Form, Input, Select, Button, Upload } from 'antd'
+import { withRouter } from 'react-router-dom'
 import PhoneView from './PhoneView'
 import './BasicProfile.css'
 
 const FormItem = Form.Item
+const { Option } = Select
 
 // const validatorPhone = (rule, value, callback) => {
 //   const values = value.split('-')
@@ -33,6 +36,10 @@ const AvatarView = ({ avatar }) => (
 
 @Form.create()
 class BasicProfile extends Component {
+  state = {
+    user: {},
+  }
+
   componentDidMount() {
     const { data, form } = this.props
 
@@ -248,6 +255,26 @@ class BasicProfile extends Component {
               </div> */}
 
           <div className="row">
+            <div className="col-lg-4">
+              <FormItem label="Language">
+                {getFieldDecorator('language', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please select your language!',
+                    },
+                  ],
+                })(
+                  <Select style={{ maxWidth: 220 }} placeholder="Lanaguage">
+                    <Option value="English">English</Option>
+                    <Option value="Russian">Russian</Option>
+                  </Select>,
+                )}
+              </FormItem>
+            </div>
+          </div>
+
+          <div className="row">
             <div className="col-lg-12">
               <FormItem label="Address">
                 {getFieldDecorator('address', {
@@ -269,4 +296,4 @@ class BasicProfile extends Component {
   }
 }
 
-export default BasicProfile
+export default withRouter(BasicProfile)

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
 
 class Reports extends Component {
   render() {
@@ -18,4 +19,4 @@ class Reports extends Component {
   }
 }
 
-export default Reports
+export default withRouter(Reports)

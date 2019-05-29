@@ -358,6 +358,11 @@ export async function getLeftMenuData() {
       key: 'users',
       children: [
         {
+          title: 'LIST',
+          key: 'usersList',
+          url: '/users/list',
+        },
+        {
           title: 'PROFILE',
           key: 'usersProfile',
           url: '/users/profile/basic',
@@ -768,6 +773,18 @@ export async function getTopMenuData() {
           title: 'SADHANA SHEET',
           key: 'addSadhana',
           url: '/sadhana/add',
+        },
+      ],
+    },
+
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'LIST',
+          key: 'usersList',
+          url: '/users/list',
         },
       ],
     },

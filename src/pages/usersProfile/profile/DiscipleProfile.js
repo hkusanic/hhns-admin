@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, DatePicker } from 'antd'
 import moment from 'moment'
+import { withRouter } from 'react-router-dom'
 
 const FormItem = Form.Item
 
@@ -168,4 +169,4 @@ class DiscipleProfile extends Component {
   }
 }
 
-export default DiscipleProfile
+export default withRouter(DiscipleProfile)

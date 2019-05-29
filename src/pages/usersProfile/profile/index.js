@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-unused-state */
 import React, { Component } from 'react'
 import Sidebar from './Sidebar'
 import BasicProfile from './BasicProfile'
@@ -6,6 +8,17 @@ import SadhanaSheets from './SadhanaSheets'
 import Reports from './Reports'
 
 class UsersProfile extends Component {
+  state = {
+    user: {},
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.location.state) {
+      console.log('nextProps.uuid===>', nextProps.location.state.uuid)
+    }
+    return null
+  }
+
   render() {
     const { location } = this.props
     const dummyData = {

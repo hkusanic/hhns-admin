@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Table } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import renderHTML from 'react-render-html'
 
 const columns = [
@@ -73,4 +73,4 @@ class SadhanaSheets extends Component {
   }
 }
 
-export default SadhanaSheets
+export default withRouter(SadhanaSheets)
