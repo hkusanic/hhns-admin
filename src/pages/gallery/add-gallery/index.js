@@ -287,7 +287,7 @@ class CreateGallery extends React.Component {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: file,
       headers: {
         'Content-Type': file.type,
       },
@@ -351,20 +351,37 @@ class CreateGallery extends React.Component {
       tempPhotoFiles.push(tempPhotoObject)
     }
 
+    const valueArray = tempPhotoFiles.map(function(item) {
+      return item.percentage
+    })
+
+    const result = valueArray.every((val, index, arr) => {
+      if (val === 100 || val === 'zeroPercent') {
+        if (val === arr[0] || arr[0] === 'zeroPercent') {
+          return true
+        }
+        // return false
+      }
+      return false
+    })
+
+    let arrayLength = 0
+    for (let i = 0; i < valueArray.length; i += 1) {
+      if (valueArray[i] !== 'zeroPercent') {
+        arrayLength += 1
+      }
+    }
+
+    if (result) {
+      notification.success({
+        message: 'Success',
+        description: `${arrayLength} file(s) have been uploaded successfully`,
+      })
+    }
+
     this.setState({
       photoFiles: tempPhotoFiles,
     })
-
-    // let array
-    // if (photoFiles && photoFiles.length > 0) {
-    //   array = [...photoFiles]
-    // } else {
-    //   array = []
-    // }
-    // array.push(finalUrl)
-    // this.setState({
-    //   photoFiles: array,
-    // })
   }
 
   handleCreateDate = (date, dateString) => {
@@ -482,13 +499,16 @@ class CreateGallery extends React.Component {
 
   deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: () => {
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
         this.handelDeleteSetFiles(item)
       },
@@ -795,8 +815,8 @@ class CreateGallery extends React.Component {
                             beforeUpload={this.beforeUploadAudio}
                             multiple
                             showUploadList={false}
-                            customRequest={this.dummyRequest}
-                            onChange={this.handleFileChange}
+                            customRequest={this.handleFileChange}
+                            // onChange={this.handleFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />

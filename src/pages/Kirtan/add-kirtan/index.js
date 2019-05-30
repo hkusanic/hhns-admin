@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
@@ -315,7 +316,7 @@ class AddKirtan extends React.Component {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: file,
       headers: {
         'Content-Type': file.type,
       },
@@ -365,6 +366,9 @@ class AddKirtan extends React.Component {
 
   deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
@@ -372,7 +376,7 @@ class AddKirtan extends React.Component {
         // console.info(data)
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
         this.handelDeleteSetFiles()
       },
@@ -402,10 +406,20 @@ class AddKirtan extends React.Component {
   }
 
   setUploadedFiles = (finalUrl, percentCompleted) => {
-    this.setState({
-      audioLink: finalUrl,
-      percentage: percentCompleted,
-    })
+    this.setState(
+      {
+        audioLink: finalUrl,
+        percentage: percentCompleted,
+      },
+      () => {
+        if (this.state.percentage === 100) {
+          notification.success({
+            message: 'Success',
+            description: 'File has been uploaded successfully',
+          })
+        }
+      },
+    )
   }
 
   dummyRequest = ({ file, onSuccess }) => {
@@ -1035,8 +1049,8 @@ class AddKirtan extends React.Component {
                               beforeUpload={this.beforeUploadAudio}
                               multiple={false}
                               showUploadList={false}
-                              customRequest={this.dummyRequest}
-                              onChange={this.handleUploading}
+                              customRequest={this.handleUploading}
+                              // onChange={this.handleUploading}
                             >
                               <p className="ant-upload-drag-icon">
                                 <Icon type="inbox" />

@@ -337,6 +337,22 @@ export async function getLeftMenuData() {
         },
       ],
     },
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/sadhana/add',
+        },
+      ],
+    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
@@ -725,6 +741,22 @@ export async function getTopMenuData() {
           title: 'CREATE VIDEO',
           key: 'createVideo',
           url: '/video/create',
+        },
+      ],
+    },
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/sadhana/add',
         },
       ],
     },
