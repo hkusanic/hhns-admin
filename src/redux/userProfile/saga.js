@@ -3,10 +3,10 @@ import { all, takeEvery, put, call } from 'redux-saga/effects'
 import { getUsersList, getUserByUuid } from 'services/userProfile'
 import actions from './action'
 
-export function* getUsersListSaga() {
-  // console.log('payload===>',payload)
+export function* getUsersListSaga(payload) {
+  // console.log('payload===>', payload)
   try {
-    const result = yield call(getUsersList)
+    const result = yield call(getUsersList, payload)
 
     const { data } = result
     const { users } = data

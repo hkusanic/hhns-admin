@@ -2,8 +2,11 @@ import axios from 'axios'
 import serverAddress from './config'
 /* eslint-disable */
 
-export async function getUsersList() {
-  const url = serverAddress + '/api/user'
+export async function getUsersList(payload) {
+  const { email } = payload
+  const { disciple } = payload
+  // const url = serverAddress + '/api/user'
+  const url = `${serverAddress}/api/user?email=${email ? email : ''}&disciple=${disciple}`
   return axios
     .get(url)
     .then(response => {

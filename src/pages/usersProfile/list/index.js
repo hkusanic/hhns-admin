@@ -15,6 +15,7 @@ class UsersList extends Component {
     lastName: '',
     userEmail: '',
     discipleName: '',
+    disciple: '',
     currentPage: 1,
     perPage: 10,
   }
@@ -46,11 +47,12 @@ class UsersList extends Component {
   }
 
   handleInputChange = event => {
-    // console.log(event.target.name)
     const { dispatch } = this.props
     this.setState({ [event.target.name]: event.target.value }, () => {
       dispatch({
-        type: '',
+        type: 'userProfile/GET_USERS',
+        email: this.state.userEmail,
+        disciple: this.state.disciple,
       })
     })
   }
@@ -62,7 +64,16 @@ class UsersList extends Component {
   }
 
   render() {
-    const { users, firstName, lastName, discipleName, userEmail, currentPage, perPage } = this.state
+    const {
+      users,
+      firstName,
+      lastName,
+      discipleName,
+      userEmail,
+      currentPage,
+      perPage,
+      disciple,
+    } = this.state
 
     const columns = [
       {
@@ -130,7 +141,7 @@ class UsersList extends Component {
               </div>
             </div>
             <div className="row">
-              <div className="col-lg-3">
+              <div className="col-lg-3 mb-2">
                 {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
 
                 <Input
@@ -142,7 +153,7 @@ class UsersList extends Component {
                 />
               </div>
 
-              <div className="col-lg-3">
+              <div className="col-lg-3 mb-2">
                 {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
 
                 <Input
@@ -154,7 +165,7 @@ class UsersList extends Component {
                 />
               </div>
 
-              <div className="col-lg-3">
+              <div className="col-lg-3 mb-2">
                 <Input
                   name="discipleName"
                   placeholder="Disciple Name"
@@ -164,13 +175,24 @@ class UsersList extends Component {
                 />
               </div>
 
-              <div className="col-lg-3">
+              <div className="col-lg-3 mb-2">
                 <Input
                   name="userEmail"
                   placeholder="User Email"
                   onChange={this.handleInputChange}
                   id="userEmail"
                   value={userEmail}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-lg-3 mb-2">
+                <Input
+                  name="disciple"
+                  placeholder="Disciple"
+                  onChange={this.handleInputChange}
+                  id="disciple"
+                  value={disciple}
                 />
               </div>
             </div>
