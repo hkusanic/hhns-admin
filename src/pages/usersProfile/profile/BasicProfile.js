@@ -2,22 +2,10 @@
 import React, { Component, Fragment } from 'react'
 import { Form, Input, Select, Button, Upload } from 'antd'
 import { withRouter } from 'react-router-dom'
-// import PhoneView from './PhoneView'
 import './BasicProfile.css'
 
 const FormItem = Form.Item
 const { Option } = Select
-
-// const validatorPhone = (rule, value, callback) => {
-//   const values = value.split('-')
-//   if (!values[1]) {
-//     callback('Please input your area code!')
-//   }
-//   if (!values[0]) {
-//     callback('Please input your phone number!')
-//   }
-//   callback()
-// }
 
 const AvatarView = ({ avatar }) => (
   <Fragment>
@@ -54,10 +42,6 @@ class BasicProfile extends Component {
   }
 
   getAvatarURL = () => {
-    // const { currentUser } = this.props
-    // if (currentUser.avatar) {
-    //   return currentUser.avatar
-    // }
     const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
     return url
   }

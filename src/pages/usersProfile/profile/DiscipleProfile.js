@@ -6,14 +6,6 @@ import { withRouter } from 'react-router-dom'
 
 const FormItem = Form.Item
 
-// function formatDate(date) {
-//   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-//     .toISOString()
-//     .split('T')[0]
-
-//   return dateString
-// }
-
 const getDataFromStorage = () => {
   const userDetails = JSON.parse(sessionStorage.getItem('userDetails'))
 

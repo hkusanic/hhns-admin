@@ -67,22 +67,6 @@ class CommentsList extends Component {
         dataIndex: 'approved',
         render: (text, record, index) => (text === true ? 'Yes' : 'No'),
       },
-      // {
-      //   title: 'Action',
-      //   key: 'action',
-      //   render: record => (
-      //     <span>
-      //       <Link
-      //         to={{
-      //           pathname: '/users/profile/basic',
-      //           state: { uuid: record.user_id },
-      //         }}
-      //       >
-      //         <i className="fa fa-edit mr-2 editIcon" />
-      //       </Link>
-      //     </span>
-      //   ),
-      // },
     ]
 
     return (
@@ -94,14 +78,6 @@ class CommentsList extends Component {
             <div className="row utils__title">
               <div className="col-lg-8">
                 <strong>Comments List</strong>
-                {/* <Switch
-                  defaultChecked
-                  checkedChildren={language ? 'en' : 'ru'}
-                  unCheckedChildren={language ? 'en' : 'ru'}
-                  onChange={this.handleLanguage}
-                  className="toggle"
-                  style={{ width: '100px', marginLeft: '10px' }}
-                /> */}
               </div>
             </div>
           </div>

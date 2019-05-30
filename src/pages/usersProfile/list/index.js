@@ -86,11 +86,6 @@ class UsersList extends Component {
         dataIndex: 'disciple',
         render: text => (text ? renderHTML(text) : ''),
       },
-      // {
-      //   title: 'Mobile',
-      //   dataIndex: 'mobileNumber',
-      //   render: text => (text ? renderHTML(text) : ''),
-      // },
       {
         title: 'Email',
         dataIndex: 'email',
@@ -130,20 +125,10 @@ class UsersList extends Component {
             <div className="row utils__title">
               <div className="col-lg-8">
                 <strong>Users List</strong>
-                {/* <Switch
-                  defaultChecked
-                  checkedChildren={language ? 'en' : 'ru'}
-                  unCheckedChildren={language ? 'en' : 'ru'}
-                  onChange={this.handleLanguage}
-                  className="toggle"
-                  style={{ width: '100px', marginLeft: '10px' }}
-                /> */}
               </div>
             </div>
             <div className="row">
               <div className="col-lg-3 mb-2">
-                {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
-
                 <Input
                   name="firstName"
                   placeholder="First Name"
@@ -154,8 +139,6 @@ class UsersList extends Component {
               </div>
 
               <div className="col-lg-3 mb-2">
-                {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
-
                 <Input
                   name="lastName"
                   placeholder="Last Name"

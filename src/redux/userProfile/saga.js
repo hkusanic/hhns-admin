@@ -4,7 +4,6 @@ import { getUsersList, getUserByUuid } from 'services/userProfile'
 import actions from './action'
 
 export function* getUsersListSaga(payload) {
-  // console.log('payload===>', payload)
   try {
     const result = yield call(getUsersList, payload)
 

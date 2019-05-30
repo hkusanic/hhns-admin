@@ -4,7 +4,6 @@ import { getCommentsList } from 'services/comment'
 import actions from './action'
 
 export function* getCommentsListSaga() {
-  // console.log('payload===>',payload)
   try {
     const result = yield call(getCommentsList)
     const { data } = result
