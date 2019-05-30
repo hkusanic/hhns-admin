@@ -1,83 +1,91 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unused-state */
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { Icon } from 'antd'
 import Sidebar from './Sidebar'
 import BasicProfile from './BasicProfile'
 import DiscipleProfile from './DiscipleProfile'
 import SadhanaSheets from './SadhanaSheets'
 import Reports from './Reports'
 
+@connect(({ userProfile }) => ({ userProfile }))
 class UsersProfile extends Component {
   state = {
-    user: {},
+    userDetails: {},
+    userId: '',
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.location.state) {
-      console.log('nextProps.uuid===>', nextProps.location.state.uuid)
+    if (nextProps.userProfile.userDetails !== prevState.userDetails) {
+      sessionStorage.setItem('userDetails', JSON.stringify(nextProps.userProfile.userDetails))
+      return {
+        userDetails: nextProps.userProfile.userDetails,
+      }
     }
     return null
   }
 
+  componentDidMount() {
+    const { location, dispatch } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      const { uuid, currentPage } = state
+      if (uuid !== undefined) {
+        const body = {
+          user_id: uuid,
+        }
+
+        dispatch({
+          type: 'userProfile/GET_USER_BY_ID',
+          payload: body,
+        })
+
+        sessionStorage.setItem('currentPage', JSON.stringify(currentPage))
+      }
+    }
+  }
+
   render() {
     const { location } = this.props
-    const dummyData = {
-      oldData: {
-        vid: '17356',
-        nid: '17353',
-        uid: '81',
-        init: 'divakar@rayapaty.com',
-        picture: null,
-        path: 'https://www.niranjanaswami.net/en/rest/user/81',
-      },
-      disciple_profile: {
-        first_initiation_date: '2010-12-10 00:00:00',
-        second_initiation_date: '2013-12-22 00:00:00',
-        spiritual_name: 'Dina Gauranga dasa',
-        temple: 'East Hartford',
-        verifier: '',
-        marital_status: 'married',
-        education: 'other',
-      },
-      name: {
-        first: 'Divakar',
-        last: 'Rayapaty',
-      },
-      gender: 'male',
-      mobileNumber: '+1-203-918-3034',
-      dob: '1975-03-21 00:00:00',
-      userName: 'Dina Gauranga',
-      email: 'dgd.nrs@gmail.com',
-      timezone: 'America/New_York',
-      language: 'en',
-      created: '1191363651',
-      access: '1559039170',
-      login: '1559020083',
-      signature: '',
-      signature_format: '3',
-      canAccessKeystone: false,
-      user_id: 'd995be95-d583-4508-a35c-14ab53ab3527',
-    }
 
     let content
     if (location.pathname === '/users/profile/basic') {
-      content = <BasicProfile data={dummyData} />
+      content = <BasicProfile />
     }
 
     if (location.pathname === '/users/profile/disciple') {
-      content = <DiscipleProfile data={dummyData} />
+      content = <DiscipleProfile />
     }
 
     if (location.pathname === '/users/profile/sadhana') {
-      content = <SadhanaSheets data={dummyData} />
+      content = <SadhanaSheets />
     }
 
     if (location.pathname === '/users/profile/reports') {
-      content = <Reports data={dummyData} />
+      content = <Reports />
     }
 
     return (
       <div>
+        <Link
+          to={{
+            pathname: '/users/list',
+            state: {
+              paginationCurrentPage: JSON.parse(sessionStorage.getItem('currentPage')),
+            },
+          }}
+        >
+          <span>
+            <Icon type="arrow-left" style={{ fontSize: '15px' }} />
+            <span style={{ fontSize: '15px', fontWeight: '400', paddingLeft: '10px' }}>
+              Users List
+            </span>
+          </span>
+        </Link>
+        <br />
+        <br />
         <Sidebar>{content}</Sidebar>
       </div>
     )

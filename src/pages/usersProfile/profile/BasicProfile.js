@@ -2,7 +2,7 @@
 import React, { Component, Fragment } from 'react'
 import { Form, Input, Select, Button, Upload } from 'antd'
 import { withRouter } from 'react-router-dom'
-import PhoneView from './PhoneView'
+// import PhoneView from './PhoneView'
 import './BasicProfile.css'
 
 const FormItem = Form.Item
@@ -34,23 +34,23 @@ const AvatarView = ({ avatar }) => (
   </Fragment>
 )
 
+const getDataFromStorage = () => {
+  const userDetails = JSON.parse(sessionStorage.getItem('userDetails'))
+
+  return userDetails
+}
+
 @Form.create()
 class BasicProfile extends Component {
   state = {
     user: {},
   }
 
-  componentDidMount() {
-    const { data, form } = this.props
-
-    form.setFieldsValue({
-      firstName: data.name.first,
-      lastName: data.name.last,
-      email: data.email,
-      nickName: data.nick_name,
-      timezone: data.timezone,
-      address: data.address,
-    })
+  static getDerivedStateFromProps() {
+    const data = getDataFromStorage()
+    return {
+      user: data,
+    }
   }
 
   getAvatarURL = () => {
@@ -65,8 +65,9 @@ class BasicProfile extends Component {
   render() {
     const {
       form: { getFieldDecorator },
-      data,
     } = this.props
+
+    const { user } = this.state
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
@@ -76,40 +77,19 @@ class BasicProfile extends Component {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem label="First Name">
-                    {getFieldDecorator('firstName', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your first name!',
-                        },
-                      ],
-                    })(<Input placeholder="First Name" />)}
+                    <Input value={user.userName} placeholder="First Name" />
                   </FormItem>
                 </div>
                 <div className="col-lg-6">
                   <FormItem label="Last Name">
-                    {getFieldDecorator('lastName', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your last name!',
-                        },
-                      ],
-                    })(<Input placeholder="Last Name" />)}
+                    <Input placeholder="Last Name" />
                   </FormItem>
                 </div>
               </div>
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem label="Email">
-                    {getFieldDecorator('email', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your email!',
-                        },
-                      ],
-                    })(<Input placeholder="Email" />)}
+                    <Input value={user.email} placeholder="Email" />
                   </FormItem>
                 </div>
                 <div className="col-lg-6">
@@ -137,157 +117,35 @@ class BasicProfile extends Component {
             </div>
           </div>
 
-          {/* <div className="row">
-                <div className="col-lg-3">
-                  <FormItem label="First Name">
-                    {getFieldDecorator('firstName', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your first name!',
-                        },
-                      ],
-                    })(<Input placeholder="First Name" />)}
-                  </FormItem>
-                </div>
-                <div className="col-lg-3">
-                  <FormItem label="Last Name">
-                    {getFieldDecorator('lastName', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your last name!',
-                        },
-                      ],
-                    })(<Input placeholder="Last Name" />)}
-                  </FormItem>
-                </div>
-                <div className="col-lg-3">
-                  <FormItem label="Email">
-                    {getFieldDecorator('email', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your email!',
-                        },
-                      ],
-                    })(<Input placeholder="Email" />)}
-                  </FormItem>
-                </div>
-                <div className="col-lg-3">
-                  <FormItem label="Nickname">
-                    {getFieldDecorator('name', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your Nickname!',
-                        },
-                      ],
-                    })(<Input placeholder="Nickname" />)}
-                  </FormItem>
-                </div>
-              </div> */}
-
-          {/* <div className="row">
-                <div className="col-lg-12">
-                  <FormItem label="Personal profile">
-                    {getFieldDecorator('profile', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your personal profile!',
-                        },
-                      ],
-                    })(<Input.TextArea placeholder="Brief introduction to yourself" rows={4} />)}
-                  </FormItem>
-                </div>
-              </div> */}
-
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Timezone">
-                {getFieldDecorator('timezone', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please select your timezone!',
-                    },
-                  ],
-                })(
-                  <Select style={{ maxWidth: 220 }} placeholder="Timezone">
-                    {/* <Option value="China">China</Option> */}
-                  </Select>,
-                )}
+                <Select value={user.timeZone} style={{ maxWidth: 220 }} placeholder="Timezone">
+                  {/* <Option value="China">China</Option> */}
+                </Select>
               </FormItem>
             </div>
 
             <div className="col-lg-8">
               <FormItem label="Phone Number">
-                {/* {getFieldDecorator('phone', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your phone!',
-                    },
-                    { validator: validatorPhone },
-                  ],
-                })(<PhoneView value={data.mobileNumber} />)} */}
-
-                <PhoneView value={data.mobileNumber} />
+                {/* <PhoneView value={data.mobileNumber} /> */}
+                <Input type="number" value={user.mobileNumber} placeholder="Mobile Number" />
               </FormItem>
             </div>
           </div>
-
-          {/* <div className="row">
-                <div className="col-lg-12">
-                  <FormItem label="Phone Number">
-                    {getFieldDecorator('phone', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please input your phone!',
-                        },
-                        { validator: validatorPhone },
-                      ],
-                    })(<PhoneView />)}
-                  </FormItem>
-                </div>
-              </div> */}
 
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Language">
-                {getFieldDecorator('language', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please select your language!',
-                    },
-                  ],
-                })(
-                  <Select style={{ maxWidth: 220 }} placeholder="Lanaguage">
-                    <Option value="English">English</Option>
-                    <Option value="Russian">Russian</Option>
-                  </Select>,
-                )}
+                <Select value={user.language} style={{ maxWidth: 220 }} placeholder="Lanaguage">
+                  <Option value="English">English</Option>
+                  <Option value="Russian">Russian</Option>
+                </Select>
               </FormItem>
             </div>
           </div>
 
           <div className="row">
-            {/* <div className="col-lg-12">
-              <FormItem label="Address">
-                {getFieldDecorator('address', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your address!',
-                    },
-                  ],
-                })(<Input placeholder="Address" />)}
-              </FormItem>
-            </div> */}
-
             <div className="col-lg-4">
               <FormItem label="Street Name">
                 {getFieldDecorator('street', {
@@ -313,15 +171,15 @@ class BasicProfile extends Component {
               </FormItem>
             </div>
             <div className="col-lg-4">
-              <FormItem label="PIN Code">
-                {getFieldDecorator('pinCode', {
+              <FormItem label="Postal Code">
+                {getFieldDecorator('postalCode', {
                   rules: [
                     {
                       required: true,
-                      message: 'Please input your PIN Code!',
+                      message: 'Please input your postal Code!',
                     },
                   ],
-                })(<Input type="number" placeholder="PIN Code" />)}
+                })(<Input type="number" placeholder="Postal Code" />)}
               </FormItem>
             </div>
           </div>
@@ -329,14 +187,14 @@ class BasicProfile extends Component {
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Country">
-                {getFieldDecorator('country', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your country name!',
-                    },
-                  ],
-                })(<Input placeholder="Country Name" />)}
+                <Select
+                  value={user.countryCode}
+                  style={{ maxWidth: 220 }}
+                  placeholder="Country Name"
+                >
+                  <Option value="en">EN</Option>
+                  <Option value="ru">RU</Option>
+                </Select>
               </FormItem>
             </div>
             <div className="col-lg-4">

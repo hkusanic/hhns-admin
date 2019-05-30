@@ -369,6 +369,17 @@ export async function getLeftMenuData() {
         },
       ],
     },
+    {
+      title: 'COMMENTS',
+      key: 'comments',
+      children: [
+        {
+          title: 'LIST',
+          key: 'commentsList',
+          url: '/comments/list',
+        },
+      ],
+    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
@@ -853,6 +864,17 @@ export async function getTopMenuData() {
               url: '/users/profile/reports',
             },
           ],
+        },
+      ],
+    },
+    {
+      title: 'COMMENTS',
+      key: 'comments',
+      children: [
+        {
+          title: 'LIST',
+          key: 'commentsList',
+          url: '/comments/list',
         },
       ],
     },

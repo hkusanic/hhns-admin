@@ -14,6 +14,12 @@ const FormItem = Form.Item
 //   return dateString
 // }
 
+const getDataFromStorage = () => {
+  const userDetails = JSON.parse(sessionStorage.getItem('userDetails'))
+
+  return userDetails
+}
+
 @Form.create()
 class DiscipleProfile extends Component {
   state = {
@@ -21,15 +27,11 @@ class DiscipleProfile extends Component {
     secondDate: null,
   }
 
-  componentDidMount() {
-    const { data, form } = this.props
-
-    form.setFieldsValue({
-      templeName: data.disciple_profile.temple,
-      spiritualName: data.disciple_profile.spiritual_name,
-      maritalStatus: data.disciple_profile.marital_status,
-      verifier: data.disciple_profile.verifier,
-    })
+  static getDerivedStateFromProps() {
+    const data = getDataFromStorage()
+    return {
+      user: data,
+    }
   }
 
   handleDateChange = (date, dateString, name) => {
@@ -47,10 +49,7 @@ class DiscipleProfile extends Component {
   }
 
   render() {
-    const {
-      form: { getFieldDecorator },
-      data,
-    } = this.props
+    const { user } = this.state
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
@@ -58,28 +57,17 @@ class DiscipleProfile extends Component {
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Disciple Name">
-                {getFieldDecorator('discipleName', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your disciple name!',
-                    },
-                  ],
-                })(<Input placeholder="Disciple Name" />)}
+                <Input value={user.discipleName} placeholder="Disciple Name" />
               </FormItem>
             </div>
             <div className="col-lg-2" />
 
             <div className="col-lg-4">
               <FormItem label="Temple Name">
-                {getFieldDecorator('templeName', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your temple name!',
-                    },
-                  ],
-                })(<Input placeholder="Temple Name" />)}
+                <Input
+                  value={user.disciple_profile && user.disciple_profile.temple}
+                  placeholder="Temple Name"
+                />
               </FormItem>
             </div>
           </div>
@@ -88,19 +76,14 @@ class DiscipleProfile extends Component {
             <div className="col-lg-4">
               <FormItem label="First Initiation Date">
                 <DatePicker
-                  value={moment(data.disciple_profile.first_initiation_date)}
+                  value={
+                    user.disciple_profile &&
+                    moment(new Date(user.disciple_profile.first_initiation_date))
+                  }
                   onChange={(date, dateString) =>
                     this.handleDateChange(date, dateString, 'firstDate')
                   }
                 />
-                {/* {getFieldDecorator('firstDate', {
-              rules: [
-                {
-                  required: true,
-                  message: 'First Initiation Date is required',
-                },
-              ],
-            })(<DatePicker name="firstDate" onChange={this.handleDateChange} />)} */}
               </FormItem>
             </div>
 
@@ -109,7 +92,10 @@ class DiscipleProfile extends Component {
             <div className="col-lg-4">
               <FormItem label="Second Initiation Date">
                 <DatePicker
-                  value={moment(data.disciple_profile.second_initiation_date)}
+                  value={
+                    user.disciple_profile &&
+                    moment(new Date(user.disciple_profile.second_initiation_date))
+                  }
                   onChange={(date, dateString) =>
                     this.handleDateChange(date, dateString, 'secondDate')
                   }
@@ -121,28 +107,20 @@ class DiscipleProfile extends Component {
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Spiritual Name">
-                {getFieldDecorator('spiritualName', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your spiritual name!',
-                    },
-                  ],
-                })(<Input placeholder="Spiritual Name" />)}
+                <Input
+                  value={user.disciple_profile && user.disciple_profile.spiritual_name}
+                  placeholder="Spiritual Name"
+                />
               </FormItem>
             </div>
             <div className="col-lg-2" />
 
             <div className="col-lg-4">
               <FormItem label="Marital Status">
-                {getFieldDecorator('maritalStatus', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your marital status!',
-                    },
-                  ],
-                })(<Input placeholder="Marital Status" />)}
+                <Input
+                  value={user.disciple_profile && user.disciple_profile.marital_status}
+                  placeholder="Marital Status"
+                />
               </FormItem>
             </div>
           </div>
@@ -150,14 +128,10 @@ class DiscipleProfile extends Component {
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Verifier">
-                {getFieldDecorator('verifier', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your verifier!',
-                    },
-                  ],
-                })(<Input placeholder="Verifier" />)}
+                <Input
+                  value={user.disciple_profile && user.disciple_profile.verifier}
+                  placeholder="Verifier"
+                />
               </FormItem>
             </div>
           </div>

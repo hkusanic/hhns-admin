@@ -11,6 +11,12 @@ import { Helmet } from 'react-helmet'
 class UsersList extends Component {
   state = {
     users: [],
+    firstName: '',
+    lastName: '',
+    userEmail: '',
+    discipleName: '',
+    currentPage: 1,
+    perPage: 10,
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -23,35 +29,57 @@ class UsersList extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, location } = this.props
+    const { state } = location
+
     dispatch({
       type: 'userProfile/GET_USERS',
     })
+
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState({
+          currentPage: state.paginationCurrentPage,
+        })
+      }
+    }
   }
 
   handleInputChange = event => {
-    console.log(event.target.name)
+    // console.log(event.target.name)
+    const { dispatch } = this.props
+    this.setState({ [event.target.name]: event.target.value }, () => {
+      dispatch({
+        type: '',
+      })
+    })
+  }
+
+  handlePageChange = page => {
+    this.setState({
+      currentPage: page,
+    })
   }
 
   render() {
-    const { users } = this.state
+    const { users, firstName, lastName, discipleName, userEmail, currentPage, perPage } = this.state
 
     const columns = [
       {
-        title: 'Full Name',
-        dataIndex: 'name.first',
-        render: (text, record) => `${record.name.first} ${record.name.last}`,
+        title: 'User Name',
+        dataIndex: 'userName',
+        render: (text, record) => (text ? renderHTML(text) : ''),
       },
       {
-        title: 'Disciple Name',
-        dataIndex: 'discipleName',
+        title: 'Disciple',
+        dataIndex: 'disciple',
         render: text => (text ? renderHTML(text) : ''),
       },
-      {
-        title: 'Mobile',
-        dataIndex: 'mobileNumber',
-        render: text => (text ? renderHTML(text) : ''),
-      },
+      // {
+      //   title: 'Mobile',
+      //   dataIndex: 'mobileNumber',
+      //   render: text => (text ? renderHTML(text) : ''),
+      // },
       {
         title: 'Email',
         dataIndex: 'email',
@@ -65,7 +93,7 @@ class UsersList extends Component {
             <Link
               to={{
                 pathname: '/users/profile/basic',
-                state: { uuid: record.user_id },
+                state: { uuid: record.user_id, currentPage },
               }}
             >
               <i className="fa fa-edit mr-2 editIcon" />
@@ -74,6 +102,13 @@ class UsersList extends Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: users.length,
+      onChange: this.handlePageChange,
+    }
 
     return (
       <div>
@@ -99,10 +134,23 @@ class UsersList extends Component {
                 {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
 
                 <Input
-                  name="userName"
-                  placeholder="Name"
+                  name="firstName"
+                  placeholder="First Name"
                   onChange={this.handleInputChange}
-                  id="userName"
+                  id="firstName"
+                  value={firstName}
+                />
+              </div>
+
+              <div className="col-lg-3">
+                {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
+
+                <Input
+                  name="lastName"
+                  placeholder="Last Name"
+                  onChange={this.handleInputChange}
+                  id="lastName"
+                  value={lastName}
                 />
               </div>
 
@@ -112,6 +160,7 @@ class UsersList extends Component {
                   placeholder="Disciple Name"
                   onChange={this.handleInputChange}
                   id="discipleName"
+                  value={discipleName}
                 />
               </div>
 
@@ -121,6 +170,7 @@ class UsersList extends Component {
                   placeholder="User Email"
                   onChange={this.handleInputChange}
                   id="userEmail"
+                  value={userEmail}
                 />
               </div>
             </div>
@@ -135,22 +185,10 @@ class UsersList extends Component {
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={users}
-              // pagination={paginationConfig}
+              pagination={paginationConfig}
             />
           </div>
         </div>
-
-        {/* <Table
-          rowKey={record => record.user_id}
-          rowClassName={record =>
-            record.translation_required === true ? 'NotTranslated' : 'translated'
-          }
-          className="utils__scrollTable"
-          scroll={{ x: '100%' }}
-          columns={columns}
-          dataSource={users}
-          // pagination={paginationConfig}
-        /> */}
       </div>
     )
   }
