@@ -29,6 +29,10 @@ class UsersList extends Component {
     })
   }
 
+  handleInputChange = event => {
+    console.log(event.target.name)
+  }
+
   render() {
     const { users } = this.state
 
@@ -94,15 +98,30 @@ class UsersList extends Component {
               <div className="col-lg-3">
                 {/* <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} /> */}
 
-                <Input name="userName" placeholder="Name" />
+                <Input
+                  name="userName"
+                  placeholder="Name"
+                  onChange={this.handleInputChange}
+                  id="userName"
+                />
               </div>
 
               <div className="col-lg-3">
-                <Input name="discipleName" placeholder="Disciple Name" />
+                <Input
+                  name="discipleName"
+                  placeholder="Disciple Name"
+                  onChange={this.handleInputChange}
+                  id="discipleName"
+                />
               </div>
 
               <div className="col-lg-3">
-                <Input name="userEmail" placeholder="User Email" />
+                <Input
+                  name="userEmail"
+                  placeholder="User Email"
+                  onChange={this.handleInputChange}
+                  id="userEmail"
+                />
               </div>
             </div>
           </div>

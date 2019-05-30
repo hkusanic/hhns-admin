@@ -275,7 +275,7 @@ class BasicProfile extends Component {
           </div>
 
           <div className="row">
-            <div className="col-lg-12">
+            {/* <div className="col-lg-12">
               <FormItem label="Address">
                 {getFieldDecorator('address', {
                   rules: [
@@ -285,6 +285,70 @@ class BasicProfile extends Component {
                     },
                   ],
                 })(<Input placeholder="Address" />)}
+              </FormItem>
+            </div> */}
+
+            <div className="col-lg-4">
+              <FormItem label="Street Name">
+                {getFieldDecorator('street', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please input your street name!',
+                    },
+                  ],
+                })(<Input placeholder="Street Name" />)}
+              </FormItem>
+            </div>
+            <div className="col-lg-4">
+              <FormItem label="City">
+                {getFieldDecorator('city', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please input your city name!',
+                    },
+                  ],
+                })(<Input placeholder="City Name" />)}
+              </FormItem>
+            </div>
+            <div className="col-lg-4">
+              <FormItem label="PIN Code">
+                {getFieldDecorator('pinCode', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please input your PIN Code!',
+                    },
+                  ],
+                })(<Input type="number" placeholder="PIN Code" />)}
+              </FormItem>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-lg-4">
+              <FormItem label="Country">
+                {getFieldDecorator('country', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please input your country name!',
+                    },
+                  ],
+                })(<Input placeholder="Country Name" />)}
+              </FormItem>
+            </div>
+            <div className="col-lg-4">
+              <FormItem label="Landmark (Optional)">
+                {getFieldDecorator('landmark', {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Please input your landmark!',
+                    },
+                  ],
+                })(<Input placeholder="Landmark" />)}
               </FormItem>
             </div>
           </div>
