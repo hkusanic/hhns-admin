@@ -1,0 +1,30 @@
+.avatar {
+  /* width: 144px; */
+  /* height: 144px; */
+  width: 104px;
+  height: 104px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  margin-left: 4rem;
+}
+
+.avatar_img {
+  width: 100%;
+  height: 100%;
+}
+
+.button_view {
+  width: 144px;
+  text-align: center;
+  margin-left: 3rem;
+}
+
+/* .nameDiv,
+.imageDiv {
+  line-height: 0.5 !important;
+} */
+
+.imageDiv {
+  margin-left: 0;
+  padding-left: 0;
+}

@@ -10,6 +10,8 @@ import galleryList from './galleryListing/saga'
 import kirtan from './kirtan/saga'
 import video from './video/saga'
 import sadhana from './sadhana/saga'
+import userProfile from './userProfile/saga'
+import comment from './comment/saga'
 
 export default function* rootSaga() {
   yield all([
@@ -24,5 +26,7 @@ export default function* rootSaga() {
     kirtan(),
     video(),
     sadhana(),
+    userProfile(),
+    comment(),
   ])
 }

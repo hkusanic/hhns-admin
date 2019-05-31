@@ -26,9 +26,10 @@ class Breadcrumbs extends React.Component {
   }
 
   setBreadcrumbs = props => {
+    // eslint-disable-next-line no-unused-vars
     const { isMenuTop, menuTopData, menuLeftData } = this.props
     this.setState({
-      breadcrumb: this.getBreadcrumb(props, isMenuTop ? menuTopData : menuLeftData),
+      breadcrumb: this.getBreadcrumb(props, menuTopData),
     })
   }
 
