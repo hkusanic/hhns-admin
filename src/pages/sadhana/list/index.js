@@ -34,16 +34,43 @@ class SadhanaList extends React.Component {
     language: true,
     currentDate: formatDate(new Date()),
     sadhanas: [],
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
     const { currentDate } = this.state
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page: 1,
-      date: currentDate,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+
+    let browsingDate
+    if (state !== undefined) {
+      // eslint-disable-next-line prefer-destructuring
+      browsingDate = state.browsingDate
+    }
+
+    if (browsingDate) {
+      this.setState(
+        {
+          currentDate: browsingDate,
+          currentPage: state.paginationCurrentPage,
+        },
+        () => {
+          dispatch({
+            type: 'sadhana/GET_SADHANAS',
+            page: 1,
+            // eslint-disable-next-line react/destructuring-assignment
+            date: this.state.currentDate,
+          })
+        },
+      )
+    } else {
+      dispatch({
+        type: 'sadhana/GET_SADHANAS',
+        page: 1,
+        date: currentDate,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -69,10 +96,14 @@ class SadhanaList extends React.Component {
             sadhanas: tempSadhanas,
           },
           () => {
-            localStorage.setItem('sadhanaArray', JSON.stringify(tempSadhanas))
+            sessionStorage.setItem('sadhanaArray', JSON.stringify(tempSadhanas))
           },
         )
       }
+    } else {
+      this.setState({
+        sadhanas: [],
+      })
     }
   }
 
@@ -93,14 +124,20 @@ class SadhanaList extends React.Component {
     })
   }
 
-  handlePageChange = page => {
-    const { dispatch } = this.props
-    const { currentDate } = this.state
+  // handlePageChange = page => {
+  //   const { dispatch } = this.props
+  //   const { currentDate } = this.state
 
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page,
-      date: currentDate,
+  //   dispatch({
+  //     type: 'sadhana/GET_SADHANAS',
+  //     page,
+  //     date: currentDate,
+  //   })
+  // }
+
+  handlePageChange = page => {
+    this.setState({
+      currentPage: page,
     })
   }
 
@@ -149,20 +186,24 @@ class SadhanaList extends React.Component {
   onChangeDate = date => {
     const { dispatch } = this.props
 
-    this.setState({
-      currentDate: date.format('YYYY-MM-DD'),
-    })
-
-    dispatch({
-      type: 'sadhana/GET_SADHANAS',
-      page: 1,
-      date: date ? date.format('YYYY-MM-DD') : null,
-    })
+    this.setState(
+      {
+        currentDate: date.format('YYYY-MM-DD'),
+      },
+      () => {
+        dispatch({
+          type: 'sadhana/GET_SADHANAS',
+          page: 1,
+          // eslint-disable-next-line react/destructuring-assignment
+          date: this.state.currentDate,
+        })
+      },
+    )
   }
 
   render() {
-    const { language, currentDate, sadhanas } = this.state
-    const { totalSadhanas } = this.props
+    const { language, currentDate, sadhanas, perPage, currentPage } = this.state
+    // const { totalSadhanas } = this.props
 
     const nowDate = formatDate(new Date())
 
@@ -175,8 +216,6 @@ class SadhanaList extends React.Component {
       customStyleLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    console.log('sadhanas===>', sadhanas)
-
     // if (sadhanas.length === 0 && !checkDate) {
     //   customStyleRight = { pointerEvents: 'none', opacity: '0.4' }
     // }
@@ -184,12 +223,12 @@ class SadhanaList extends React.Component {
     const columns = [
       {
         title: 'First Name',
-        dataIndex: 'firstName',
+        dataIndex: 'user.name.first',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Last Name',
-        dataIndex: 'lastName',
+        dataIndex: 'user.name.last',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
@@ -212,13 +251,29 @@ class SadhanaList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/sadhana/add', state: { uuid: record.itemIndex, language } }}>
+            <Link
+              to={{
+                pathname: '/sadhana/add',
+                state: { uuid: record.itemIndex, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
           </span>
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: sadhanas.length,
+      onChange: this.handlePageChange,
+    }
+
+    const indexOfLastData = currentPage * perPage
+    const indexOfFirstData = indexOfLastData - perPage
+    const currentDataArray = sadhanas.slice(indexOfFirstData, indexOfLastData)
 
     return (
       <div>
@@ -266,22 +321,18 @@ class SadhanaList extends React.Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
-              onRow={record => {
-                return {
-                  onDoubleClick: () => {
-                    this.hanldeRedirect(record)
-                  },
-                }
-              }}
+              // onRow={record => {
+              //   return {
+              //     onDoubleClick: () => {
+              //       this.hanldeRedirect(record)
+              //     },
+              //   }
+              // }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}
-              dataSource={sadhanas}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChange,
-                total: totalSadhanas,
-              }}
+              dataSource={currentDataArray}
+              pagination={paginationConfig}
             />
           </div>
         </div>

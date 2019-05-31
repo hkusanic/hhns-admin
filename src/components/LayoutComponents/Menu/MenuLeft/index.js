@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
@@ -6,7 +7,6 @@ import store from 'store'
 import { Scrollbars } from 'react-custom-scrollbars'
 import _ from 'lodash'
 import styles from './style.module.scss'
-
 const { Sider } = Layout
 const { SubMenu, Divider } = Menu
 
@@ -166,8 +166,14 @@ class MenuLeft extends React.Component {
       if (menuItem.children) {
         const subMenuTitle = (
           <span key={menuItem.key}>
-            <span className={styles.title}>{menuItem.title}</span>
-            {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+            {!this.props.isMenuCollapsed ? (
+              <span className={styles.title}>{menuItem.title}</span>
+            ) : (
+              <span style={{ minWidth: '150px' }}>{menuItem.title}</span>
+            )}
+            {this.props.isMenuCollapsed
+              ? menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />
+              : null}
           </span>
         )
         return (
@@ -185,13 +191,13 @@ class MenuLeft extends React.Component {
     const { isMobileView, isMenuCollapsed, isLightTheme } = this.props
     const menuSettings = isMobileView
       ? {
-          width: 256,
+          width: 180,
           collapsible: false,
           collapsed: false,
           onCollapse: this.onCollapse,
         }
       : {
-          width: 256,
+          width: 180,
           collapsible: true,
           collapsed: isMenuCollapsed,
           onCollapse: this.onCollapse,
@@ -204,15 +210,9 @@ class MenuLeft extends React.Component {
       <Sider
         {...menuSettings}
         className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
+        collapsedWidth={140}
+        width={180}
       >
-        {/* <div className={styles.logo}> */}
-        {/* <div className={styles.logoContainer}> */}
-        {/* <img
-              src={`resources/images/logo-inverse${menuSettings.collapsed ? '-mobile' : ''}.png`}
-              alt=""
-            /> */}
-        {/* </div> */}
-        {/* </div> */}
         <Scrollbars
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
@@ -240,19 +240,6 @@ class MenuLeft extends React.Component {
           >
             {menu}
           </Menu>
-          {/* <div className={styles.buyPro}>
-            <p>
-              <strong>More components, more styles, more themes, and premium support!</strong>
-            </p>
-            <a
-              href="https://themeforest.net/item/clean-ui-react-admin-template/21938700"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-sm btn-danger"
-            >
-              Buy Pro 24$
-            </a>
-          </div> */}
         </Scrollbars>
       </Sider>
     )

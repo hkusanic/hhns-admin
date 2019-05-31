@@ -315,6 +315,44 @@ const routes = [
     component: loadable(() => import('pages/sadhana/add')),
     exact: true,
   },
+
+  // {
+  //   path: '/users/profile/basic',
+  //   component: loadable(() => import('pages/usersProfile/profile/index.js')),
+  //   exact: true,
+  // },
+
+  {
+    path: '/users/list',
+    component: loadable(() => import('pages/usersProfile/list')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/basic',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/disciple',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/sadhana',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/reports',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+
+  {
+    path: '/comments/list',
+    component: loadable(() => import('pages/comments/list')),
+    exact: true,
+  },
   // YouTube
   // {
   //   path: '/youtube/feed',

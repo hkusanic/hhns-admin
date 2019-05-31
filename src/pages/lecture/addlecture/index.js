@@ -1436,6 +1436,7 @@ class AddLecture extends React.Component {
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
+        <div style={{backgroundColor: 'white', borderRadius: '8px', paddingTop: '20px', margin: '20px 0px'}}>
         <Switch
           disabled={switchDisabled}
           defaultChecked
@@ -1443,18 +1444,17 @@ class AddLecture extends React.Component {
           unCheckedChildren={language ? 'en' : 'ru'}
           onChange={this.handleLanguage}
           className="toggle"
-          style={{ width: '100px', marginLeft: '10px' }}
+          style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
         />
         {editinglecture && editinglecture.en && editinglecture.ru ? (
-          <div style={{ paddingTop: '10px' }}>
+          <div style={{ paddingTop: '0px', paddingLeft: '15px', fontSize: '1.2rem' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>{language ? editinglecture.en.title : editinglecture.ru.title}</span>
             </div>
           </div>
-        ) : null}
-
+        ) : <br />}
         <Tabs defaultActiveKey="1">
           <TabPane tab="Lecture" key="1">
             <div>
@@ -2395,6 +2395,7 @@ class AddLecture extends React.Component {
             </section>
           </TabPane>
         </Tabs>
+        </div>
         <div className={styles.submit}>
           <span className="mr-3">
             <Button type="primary" onClick={this.handleFormBody}>
@@ -2405,6 +2406,7 @@ class AddLecture extends React.Component {
             Discard
           </Button>
         </div>
+        
       </React.Fragment>
     )
   }

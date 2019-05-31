@@ -2,11 +2,12 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Form, Input, Icon, TimePicker } from 'antd'
+import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
-import BackNavigation from '../../../common/BackNavigation/index'
+// import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 import './index.css'
 
@@ -50,6 +51,7 @@ class AddSadhana extends React.Component {
       nextSadhanaDate: '',
       nextSadhanaEmail: '',
       currentIndex: 0,
+      currentPage: 0,
     }
   }
 
@@ -59,12 +61,13 @@ class AddSadhana extends React.Component {
     const { state } = location
 
     if (state !== undefined) {
-      const { uuid } = state
+      const { uuid, currentPage } = state
 
       if (uuid !== undefined) {
         this.setState(
           {
             currentIndex: uuid,
+            currentPage,
           },
           () => {
             const tempObject = this.getSadhanaDetails(uuid)
@@ -78,14 +81,16 @@ class AddSadhana extends React.Component {
   }
 
   getSadhanaDetails = index => {
-    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
-
+    const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
     let tempObject = {}
     // eslint-disable-next-line no-plusplus
-    for (let i = 0; i <= tempArray.length; i++) {
-      if (index === tempArray[i].itemIndex) {
-        tempObject = { ...tempArray[i] }
-        break
+    if (tempArray.length > 0) {
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i <= tempArray.length; i++) {
+        if (index === tempArray[i].itemIndex) {
+          tempObject = { ...tempArray[i] }
+          break
+        }
       }
     }
 
@@ -222,7 +227,7 @@ class AddSadhana extends React.Component {
   }
 
   render() {
-    const { language, editSadhana, currentDate, currentIndex } = this.state
+    const { language, editSadhana, currentDate, currentIndex, currentPage } = this.state
 
     const { form } = this.props
 
@@ -231,8 +236,17 @@ class AddSadhana extends React.Component {
     // let customStyleRight = {}
     let oldRight = {}
     let oldLeft = {}
+
+    if (
+      editSadhana === null ||
+      editSadhana === undefined ||
+      Object.keys(editSadhana).length === 0
+    ) {
+      return <div>Data not found</div>
+    }
+
     if (Object.keys(editSadhana).length > 0) {
-      fullName = `${editSadhana.firstName} ${editSadhana.lastName}`
+      fullName = `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
     }
 
     const nowDate = new Date()
@@ -240,22 +254,40 @@ class AddSadhana extends React.Component {
     const tempCurrentDate = new Date(currentDate)
     tempCurrentDate.setHours(0, 0, 0, 0)
 
-    const tempArray = JSON.parse(localStorage.getItem('sadhanaArray'))
+    const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
 
     if (currentIndex === 0) {
       oldLeft = { pointerEvents: 'none', opacity: '0.4' }
     }
 
-    console.log('check===>', currentIndex === tempArray.length - 1)
-
-    if (currentIndex === tempArray.length - 1) {
-      oldRight = { pointerEvents: 'none', opacity: '0.4' }
+    if (tempArray.length > 0) {
+      if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
+        oldRight = { pointerEvents: 'none', opacity: '0.4' }
+      }
     }
 
     return (
       <React.Fragment>
         <div className="container headerDiv">
-          <BackNavigation link="/sadhana/list" title="Sadhana List" />
+          {/* <BackNavigation link="/sadhana/list" title="Sadhana List" /> */}
+
+          <Link
+            to={{
+              pathname: '/sadhana/list',
+              state: {
+                browsingDate: editSadhana.date,
+                paginationCurrentPage: currentPage,
+              },
+            }}
+          >
+            <span>
+              <Icon type="arrow-left" style={{ fontSize: '15px' }} />
+              <span style={{ fontSize: '15px', fontWeight: '400', paddingLeft: '10px' }}>
+                Sadhana List
+              </span>
+            </span>
+          </Link>
+
           {/* <div className="col-lg-3">
               <Switch
                 defaultChecked
@@ -300,14 +332,28 @@ class AddSadhana extends React.Component {
                     <div className="row">
                       <div className="col-lg-6">
                         <div className="form-group">
-                          <FormItem label={language ? 'Disciple Name' : 'Disciple Name'}>
-                            <Input
-                              disabled
-                              // value={fullName}
-                              placeholder="Disciple Name"
-                              name="name"
-                            />
-                          </FormItem>
+                          {editSadhana.user && editSadhana.user.discipleName ? (
+                            <FormItem label={language ? 'Disciple Name' : 'Disciple Name'}>
+                              <Input
+                                disabled
+                                value={editSadhana.user.discipleName}
+                                placeholder="Disciple Name"
+                                name="discipleName"
+                              />
+                            </FormItem>
+                          ) : (
+                            <FormItem label={language ? 'Name' : 'Name'}>
+                              <Input
+                                disabled
+                                value={
+                                  editSadhana.user &&
+                                  `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
+                                }
+                                placeholder="Name"
+                                name="name"
+                              />
+                            </FormItem>
+                          )}
                         </div>
                       </div>
                       <div className="col-lg-6">
@@ -315,7 +361,7 @@ class AddSadhana extends React.Component {
                           <FormItem label={language ? 'User Email' : 'User Email'}>
                             <Input
                               disabled
-                              value={editSadhana.email}
+                              value={editSadhana.user && editSadhana.user.email}
                               placeholder="User Email"
                               name="email"
                             />
