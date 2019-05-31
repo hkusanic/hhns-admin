@@ -53,6 +53,7 @@ class UsersList extends Component {
         type: 'userProfile/GET_USERS',
         email: this.state.userEmail,
         disciple: this.state.disciple,
+        discipleName: this.state.discipleName,
       })
     })
   }
