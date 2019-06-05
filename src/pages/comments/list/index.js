@@ -118,7 +118,7 @@ class CommentsList extends Component {
                         name="yesButton"
                         onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
                       >
-                        Yes
+                        Approve
                       </Button>
                       &nbsp;&nbsp;&nbsp;
                       <Button
@@ -127,7 +127,7 @@ class CommentsList extends Component {
                         name="noButton"
                         onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
                       >
-                        No
+                        Disapprove
                       </Button>
                     </div>
                   </div>
