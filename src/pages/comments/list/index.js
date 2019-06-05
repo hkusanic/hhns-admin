@@ -42,13 +42,11 @@ class CommentsList extends Component {
   }
 
   handleButtonClick = (uuid, buttonName) => {
-    console.log('uuid===>', uuid)
-    console.log('buttonName===>', buttonName)
     const { dispatch } = this.props
     if (buttonName === 'yesButton') {
       dispatch({
         type: 'comment/UPDATE_COMMENT',
-        approved: true,
+        approved: 0,
         uuid,
       })
     }
@@ -56,10 +54,24 @@ class CommentsList extends Component {
     if (buttonName === 'noButton') {
       dispatch({
         type: 'comment/UPDATE_COMMENT',
-        approved: false,
+        approved: 1,
         uuid,
       })
     }
+  }
+
+  // eslint-disable-next-line consistent-return
+  checkApproval = data => {
+    if (data === 0 || data === '0') {
+      return 'Approved'
+    }
+    if (data === 1 || data === '1') {
+      return 'Disapproved'
+    }
+    if (data === 2 || data === '2') {
+      return 'Needs Approval'
+    }
+    // return 2
   }
 
   render() {
@@ -84,7 +96,7 @@ class CommentsList extends Component {
       {
         title: 'Approved',
         dataIndex: 'approved',
-        render: (text, record, index) => (text === true ? 'Yes' : 'No'),
+        render: (text, record, index) => this.checkApproval(record.approved),
       },
     ]
 
@@ -114,7 +126,8 @@ class CommentsList extends Component {
                     <div className="col-lg-6 buttonDiv">
                       <Button
                         type="primary"
-                        disabled={record.approved}
+                        // eslint-disable-next-line no-unneeded-ternary
+                        disabled={record.approved === 0 || record.approved === '0' ? true : false}
                         name="yesButton"
                         onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
                       >
@@ -123,7 +136,8 @@ class CommentsList extends Component {
                       &nbsp;&nbsp;&nbsp;
                       <Button
                         type="danger"
-                        disabled={!record.approved}
+                        // eslint-disable-next-line no-unneeded-ternary
+                        disabled={record.approved === 1 || record.approved === '1' ? true : false}
                         name="noButton"
                         onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
                       >

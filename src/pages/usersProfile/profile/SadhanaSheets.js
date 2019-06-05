@@ -1,60 +1,8 @@
 import React, { Component } from 'react'
 import { Table } from 'antd'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
-
-// const columns = [
-//   {
-//     title: 'Rounds',
-//     dataIndex: 'rounds',
-//     render: text => (text ? renderHTML(text) : ''),
-//   },
-//   {
-//     title: 'Reading',
-//     dataIndex: 'reading',
-//     render: text => (text ? renderHTML(text) : ''),
-//   },
-//   {
-//     title: 'Time Rising',
-//     dataIndex: 'time_rising',
-//     render: text => (text ? renderHTML(text) : ''),
-//   },
-//   {
-//     title: 'Action',
-//     key: 'action',
-//     render: record => (
-//       <span>
-//         <Link
-//           to={{
-//             pathname: '/sadhana/add',
-//             state: { uuid: record.itemIndex },
-//           }}
-//         >
-//           <i className="fa fa-edit mr-2 editIcon" />
-//         </Link>
-//       </span>
-//     ),
-//   },
-// ]
-
-// const dummyData = [
-//   {
-//     rounds: '20',
-//     reading: '10',
-//     time_rising: '10:00',
-//   },
-//   {
-//     rounds: '30',
-//     reading: '15',
-//     time_rising: '12:00',
-//   },
-//   {
-//     rounds: '50',
-//     reading: '30',
-//     time_rising: '20:00',
-//   },
-// ]
 
 const getDataFromStorage = () => {
   const userDetails = JSON.parse(sessionStorage.getItem('userDetails'))
@@ -82,14 +30,33 @@ class SadhanaSheets extends Component {
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.sadhana.sadhanas !== prevState.sadhanas) {
-      return {
-        sadhanas: nextProps.sadhana.sadhanas,
-      }
-    }
+  componentWillReceiveProps(nextProps) {
+    const { sadhana } = nextProps
 
-    return null
+    const { sadhanas } = sadhana
+
+    if (sadhanas.length > 0) {
+      const tempSadhanas = []
+      let tempObject = {}
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < sadhanas.length; i++) {
+        tempObject = { ...sadhanas[i], itemIndex: i }
+        tempSadhanas.push(tempObject)
+      }
+
+      this.setState(
+        {
+          sadhanas: tempSadhanas,
+        },
+        () => {
+          sessionStorage.setItem('singleUserSadhanaArray', JSON.stringify(tempSadhanas))
+        },
+      )
+    } else {
+      this.setState({
+        sadhanas: [],
+      })
+    }
   }
 
   showing100Characters = sentence => {
@@ -131,22 +98,22 @@ class SadhanaSheets extends Component {
         dataIndex: 'time_rising',
         render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
-      // {
-      //   title: 'Action',
-      //   key: 'action',
-      //   render: record => (
-      //     <span>
-      //       <Link
-      //         to={{
-      //           pathname: '/sadhana/add',
-      //           state: { uuid: record.itemIndex },
-      //         }}
-      //       >
-      //         <i className="fa fa-edit mr-2 editIcon" />
-      //       </Link>
-      //     </span>
-      //   ),
-      // },
+      {
+        title: 'Action',
+        key: 'action',
+        render: record => (
+          <span>
+            <Link
+              to={{
+                pathname: '/single-sadhana/add',
+                state: { uuid: record.itemIndex },
+              }}
+            >
+              <i className="fa fa-edit mr-2 editIcon" />
+            </Link>
+          </span>
+        ),
+      },
     ]
 
     return (

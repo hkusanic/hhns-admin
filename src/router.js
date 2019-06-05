@@ -353,6 +353,12 @@ const routes = [
     component: loadable(() => import('pages/comments/list')),
     exact: true,
   },
+
+  {
+    path: '/single-sadhana/add',
+    component: loadable(() => import('pages/usersProfile/profile/SadhanaView.js')),
+    exact: true,
+  },
   // YouTube
   // {
   //   path: '/youtube/feed',

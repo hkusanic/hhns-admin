@@ -7,12 +7,6 @@ import './DiscipleProfile.css'
 
 const FormItem = Form.Item
 
-const getDataFromStorage = () => {
-  const userDetails = JSON.parse(sessionStorage.getItem('userDetails'))
-
-  return userDetails
-}
-
 @Form.create()
 class DiscipleProfile extends Component {
   state = {
@@ -21,22 +15,20 @@ class DiscipleProfile extends Component {
     user: {},
   }
 
-  static getDerivedStateFromProps() {
-    const data = getDataFromStorage()
-
-    if (Object.keys(data).length > 0) {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.userDetails !== prevState.user) {
       return {
-        user: data,
+        user: nextProps.userDetails,
         // eslint-disable-next-line no-nested-ternary
-        firstDate: data.disciple_profile
-          ? data.disciple_profile.first_initiation_date
-            ? moment(new Date(data.disciple_profile.first_initiation_date))
+        firstDate: nextProps.userDetails.disciple_profile
+          ? nextProps.userDetails.disciple_profile.first_initiation_date
+            ? moment(new Date(nextProps.userDetails.disciple_profile.first_initiation_date))
             : null
           : null,
         // eslint-disable-next-line no-nested-ternary
-        secondDate: data.disciple_profile
-          ? data.disciple_profile.second_initiation_date
-            ? moment(new Date(data.disciple_profile.second_initiation_date))
+        secondDate: nextProps.userDetails.disciple_profile
+          ? nextProps.userDetails.disciple_profile.second_initiation_date
+            ? moment(new Date(nextProps.userDetails.disciple_profile.second_initiation_date))
             : null
           : null,
       }
@@ -67,7 +59,7 @@ class DiscipleProfile extends Component {
           <div className="row">
             <div className="col-lg-6">
               <FormItem label="Disciple Name">
-                <Input value={user.discipleName} placeholder="Disciple Name" />
+                <Input value={user.discipleName} placeholder="Disciple Name" disabled />
               </FormItem>
             </div>
             {/* <div className="col-lg-2" /> */}
@@ -77,6 +69,7 @@ class DiscipleProfile extends Component {
                 <Input
                   value={user.disciple_profile && user.disciple_profile.temple}
                   placeholder="Temple Name"
+                  disabled
                 />
               </FormItem>
             </div>
@@ -96,8 +89,6 @@ class DiscipleProfile extends Component {
                 />
               </FormItem>
             </div>
-
-            {/* <div className="col-lg-2" /> */}
 
             <div className="col-lg-6">
               <FormItem label="Second Initiation Date">
@@ -120,23 +111,25 @@ class DiscipleProfile extends Component {
                 <Input
                   value={user.disciple_profile && user.disciple_profile.marital_status}
                   placeholder="Marital Status"
+                  disabled
                 />
               </FormItem>
             </div>
-
-            {/* <div className="col-lg-2" /> */}
 
             <div className="col-lg-6">
               <FormItem label="Verifier">
                 <Input
                   value={user.disciple_profile && user.disciple_profile.verifier}
                   placeholder="Verifier"
+                  disabled
                 />
               </FormItem>
             </div>
           </div>
 
-          <Button type="primary">Update Details</Button>
+          <Button type="primary" disabled>
+            Update Details
+          </Button>
         </div>
       </Form>
     )
