@@ -3,10 +3,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Table, Icon, DatePicker, Input } from 'antd'
+import { Table, Icon, DatePicker, Input, Collapse, Button } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
+import './index.css'
+
+const { Panel } = Collapse
 
 function formatDate(date) {
   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -38,15 +41,31 @@ class CommentsList extends Component {
     return null
   }
 
+  handleButtonClick = (uuid, buttonName) => {
+    console.log('uuid===>', uuid)
+    console.log('buttonName===>', buttonName)
+    const { dispatch } = this.props
+    if (buttonName === 'yesButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: true,
+        uuid,
+      })
+    }
+
+    if (buttonName === 'noButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: false,
+        uuid,
+      })
+    }
+  }
+
   render() {
     const { comments } = this.state
 
     const columns = [
-      {
-        title: 'Message',
-        dataIndex: 'message',
-        render: (text, record, index) => renderHTML(text),
-      },
       {
         title: 'Author Name',
         dataIndex: 'author_name',
@@ -84,8 +103,28 @@ class CommentsList extends Component {
           <div className="card-body">
             <Table
               rowKey={record => record._id}
-              className="utils__scrollTable"
-              scroll={{ x: '100%' }}
+              expandedRowRender={record => (
+                <div>
+                  <div className="textRender">{renderHTML(record.message)}</div>
+                  <Button
+                    type="primary"
+                    disabled={record.approved}
+                    name="yesButton"
+                    onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
+                  >
+                    Yes
+                  </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button
+                    type="danger"
+                    disabled={!record.approved}
+                    name="noButton"
+                    onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
+                  >
+                    No
+                  </Button>
+                </div>
+              )}
               columns={columns}
               dataSource={comments}
               // pagination={paginationConfig}

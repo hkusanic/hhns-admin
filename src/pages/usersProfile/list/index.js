@@ -3,9 +3,11 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Table, Icon, DatePicker, Input } from 'antd'
+import { Table, Icon, DatePicker, Input, Select, Form, Button } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
+
+const { Option } = Select
 
 @connect(({ userProfile }) => ({ userProfile }))
 class UsersList extends Component {
@@ -58,10 +60,38 @@ class UsersList extends Component {
     })
   }
 
+  handleSelctChange = value => {
+    const { dispatch } = this.props
+    this.setState({ disciple: value }, () => {
+      dispatch({
+        type: 'userProfile/GET_USERS',
+        email: this.state.userEmail,
+        disciple: this.state.disciple,
+        discipleName: this.state.discipleName,
+      })
+    })
+  }
+
   handlePageChange = page => {
     this.setState({
       currentPage: page,
     })
+  }
+
+  handleButtonClick = () => {
+    const { dispatch } = this.props
+    this.setState(
+      {
+        userEmail: '',
+        disciple: '',
+        discipleName: '',
+      },
+      () => {
+        dispatch({
+          type: 'userProfile/GET_USERS',
+        })
+      },
+    )
   }
 
   render() {
@@ -171,13 +201,23 @@ class UsersList extends Component {
             </div>
             <div className="row">
               <div className="col-lg-3 mb-2">
-                <Input
-                  name="disciple"
-                  placeholder="Disciple"
-                  onChange={this.handleInputChange}
+                <Select
+                  style={{ width: '100%' }}
                   id="disciple"
-                  value={disciple}
-                />
+                  placeholder="Disciple"
+                  onChange={this.handleSelctChange}
+                  // eslint-disable-next-line no-unneeded-ternary
+                  value={disciple ? disciple : undefined}
+                >
+                  <Option value="Disciple">Disciple</Option>
+                  <Option value="No">No</Option>
+                  <Option value="Aspiring Disciple">Aspiring Disciple</Option>
+                </Select>
+              </div>
+              <div className="col-lg-3 mb-2">
+                <Button type="primary" onClick={this.handleButtonClick}>
+                  Reset
+                </Button>
               </div>
             </div>
           </div>

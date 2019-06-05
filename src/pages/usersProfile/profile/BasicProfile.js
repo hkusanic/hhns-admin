@@ -130,18 +130,20 @@ class BasicProfile extends Component {
           </div>
 
           <div className="row">
-            <div className="col-lg-4">
+            <div className="col-lg-12">
               <FormItem label="Street Name">
-                {getFieldDecorator('street', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your street name!',
-                    },
-                  ],
-                })(<Input placeholder="Street Name" />)}
+                <Input placeholder="Street Name" name="streetName" />
               </FormItem>
             </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-12">
+              <FormItem label="Landmark (Optional)">
+                <Input placeholder="Landmark" name="landmark" />
+              </FormItem>
+            </div>
+          </div>
+          <div className="row">
             <div className="col-lg-4">
               <FormItem label="City">
                 {getFieldDecorator('city', {
@@ -166,9 +168,7 @@ class BasicProfile extends Component {
                 })(<Input type="number" placeholder="Postal Code" />)}
               </FormItem>
             </div>
-          </div>
 
-          <div className="row">
             <div className="col-lg-4">
               <FormItem label="Country">
                 <Select
@@ -179,18 +179,6 @@ class BasicProfile extends Component {
                   <Option value="en">EN</Option>
                   <Option value="ru">RU</Option>
                 </Select>
-              </FormItem>
-            </div>
-            <div className="col-lg-4">
-              <FormItem label="Landmark (Optional)">
-                {getFieldDecorator('landmark', {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Please input your landmark!',
-                    },
-                  ],
-                })(<Input placeholder="Landmark" />)}
               </FormItem>
             </div>
           </div>
