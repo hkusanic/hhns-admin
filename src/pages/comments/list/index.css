@@ -1,5 +1,9 @@
 .textRender p {
-  max-width: 250px;
+  max-width: 650px;
   word-wrap: break-word;
   text-align: justify;
+}
+
+.buttonDiv{
+  text-align: center
 }

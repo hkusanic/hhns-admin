@@ -105,24 +105,32 @@ class CommentsList extends Component {
               rowKey={record => record._id}
               expandedRowRender={record => (
                 <div>
-                  <div className="textRender">{renderHTML(record.message)}</div>
-                  <Button
-                    type="primary"
-                    disabled={record.approved}
-                    name="yesButton"
-                    onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
-                  >
-                    Yes
-                  </Button>
-                  &nbsp;&nbsp;&nbsp;
-                  <Button
-                    type="danger"
-                    disabled={!record.approved}
-                    name="noButton"
-                    onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
-                  >
-                    No
-                  </Button>
+                  <div className="row">
+                    <div className="col-lg-1" />
+                    <div className="col-lg-10 textRender">{renderHTML(record.message)}</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-2" />
+                    <div className="col-lg-6 buttonDiv">
+                      <Button
+                        type="primary"
+                        disabled={record.approved}
+                        name="yesButton"
+                        onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
+                      >
+                        Yes
+                      </Button>
+                      &nbsp;&nbsp;&nbsp;
+                      <Button
+                        type="danger"
+                        disabled={!record.approved}
+                        name="noButton"
+                        onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
+                      >
+                        No
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               )}
               columns={columns}
