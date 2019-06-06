@@ -58,6 +58,14 @@ class CommentsList extends Component {
         uuid,
       })
     }
+
+    if (buttonName === 'needButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: 2,
+        uuid,
+      })
+    }
   }
 
   // eslint-disable-next-line consistent-return
@@ -142,6 +150,16 @@ class CommentsList extends Component {
                         onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
                       >
                         Disapprove
+                      </Button>
+                      &nbsp;&nbsp;&nbsp;
+                      <Button
+                        type="default"
+                        // eslint-disable-next-line no-unneeded-ternary
+                        disabled={record.approved === 2 || record.approved === '2' ? true : false}
+                        name="needButton"
+                        onClick={event => this.handleButtonClick(record.uuid, 'needButton')}
+                      >
+                        Needs Approval
                       </Button>
                     </div>
                   </div>
