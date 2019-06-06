@@ -91,10 +91,15 @@ class ProductsList extends React.Component {
   }
 
   hanldeRedirect = record => {
+    const { language } = this.state
     const { history } = this.props
+
     history.push({
       pathname: '/lecture/create',
-      state: record.uuid,
+      state: {
+        id: record.uuid,
+        language,
+      },
     })
   }
 

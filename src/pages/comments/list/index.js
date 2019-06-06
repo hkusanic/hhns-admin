@@ -82,7 +82,6 @@ class CommentsList extends Component {
     if (data === 2 || data === '2') {
       return 'Needs Approval'
     }
-    // return 2
   }
 
   // eslint-disable-next-line consistent-return
