@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable eqeqeq */
 /* eslint-disable func-names */
@@ -186,6 +187,8 @@ class AddLecture extends React.Component {
           const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
           editorStateTranscriptionEn = EditorState.createWithContent(contentStateEn)
         }
+      } else {
+        editorStateTranscriptionEn = EditorState.createEmpty()
       }
 
       if (htmlSummaryEn && htmlSummaryEn.length > 0) {
@@ -194,6 +197,8 @@ class AddLecture extends React.Component {
           const csEn = ContentState.createFromBlockArray(cbEn.contentBlocks)
           editorStateSummaryEn = EditorState.createWithContent(csEn)
         }
+      } else {
+        editorStateSummaryEn = EditorState.createEmpty()
       }
 
       const htmlTranscriptionRu = lecture.editLecture
@@ -209,6 +214,8 @@ class AddLecture extends React.Component {
           const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
           editorStateTranscriptionRu = EditorState.createWithContent(contentStateRu)
         }
+      } else {
+        editorStateTranscriptionRu = EditorState.createEmpty()
       }
 
       if (htmlSummaryRu && htmlSummaryRu.length > 0) {
@@ -217,6 +224,8 @@ class AddLecture extends React.Component {
           const csRu = ContentState.createFromBlockArray(cbRu.contentBlocks)
           editorStateSummaryRu = EditorState.createWithContent(csRu)
         }
+      } else {
+        editorStateSummaryRu = EditorState.createEmpty()
       }
 
       const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
