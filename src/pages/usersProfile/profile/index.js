@@ -52,19 +52,19 @@ class UsersProfile extends Component {
 
     let content
     if (location.pathname === '/users/profile/basic') {
-      content = <BasicProfile />
+      content = <BasicProfile userDetails={JSON.parse(sessionStorage.getItem('userDetails'))} />
     }
 
     if (location.pathname === '/users/profile/disciple') {
-      content = <DiscipleProfile />
+      content = <DiscipleProfile userDetails={JSON.parse(sessionStorage.getItem('userDetails'))} />
     }
 
     if (location.pathname === '/users/profile/sadhana') {
-      content = <SadhanaSheets />
+      content = <SadhanaSheets userDetails={JSON.parse(sessionStorage.getItem('userDetails'))} />
     }
 
     if (location.pathname === '/users/profile/reports') {
-      content = <Reports />
+      content = <Reports userDetails={JSON.parse(sessionStorage.getItem('userDetails'))} />
     }
 
     return (

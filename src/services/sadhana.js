@@ -2,7 +2,7 @@ import axios from 'axios'
 import serverAddress from './config'
 /* eslint-disable */
 
-export async function getSadhanaList(page, date, createdDateSort, email) {
+export async function getSadhanaList(page, date, createdDateSort, email, userId) {
   const pageNumber = page || 1
   const dateNow = date || null
   const createdDateSorting = createdDateSort || null
@@ -12,7 +12,8 @@ export async function getSadhanaList(page, date, createdDateSort, email) {
     pageNumber +
     (dateNow ? '&date=' + date : '') +
     (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '') +
-    (email ? '&email=' + email : '')
+    (email ? '&email=' + email : '') +
+    (userId ? '&userId=' + userId : '')
   return axios
     .get(url)
     .then(response => {

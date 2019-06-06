@@ -878,6 +878,23 @@ export async function getTopMenuData() {
         },
       ],
     },
+
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/single-sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/single-sadhana/add',
+        },
+      ],
+    },
     // {
     //   title: 'USERS',
     //   key: 'basic',

@@ -7,6 +7,7 @@ import store from 'store'
 import { Scrollbars } from 'react-custom-scrollbars'
 import _ from 'lodash'
 import styles from './style.module.scss'
+
 const { Sider } = Layout
 const { SubMenu, Divider } = Menu
 

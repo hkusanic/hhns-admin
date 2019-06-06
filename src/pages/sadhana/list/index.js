@@ -295,7 +295,11 @@ class SadhanaList extends React.Component {
             </div>
             <div className="row">
               <div className="datePickerDiv col-lg-4">
-                <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} />
+                <DatePicker
+                  allowClear={false}
+                  style={{ paddingTop: '10px' }}
+                  onChange={this.onChangeDate}
+                />
               </div>
 
               <div

@@ -3,10 +3,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Table, Icon, DatePicker, Input } from 'antd'
+import { Table, Icon, DatePicker, Input, Collapse, Button } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
+import './index.css'
+
+const { Panel } = Collapse
 
 function formatDate(date) {
   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -38,15 +41,51 @@ class CommentsList extends Component {
     return null
   }
 
+  handleButtonClick = (uuid, buttonName) => {
+    const { dispatch } = this.props
+    if (buttonName === 'yesButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: 0,
+        uuid,
+      })
+    }
+
+    if (buttonName === 'noButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: 1,
+        uuid,
+      })
+    }
+
+    if (buttonName === 'needButton') {
+      dispatch({
+        type: 'comment/UPDATE_COMMENT',
+        approved: 2,
+        uuid,
+      })
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  checkApproval = data => {
+    if (data === 0 || data === '0') {
+      return 'Approved'
+    }
+    if (data === 1 || data === '1') {
+      return 'Disapproved'
+    }
+    if (data === 2 || data === '2') {
+      return 'Needs Approval'
+    }
+    // return 2
+  }
+
   render() {
     const { comments } = this.state
 
     const columns = [
-      {
-        title: 'Message',
-        dataIndex: 'message',
-        render: (text, record, index) => renderHTML(text),
-      },
       {
         title: 'Author Name',
         dataIndex: 'author_name',
@@ -65,7 +104,7 @@ class CommentsList extends Component {
       {
         title: 'Approved',
         dataIndex: 'approved',
-        render: (text, record, index) => (text === true ? 'Yes' : 'No'),
+        render: (text, record, index) => this.checkApproval(record.approved),
       },
     ]
 
@@ -84,8 +123,62 @@ class CommentsList extends Component {
           <div className="card-body">
             <Table
               rowKey={record => record._id}
-              className="utils__scrollTable"
-              scroll={{ x: '100%' }}
+              expandedRowRender={record => (
+                <div>
+                  <div className="row">
+                    <div className="col-lg-1" />
+                    <div className="col-lg-10 textRender">{renderHTML(record.message)}</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-2" />
+                    <div className="col-lg-6 buttonDiv">
+                      <div className="row">
+                        <div className="col-lg-2 mt-2">
+                          <Button
+                            type="primary"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 0 || record.approved === '0' ? true : false
+                            }
+                            name="yesButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+
+                        <div className="col-lg-2 mt-2">
+                          <Button
+                            type="danger"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 1 || record.approved === '1' ? true : false
+                            }
+                            name="noButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
+                          >
+                            Disapprove
+                          </Button>
+                        </div>
+
+                        <div className="col-lg-2 mt-2 ml-4">
+                          <Button
+                            type="default"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 2 || record.approved === '2' ? true : false
+                            }
+                            name="needButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'needButton')}
+                          >
+                            Needs Approval
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               columns={columns}
               dataSource={comments}
               // pagination={paginationConfig}
