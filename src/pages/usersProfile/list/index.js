@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { Table, Icon, DatePicker, Input, Select, Form, Button } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
+import './index.css'
 
 const { Option } = Select
 
@@ -227,7 +228,7 @@ class UsersList extends Component {
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={users}
