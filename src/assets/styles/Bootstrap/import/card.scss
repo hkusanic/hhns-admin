@@ -82,6 +82,18 @@
   // color: #fff !important;
 }
 
+.commentApproved {
+  background-color: #62b0e1fc !important;
+}
+
+.commentDisapproved {
+  background-color: #ff6868 !important;
+}
+
+.commentNeedsApproval {
+  background-color: #fff !important;
+}
+
 .closeIcon {
   color: red !important;
   cursor: pointer;

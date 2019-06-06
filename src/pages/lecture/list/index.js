@@ -59,7 +59,6 @@ class ProductsList extends React.Component {
 
   deleteLecture = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'lecture/DELETE_LECTURE',
       uuid,
