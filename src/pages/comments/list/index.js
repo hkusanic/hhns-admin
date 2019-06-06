@@ -132,35 +132,49 @@ class CommentsList extends Component {
                   <div className="row">
                     <div className="col-lg-2" />
                     <div className="col-lg-6 buttonDiv">
-                      <Button
-                        type="primary"
-                        // eslint-disable-next-line no-unneeded-ternary
-                        disabled={record.approved === 0 || record.approved === '0' ? true : false}
-                        name="yesButton"
-                        onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
-                      >
-                        Approve
-                      </Button>
-                      &nbsp;&nbsp;&nbsp;
-                      <Button
-                        type="danger"
-                        // eslint-disable-next-line no-unneeded-ternary
-                        disabled={record.approved === 1 || record.approved === '1' ? true : false}
-                        name="noButton"
-                        onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
-                      >
-                        Disapprove
-                      </Button>
-                      &nbsp;&nbsp;&nbsp;
-                      <Button
-                        type="default"
-                        // eslint-disable-next-line no-unneeded-ternary
-                        disabled={record.approved === 2 || record.approved === '2' ? true : false}
-                        name="needButton"
-                        onClick={event => this.handleButtonClick(record.uuid, 'needButton')}
-                      >
-                        Needs Approval
-                      </Button>
+                      <div className="row">
+                        <div className="col-lg-2 mt-2">
+                          <Button
+                            type="primary"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 0 || record.approved === '0' ? true : false
+                            }
+                            name="yesButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'yesButton')}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+
+                        <div className="col-lg-2 mt-2">
+                          <Button
+                            type="danger"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 1 || record.approved === '1' ? true : false
+                            }
+                            name="noButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'noButton')}
+                          >
+                            Disapprove
+                          </Button>
+                        </div>
+
+                        <div className="col-lg-2 mt-2 ml-4">
+                          <Button
+                            type="default"
+                            disabled={
+                              // eslint-disable-next-line no-unneeded-ternary
+                              record.approved === 2 || record.approved === '2' ? true : false
+                            }
+                            name="needButton"
+                            onClick={event => this.handleButtonClick(record.uuid, 'needButton')}
+                          >
+                            Needs Approval
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
