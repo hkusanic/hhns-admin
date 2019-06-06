@@ -107,7 +107,7 @@ class CommentsList extends Component {
     })
   }
 
-  handleButtonClick = () => {
+  handleResetButtonClick = () => {
     const { dispatch } = this.props
     this.setState(
       {
@@ -174,13 +174,13 @@ class CommentsList extends Component {
                 </Select>
               </div>
               <div className="col-lg-3 mb-2">
-                <Button type="primary" onClick={this.handleButtonClick}>
+                <Button type="primary" onClick={this.handleResetButtonClick}>
                   Reset
                 </Button>
               </div>
             </div>
           </div>
-          <div className="card-body">
+          <div className="container card-body">
             <Table
               rowKey={record => record._id}
               rowClassName={record =>

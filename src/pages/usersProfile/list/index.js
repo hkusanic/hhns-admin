@@ -95,6 +95,15 @@ class UsersList extends Component {
     )
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    const { currentPage } = this.state
+    history.push({
+      pathname: '/users/profile/basic',
+      state: { uuid: record.user_id, currentPage },
+    })
+  }
+
   render() {
     const {
       users,
@@ -222,9 +231,16 @@ class UsersList extends Component {
               </div>
             </div>
           </div>
-          <div className="card-body">
+          <div className="container card-body">
             <Table
               rowKey={record => record.user_id}
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }

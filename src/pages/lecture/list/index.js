@@ -169,7 +169,7 @@ class ProductsList extends React.Component {
       <div>
         <Helmet title="Lecture List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Lecture List</strong>
               <Switch

@@ -56,7 +56,6 @@ class BlogList extends React.Component {
 
   deleteBlog = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'blog/DELETE_BLOG_BY_ID',
       uuid,
@@ -71,10 +70,11 @@ class BlogList extends React.Component {
   }
 
   hanldeRedirect = record => {
+    const { language } = this.state
     const { history } = this.props
     history.push({
       pathname: '/blog/add-blog-post',
-      state: record.uuid,
+      state: { id: record.uuid, language },
     })
   }
 
@@ -125,7 +125,7 @@ class BlogList extends React.Component {
       <div>
         <Helmet title="Products List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Blog List</strong>
               <Switch
