@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-state */
 import React, { Component, Fragment } from 'react'
 import { Form, Input, Select, Button, Upload } from 'antd'
 import { withRouter } from 'react-router-dom'
@@ -7,10 +6,10 @@ import './BasicProfile.css'
 const FormItem = Form.Item
 const { Option } = Select
 
-const AvatarView = ({ avatar }) => (
+const AvatarView = ({ profilePic }) => (
   <Fragment>
     <div className="avatar">
-      <img src={avatar} alt="avatar" className="avatar_img" />
+      <img src={profilePic} alt="avatar" className="avatar_img" />
     </div>
     <Upload fileList={[]}>
       <div className="button_view">
@@ -39,9 +38,12 @@ class BasicProfile extends Component {
     return null
   }
 
-  getAvatarURL = () => {
-    const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
-    return url
+  getProfileUrl = () => {
+    const { user } = this.state
+    if (user.profile_pic === 'Profile pic not available') {
+      return 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
+    }
+    return user.profile_pic
   }
 
   handleLanguageChange = language => {
@@ -65,6 +67,10 @@ class BasicProfile extends Component {
 
     if (language === 'ru') {
       language = 'Russian'
+    }
+
+    if (!user) {
+      return <div>Loading...</div>
     }
 
     return (
@@ -114,12 +120,7 @@ class BasicProfile extends Component {
             </div>
 
             <div className="col-lg-4 imageDiv">
-              <AvatarView avatar={this.getAvatarURL()} />
-              {/* <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br /> */}
+              <AvatarView profilePic={this.getProfileUrl()} />
             </div>
           </div>
 

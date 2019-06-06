@@ -1436,49 +1436,60 @@ class AddLecture extends React.Component {
     return (
       <React.Fragment>
         <BackNavigation link="/lecture/list" title="Lecture List" />
-        <Switch
-          disabled={switchDisabled}
-          defaultChecked
-          checkedChildren={language ? 'en' : 'ru'}
-          unCheckedChildren={language ? 'en' : 'ru'}
-          onChange={this.handleLanguage}
-          className="toggle"
-          style={{ width: '100px', marginLeft: '10px' }}
-        />
-        {editinglecture && editinglecture.en && editinglecture.ru ? (
-          <div style={{ paddingTop: '10px' }}>
-            <div>
-              <strong>Title :</strong>
-              &nbsp;&nbsp;
-              <span>{language ? editinglecture.en.title : editinglecture.ru.title}</span>
+        <div
+          style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            margin: '20px 0px',
+          }}
+        >
+          <Switch
+            disabled={switchDisabled}
+            defaultChecked
+            checkedChildren={language ? 'en' : 'ru'}
+            unCheckedChildren={language ? 'en' : 'ru'}
+            onChange={this.handleLanguage}
+            className="toggle"
+            style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
+          />
+          {editinglecture && editinglecture.en && editinglecture.ru ? (
+            <div style={{ paddingTop: '0px', paddingLeft: '15px', fontSize: '1.2rem' }}>
+              <div>
+                <strong>Title :</strong>
+                &nbsp;&nbsp;
+                <span>{language ? editinglecture.en.title : editinglecture.ru.title}</span>
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : (
+            <br />
+          )}
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Lecture" key="1">
+              <div>
+                <Helmet title="Add Blog Post" />
+                <section className="card">
+                  <div className="card-body">
+                    <div className={styles.addPost}>
+                      <Form className="mt-3">
+                        <div className="form-group">
+                          <FormItem label={language ? 'Title' : 'Title'}>
+                            <Input
+                              onChange={this.handleTitleChange}
+                              value={language ? titleEn : titleRu}
+                              placeholder="lecture title"
+                              name="title"
+                            />
+                            {!formElements.title.valid &&
+                            formElements.title.validation &&
+                            formElements.title.touched ? (
+                              <div className="invalidFeedback">
+                                {formElements.title.errorMessage}
+                              </div>
+                            ) : null}
+                          </FormItem>
 
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Lecture" key="1">
-            <div>
-              <Helmet title="Add Blog Post" />
-              <section className="card">
-                <div className="card-body">
-                  <div className={styles.addPost}>
-                    <Form className="mt-3">
-                      <div className="form-group">
-                        <FormItem label={language ? 'Title' : 'Title'}>
-                          <Input
-                            onChange={this.handleTitleChange}
-                            value={language ? titleEn : titleRu}
-                            placeholder="lecture title"
-                            name="title"
-                          />
-                          {!formElements.title.valid &&
-                          formElements.title.validation &&
-                          formElements.title.touched ? (
-                            <div className="invalidFeedback">{formElements.title.errorMessage}</div>
-                          ) : null}
-                        </FormItem>
-
-                        {/* <FormItem label={language ? 'Title' : 'Title'}>
+                          {/* <FormItem label={language ? 'Title' : 'Title'}>
                           {form.getFieldDecorator('title', {
                             rules: [
                               {
@@ -1495,7 +1506,7 @@ class AddLecture extends React.Component {
                           )}
                         </FormItem> */}
 
-                        {/* <FormItem label={language ? 'Title' : 'Title'}>
+                          {/* <FormItem label={language ? 'Title' : 'Title'}>
                           {form.getFieldDecorator('title', {
                             initialValue:
                               editinglecture && editinglecture.en && editinglecture.ru
@@ -1505,144 +1516,152 @@ class AddLecture extends React.Component {
                                 : '',
                           })(<Input placeholder="lecture title" />)}
                         </FormItem> */}
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Author">
-                          {form.getFieldDecorator('author', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Author is required',
-                              },
-                            ],
-                            initialValue: editinglecture ? editinglecture.author : '',
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Author"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              <Option value="Niranjana Swami">Niranjana Swami</Option>
-                              <Option value="other">Other</Option>
-                            </Select>,
-                          )}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Language">
-                          {form.getFieldDecorator('language', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Language is required',
-                              },
-                            ],
-                            initialValue: editinglecture
-                              ? editinglecture.language
-                              : 'Select a Language',
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select a Language"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              <Option value="english">English</Option>
-                              <Option value="russian">Russian</Option>
-                            </Select>,
-                          )}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Date">
-                          {form.getFieldDecorator('date', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Date is required',
-                              },
-                            ],
-                            initialValue: editinglecture
-                              ? moment(editinglecture.created_date, dateFormat)
-                              : moment(new Date(), dateFormat),
-                          })(<DatePicker onChange={this.onChange} />)}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Publish Date">
-                          {form.getFieldDecorator('publish_date', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Publish Date is required',
-                              },
-                            ],
-                            initialValue:
-                              editinglecture && editinglecture.published_date
-                                ? moment(editinglecture.published_date, dateFormat)
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Author">
+                            {form.getFieldDecorator('author', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Author is required',
+                                },
+                              ],
+                              initialValue: editinglecture ? editinglecture.author : '',
+                            })(
+                              <Select
+                                id="product-edit-colors"
+                                showSearch
+                                style={{ width: '100%' }}
+                                placeholder="Select Author"
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                  option.props.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                }
+                              >
+                                <Option value="Niranjana Swami">Niranjana Swami</Option>
+                                <Option value="other">Other</Option>
+                              </Select>,
+                            )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Language">
+                            {form.getFieldDecorator('language', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Language is required',
+                                },
+                              ],
+                              initialValue: editinglecture
+                                ? editinglecture.language
+                                : 'Select a Language',
+                            })(
+                              <Select
+                                id="product-edit-colors"
+                                showSearch
+                                style={{ width: '100%' }}
+                                placeholder="Select a Language"
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                  option.props.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                                }
+                              >
+                                <Option value="english">English</Option>
+                                <Option value="russian">Russian</Option>
+                              </Select>,
+                            )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Date">
+                            {form.getFieldDecorator('date', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Date is required',
+                                },
+                              ],
+                              initialValue: editinglecture
+                                ? moment(editinglecture.created_date, dateFormat)
                                 : moment(new Date(), dateFormat),
-                          })(<DatePicker disabled />)}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem>
-                          {form.getFieldDecorator('translationRequired', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Need Translation is required',
-                              },
-                            ],
-                            initialValue: editinglecture ? editinglecture.translation_required : '',
-                          })(
-                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                              &nbsp; Need Translation ?
-                            </Checkbox>,
-                          )}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label={language ? 'Location' : 'Location'}>
-                          <Select
-                            id="product-edit-colors"
-                            showSearch
-                            style={{ width: '100%' }}
-                            placeholder="Select Location"
-                            optionFilterProp="children"
-                            value={language ? locationEn : locationRu}
-                            filterOption={(input, option) =>
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            {locations && locations.length > 0
-                              ? locations.map(item => {
-                                  return (
-                                    <Option
-                                      onClick={() => {
-                                        this.handleLocationChange(item)
-                                      }}
-                                      key={item._id}
-                                      value={language ? item.title_en : item.title_ru}
-                                    >
-                                      {language ? item.title_en : item.title_ru}
-                                    </Option>
-                                  )
-                                })
-                              : null}
-                          </Select>
+                            })(<DatePicker onChange={this.onChange} />)}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Publish Date">
+                            {form.getFieldDecorator('publish_date', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Publish Date is required',
+                                },
+                              ],
+                              initialValue:
+                                editinglecture && editinglecture.published_date
+                                  ? moment(editinglecture.published_date, dateFormat)
+                                  : moment(new Date(), dateFormat),
+                            })(<DatePicker disabled />)}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem>
+                            {form.getFieldDecorator('translationRequired', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: 'Need Translation is required',
+                                },
+                              ],
+                              initialValue: editinglecture
+                                ? editinglecture.translation_required
+                                : '',
+                            })(
+                              <Checkbox
+                                checked={translationRequired}
+                                onChange={this.handleCheckbox}
+                              >
+                                &nbsp; Need Translation ?
+                              </Checkbox>,
+                            )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label={language ? 'Location' : 'Location'}>
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Location"
+                              optionFilterProp="children"
+                              value={language ? locationEn : locationRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {locations && locations.length > 0
+                                ? locations.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleLocationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
 
-                          {/* {form.getFieldDecorator('location', {
+                            {/* {form.getFieldDecorator('location', {
                             rules: [
                               {
                                 required: true,
@@ -1685,39 +1704,40 @@ class AddLecture extends React.Component {
                                 : null}
                             </Select>,
                           )} */}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label={language ? 'Event' : 'Event'}>
-                          <Select
-                            id="product-edit-colors"
-                            showSearch
-                            style={{ width: '100%' }}
-                            placeholder="Select Event"
-                            optionFilterProp="children"
-                            value={language ? eventEn : eventRu}
-                            filterOption={(input, option) =>
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            {events && events.length > 0
-                              ? events.map(item => {
-                                  return (
-                                    <Option
-                                      onClick={() => {
-                                        this.handleEventChange(item)
-                                      }}
-                                      key={item._id}
-                                      value={language ? item.title_en : item.title_ru}
-                                    >
-                                      {language ? item.title_en : item.title_ru}
-                                    </Option>
-                                  )
-                                })
-                              : null}
-                          </Select>
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label={language ? 'Event' : 'Event'}>
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Event"
+                              optionFilterProp="children"
+                              value={language ? eventEn : eventRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {events && events.length > 0
+                                ? events.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleEventChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
 
-                          {/* {form.getFieldDecorator('event', {
+                            {/* {form.getFieldDecorator('event', {
                             rules: [
                               {
                                 required: true,
@@ -1760,39 +1780,40 @@ class AddLecture extends React.Component {
                                 : null}
                             </Select>,
                           )} */}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label={language ? 'Topic' : 'Topic'}>
-                          <Select
-                            id="product-edit-colors"
-                            showSearch
-                            style={{ width: '100%' }}
-                            placeholder="Select Topic"
-                            optionFilterProp="children"
-                            value={language ? topicEn : topicRu}
-                            filterOption={(input, option) =>
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            {topics && topics.length > 0
-                              ? topics.map(item => {
-                                  return (
-                                    <Option
-                                      onClick={() => {
-                                        this.handleTopicChange(item)
-                                      }}
-                                      key={item._id}
-                                      value={language ? item.title_en : item.title_ru}
-                                    >
-                                      {language ? item.title_en : item.title_ru}
-                                    </Option>
-                                  )
-                                })
-                              : null}
-                          </Select>
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label={language ? 'Topic' : 'Topic'}>
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Topic"
+                              optionFilterProp="children"
+                              value={language ? topicEn : topicRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {topics && topics.length > 0
+                                ? topics.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleTopicChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
 
-                          {/* {form.getFieldDecorator('topic', {
+                            {/* {form.getFieldDecorator('topic', {
                             rules: [
                               {
                                 required: true,
@@ -1835,61 +1856,62 @@ class AddLecture extends React.Component {
                                 : null}
                             </Select>,
                           )} */}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Part / Canto">
-                          {form.getFieldDecorator('part', {
-                            initialValue: editinglecture ? editinglecture.part : '',
-                          })(<Input type="Number" placeholder="part/songs" />)}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Chapter">
-                          {form.getFieldDecorator('chapter', {
-                            initialValue: editinglecture ? editinglecture.chapter : '',
-                          })(<Input type="Number" placeholder="Chapter" />)}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Verse">
-                          {form.getFieldDecorator('verse', {
-                            initialValue: editinglecture ? editinglecture.verse : '',
-                          })(<Input type="Number" placeholder="Verse/Text" />)}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Translation">
-                          <Select
-                            id="product-edit-colors"
-                            showSearch
-                            style={{ width: '100%' }}
-                            placeholder="Select Artist"
-                            // onChange={this.handleSelectTranslation}
-                            optionFilterProp="children"
-                            value={language ? translationEn : translationRu}
-                            filterOption={(input, option) =>
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            {translations && translations.length > 0
-                              ? translations.map(item => {
-                                  return (
-                                    <Option
-                                      onClick={() => {
-                                        this.handleTranslationChange(item)
-                                      }}
-                                      key={item._id}
-                                      value={language ? item.title_en : item.title_ru}
-                                    >
-                                      {language ? item.title_en : item.title_ru}
-                                    </Option>
-                                  )
-                                })
-                              : null}
-                          </Select>
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Part / Canto">
+                            {form.getFieldDecorator('part', {
+                              initialValue: editinglecture ? editinglecture.part : '',
+                            })(<Input type="Number" placeholder="part/songs" />)}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Chapter">
+                            {form.getFieldDecorator('chapter', {
+                              initialValue: editinglecture ? editinglecture.chapter : '',
+                            })(<Input type="Number" placeholder="Chapter" />)}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Verse">
+                            {form.getFieldDecorator('verse', {
+                              initialValue: editinglecture ? editinglecture.verse : '',
+                            })(<Input type="Number" placeholder="Verse/Text" />)}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Translation">
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Artist"
+                              // onChange={this.handleSelectTranslation}
+                              optionFilterProp="children"
+                              value={language ? translationEn : translationRu}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              {translations && translations.length > 0
+                                ? translations.map(item => {
+                                    return (
+                                      <Option
+                                        onClick={() => {
+                                          this.handleTranslationChange(item)
+                                        }}
+                                        key={item._id}
+                                        value={language ? item.title_en : item.title_ru}
+                                      >
+                                        {language ? item.title_en : item.title_ru}
+                                      </Option>
+                                    )
+                                  })
+                                : null}
+                            </Select>
 
-                          {/* {form.getFieldDecorator('translation', {
+                            {/* {form.getFieldDecorator('translation', {
                             rules: [
                               {
                                 required: true,
@@ -1933,15 +1955,15 @@ class AddLecture extends React.Component {
                                 : null}
                             </Select>,
                           )} */}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem>
-                          <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
-                            &nbsp; Need Transcribe ?
-                          </Checkbox>
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem>
+                            <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
+                              &nbsp; Need Transcribe ?
+                            </Checkbox>
 
-                          {/* {form.getFieldDecorator('transcribe', {
+                            {/* {form.getFieldDecorator('transcribe', {
                             rules: [
                               {
                                 required: true,
@@ -1954,27 +1976,27 @@ class AddLecture extends React.Component {
                               &nbsp; Need Translation ?
                             </Checkbox>,
                           )} */}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label={language ? 'Body' : 'Body'}>
-                          {form.getFieldDecorator('content', {
-                            initialValue: editorState || '',
-                          })(
-                            <div className={styles.editor}>
-                              <Editor
-                                editorState={editorState}
-                                onEditorStateChange={this.onEditorStateChange}
-                              />
-                            </div>,
-                          )}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem label="Attachment">
-                          {audioLink ? (
-                            <ul>
-                              {/* <li className="filesList">
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label={language ? 'Body' : 'Body'}>
+                            {form.getFieldDecorator('content', {
+                              initialValue: editorState || '',
+                            })(
+                              <div className={styles.editor}>
+                                <Editor
+                                  editorState={editorState}
+                                  onEditorStateChange={this.onEditorStateChange}
+                                />
+                              </div>,
+                            )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label="Attachment">
+                            {audioLink ? (
+                              <ul>
+                                {/* <li className="filesList">
                                 {audioLink}
                                 &nbsp;&nbsp;
                                 <i
@@ -1985,78 +2007,78 @@ class AddLecture extends React.Component {
                                 />
                               </li> */}
 
-                              <li className="filesList">
-                                <div
-                                  style={{
-                                    display: 'inline-block',
-                                    width: '20rem',
-                                    paddingLeft: '15px',
-                                  }}
-                                >
-                                  {audioLink.split('/').pop(-1)}
-                                  &nbsp;&nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(audioLink, 'audio')
+                                <li className="filesList">
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
                                     }}
-                                  />
-                                </div>
-                                {percentage !== 0 ? (
-                                  <div style={{ display: 'inline-block', width: '20rem' }}>
-                                    <Progress percent={percentage} />
+                                  >
+                                    {audioLink.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(audioLink, 'audio')
+                                      }}
+                                    />
                                   </div>
-                                ) : null}
-                              </li>
-                            </ul>
-                          ) : (
-                            ''
-                          )}
-                        </FormItem>
-                      </div>
-                      <div className="form-group">
-                        <FormItem>
-                          {form.getFieldDecorator('Files')(
-                            <Dragger
-                              beforeUpload={this.beforeUploadAudio}
-                              multiple={false}
-                              showUploadList={false}
-                              customRequest={this.handleFileChange}
-                              // onChange={this.handleFileChange}
-                            >
-                              <p className="ant-upload-drag-icon">
-                                <Icon type="inbox" />
-                              </p>
-                              <p className="ant-upload-text">
-                                Click or drag file to this area to upload
-                              </p>
-                              <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibit from
-                                uploading company data or other band files
-                              </p>
-                            </Dragger>,
-                          )}
-                        </FormItem>
-                      </div>
-                    </Form>
+                                  {percentage !== 0 ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              </ul>
+                            ) : (
+                              ''
+                            )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem>
+                            {form.getFieldDecorator('Files')(
+                              <Dragger
+                                beforeUpload={this.beforeUploadAudio}
+                                multiple={false}
+                                showUploadList={false}
+                                customRequest={this.handleFileChange}
+                                // onChange={this.handleFileChange}
+                              >
+                                <p className="ant-upload-drag-icon">
+                                  <Icon type="inbox" />
+                                </p>
+                                <p className="ant-upload-text">
+                                  Click or drag file to this area to upload
+                                </p>
+                                <p className="ant-upload-hint">
+                                  Support for a single or bulk upload. Strictly prohibit from
+                                  uploading company data or other band files
+                                </p>
+                              </Dragger>,
+                            )}
+                          </FormItem>
+                        </div>
+                      </Form>
+                    </div>
                   </div>
-                </div>
-              </section>
-            </div>
-          </TabPane>
-          <TabPane tab="Summary" key="2">
-            <section className="card">
-              <div className="card-body">
-                <Form className="mt-3">
-                  <div className="form-group">
-                    <FormItem label={language ? 'Summary' : 'Summary'}>
-                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                        <Editor
-                          editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
-                          onEditorStateChange={this.onEditorChangeStateSummary}
-                        />
-                      </div>
-                      {/* {form.getFieldDecorator('summary', {
+                </section>
+              </div>
+            </TabPane>
+            <TabPane tab="Summary" key="2">
+              <section className="card">
+                <div className="card-body">
+                  <Form className="mt-3">
+                    <div className="form-group">
+                      <FormItem label={language ? 'Summary' : 'Summary'}>
+                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                          <Editor
+                            editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
+                            onEditorStateChange={this.onEditorChangeStateSummary}
+                          />
+                        </div>
+                        {/* {form.getFieldDecorator('summary', {
                         initialValue: editorStateSummary,
                       })(
                         <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
@@ -2066,105 +2088,105 @@ class AddLecture extends React.Component {
                           />
                         </div>,
                       )} */}
-                    </FormItem>
-                  </div>
-                  <div className="form-group" style={customStyleSumm}>
-                    <FormItem label="Attachment">
-                      <ul>
-                        {language
-                          ? // summaryFilesEn.length > 0 &&
-                            //   summaryFilesEn.map((item, index) => {
-                            //     if (item !== '') {
-                            //       return (
-                            //         <li className="filesList">
-                            //           {item} &nbsp;&nbsp;
-                            //           <i
-                            //             className="fa fa-close closeIcon"
-                            //             onClick={() => {
-                            //               this.deleteFile(item, 'transcription')
-                            //             }}
-                            //           />
-                            //         </li>
-                            //       )
-                            //     }
-                            //   })
+                      </FormItem>
+                    </div>
+                    <div className="form-group" style={customStyleSumm}>
+                      <FormItem label="Attachment">
+                        <ul>
+                          {language
+                            ? // summaryFilesEn.length > 0 &&
+                              //   summaryFilesEn.map((item, index) => {
+                              //     if (item !== '') {
+                              //       return (
+                              //         <li className="filesList">
+                              //           {item} &nbsp;&nbsp;
+                              //           <i
+                              //             className="fa fa-close closeIcon"
+                              //             onClick={() => {
+                              //               this.deleteFile(item, 'transcription')
+                              //             }}
+                              //           />
+                              //         </li>
+                              //       )
+                              //     }
+                              //   })
 
-                            summArrayEn.length > 0 &&
-                            summArrayEn.map((item, index) => {
-                              return (
-                                <li className="filesList" key={index}>
-                                  <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: '20rem',
-                                      paddingLeft: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'summary')
+                              summArrayEn.length > 0 &&
+                              summArrayEn.map((item, index) => {
+                                return (
+                                  <li className="filesList" key={index}>
+                                    <div
+                                      style={{
+                                        display: 'inline-block',
+                                        width: '20rem',
+                                        paddingLeft: '15px',
                                       }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
+                                    >
+                                      {item.fileName && item.fileName.split('/').pop(-1)}
+                                      &nbsp;&nbsp;&nbsp;
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'summary')
+                                        }}
+                                      />
                                     </div>
-                                  ) : null}
-                                </li>
-                              )
-                            })
-                          : // summaryFilesRu.length > 0 &&
-                            //   summaryFilesRu.map((item, index) => {
-                            //     if (item !== '') {
-                            //       return (
-                            //         <li className="filesList">
-                            //           {item} &nbsp;&nbsp;
-                            //           <i
-                            //             className="fa fa-close closeIcon"
-                            //             onClick={() => {
-                            //               this.deleteFile(item, 'transcription')
-                            //             }}
-                            //           />
-                            //         </li>
-                            //       )
-                            //     }
-                            //   })
-                            summArrayRu.length > 0 &&
-                            summArrayRu.map((item, index) => {
-                              return (
-                                <li className="filesList" key={index}>
-                                  <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: '20rem',
-                                      paddingLeft: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'summary')
+                                    {item.percentage !== 'zeroPercent' ? (
+                                      <div style={{ display: 'inline-block', width: '20rem' }}>
+                                        <Progress percent={item.percentage} />
+                                      </div>
+                                    ) : null}
+                                  </li>
+                                )
+                              })
+                            : // summaryFilesRu.length > 0 &&
+                              //   summaryFilesRu.map((item, index) => {
+                              //     if (item !== '') {
+                              //       return (
+                              //         <li className="filesList">
+                              //           {item} &nbsp;&nbsp;
+                              //           <i
+                              //             className="fa fa-close closeIcon"
+                              //             onClick={() => {
+                              //               this.deleteFile(item, 'transcription')
+                              //             }}
+                              //           />
+                              //         </li>
+                              //       )
+                              //     }
+                              //   })
+                              summArrayRu.length > 0 &&
+                              summArrayRu.map((item, index) => {
+                                return (
+                                  <li className="filesList" key={index}>
+                                    <div
+                                      style={{
+                                        display: 'inline-block',
+                                        width: '20rem',
+                                        paddingLeft: '15px',
                                       }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
+                                    >
+                                      {item.fileName && item.fileName.split('/').pop(-1)}
+                                      &nbsp;&nbsp;&nbsp;
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'summary')
+                                        }}
+                                      />
                                     </div>
-                                  ) : null}
-                                </li>
-                              )
-                            })}
-                      </ul>
-                    </FormItem>
+                                    {item.percentage !== 'zeroPercent' ? (
+                                      <div style={{ display: 'inline-block', width: '20rem' }}>
+                                        <Progress percent={item.percentage} />
+                                      </div>
+                                    ) : null}
+                                  </li>
+                                )
+                              })}
+                        </ul>
+                      </FormItem>
 
-                    {/* <FormItem label="Attachment">
+                      {/* <FormItem label="Attachment">
                       <ul>
                         {summaryFiles && summaryFiles.length > 0
                           ? summaryFiles.map(item => {
@@ -2185,51 +2207,51 @@ class AddLecture extends React.Component {
                           : null}
                       </ul>
                     </FormItem> */}
-                  </div>
-                  <div className="form-group">
-                    <FormItem>
-                      {form.getFieldDecorator('Files1')(
-                        <Dragger
-                          beforeUpload={this.beforeUpload}
-                          showUploadList={false}
-                          multiple
-                          customRequest={this.handleSummaryFileChange}
-                          // onChange={this.handleSummaryFileChange}
-                        >
-                          <p className="ant-upload-drag-icon">
-                            <Icon type="inbox" />
-                          </p>
-                          <p className="ant-upload-text">
-                            Click or drag file to this area to upload
-                          </p>
-                          <p className="ant-upload-hint">
-                            Support for a single or bulk upload. Strictly prohibit from uploading
-                            company data or other band files
-                          </p>
-                        </Dragger>,
-                      )}
-                    </FormItem>
-                  </div>
-                </Form>
-              </div>
-            </section>
-          </TabPane>
-          <TabPane tab="Transcription" key="3">
-            <section className="card">
-              <div className="card-body">
-                &nbsp;
-                <div className="form-group">
-                  <FormItem label={language ? 'Transcription' : 'Transcription'}>
-                    <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                      <Editor
-                        editorState={
-                          language ? editorStateTranscriptionEn : editorStateTranscriptionRu
-                        }
-                        onEditorStateChange={this.onEditorChangeStateTranscription}
-                      />
                     </div>
+                    <div className="form-group">
+                      <FormItem>
+                        {form.getFieldDecorator('Files1')(
+                          <Dragger
+                            beforeUpload={this.beforeUpload}
+                            showUploadList={false}
+                            multiple
+                            customRequest={this.handleSummaryFileChange}
+                            // onChange={this.handleSummaryFileChange}
+                          >
+                            <p className="ant-upload-drag-icon">
+                              <Icon type="inbox" />
+                            </p>
+                            <p className="ant-upload-text">
+                              Click or drag file to this area to upload
+                            </p>
+                            <p className="ant-upload-hint">
+                              Support for a single or bulk upload. Strictly prohibit from uploading
+                              company data or other band files
+                            </p>
+                          </Dragger>,
+                        )}
+                      </FormItem>
+                    </div>
+                  </Form>
+                </div>
+              </section>
+            </TabPane>
+            <TabPane tab="Transcription" key="3">
+              <section className="card">
+                <div className="card-body">
+                  &nbsp;
+                  <div className="form-group">
+                    <FormItem label={language ? 'Transcription' : 'Transcription'}>
+                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                        <Editor
+                          editorState={
+                            language ? editorStateTranscriptionEn : editorStateTranscriptionRu
+                          }
+                          onEditorStateChange={this.onEditorChangeStateTranscription}
+                        />
+                      </div>
 
-                    {/* {form.getFieldDecorator('transcription', {
+                      {/* {form.getFieldDecorator('transcription', {
                       initialValue: editinglecture
                         ? language
                           ? editorStateTranscriptionEn
@@ -2245,100 +2267,100 @@ class AddLecture extends React.Component {
                         />
                       </div>,
                     )} */}
-                  </FormItem>
-                </div>
-                <div className="form-group" style={customStyleTrans}>
-                  <FormItem label="Attachment">
-                    <ul>
-                      {language
-                        ? // transcriptionFilesEn.length > 0 &&
-                          //   transcriptionFilesEn.map((item, index) => {
-                          //     if (item !== '') {
-                          //       return (
-                          //         <li className="filesList">
-                          //           <i
-                          //             className="fa fa-trash closeIcon"
-                          //             onClick={() => {
-                          //               this.deleteFile(item, 'transcription')
-                          //             }}
-                          //           />
-                          //           <div
-                          //             style={{
-                          //               display: 'inline-block',
-                          //               width: '20rem',
-                          //               paddingLeft: '15px',
-                          //             }}
-                          //           >
-                          //             {item.split('/').pop(-1)}
-                          //           </div>
-                          //           <div style={{ display: 'inline-block', width: '20rem' }}>
-                          //             <Progress percent={percentage} />
-                          //           </div>
-                          //         </li>
-                          //       )
-                          //     }
-                          //   })
-                          transArrayEn.length > 0 &&
-                          transArrayEn.map((item, index) => {
-                            return (
-                              <li className="filesList" key={index}>
-                                {' '}
-                                <div
-                                  style={{
-                                    display: 'inline-block',
-                                    width: '20rem',
-                                    paddingLeft: '15px',
-                                  }}
-                                >
-                                  {item.fileName && item.fileName.split('/').pop(-1)}
-                                  &nbsp;&nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'transcription')
+                    </FormItem>
+                  </div>
+                  <div className="form-group" style={customStyleTrans}>
+                    <FormItem label="Attachment">
+                      <ul>
+                        {language
+                          ? // transcriptionFilesEn.length > 0 &&
+                            //   transcriptionFilesEn.map((item, index) => {
+                            //     if (item !== '') {
+                            //       return (
+                            //         <li className="filesList">
+                            //           <i
+                            //             className="fa fa-trash closeIcon"
+                            //             onClick={() => {
+                            //               this.deleteFile(item, 'transcription')
+                            //             }}
+                            //           />
+                            //           <div
+                            //             style={{
+                            //               display: 'inline-block',
+                            //               width: '20rem',
+                            //               paddingLeft: '15px',
+                            //             }}
+                            //           >
+                            //             {item.split('/').pop(-1)}
+                            //           </div>
+                            //           <div style={{ display: 'inline-block', width: '20rem' }}>
+                            //             <Progress percent={percentage} />
+                            //           </div>
+                            //         </li>
+                            //       )
+                            //     }
+                            //   })
+                            transArrayEn.length > 0 &&
+                            transArrayEn.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  {' '}
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
                                     }}
-                                  />
-                                </div>
-                                {item.percentage !== 'zeroPercent' ? (
-                                  <div style={{ display: 'inline-block', width: '20rem' }}>
-                                    <Progress percent={item.percentage} />
+                                  >
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'transcription')
+                                      }}
+                                    />
                                   </div>
-                                ) : null}
-                              </li>
-                            )
-                          })
-                        : transArrayRu.length > 0 &&
-                          transArrayRu.map((item, index) => {
-                            return (
-                              <li className="filesList" key={index}>
-                                <div
-                                  style={{
-                                    display: 'inline-block',
-                                    width: '20rem',
-                                    paddingLeft: '15px',
-                                  }}
-                                >
-                                  {item.fileName && item.fileName.split('/').pop(-1)}
-                                  &nbsp;&nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item.fileName, 'transcription')
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })
+                          : transArrayRu.length > 0 &&
+                            transArrayRu.map((item, index) => {
+                              return (
+                                <li className="filesList" key={index}>
+                                  <div
+                                    style={{
+                                      display: 'inline-block',
+                                      width: '20rem',
+                                      paddingLeft: '15px',
                                     }}
-                                  />
-                                </div>
-                                {item.percentage !== 'zeroPercent' ? (
-                                  <div style={{ display: 'inline-block', width: '20rem' }}>
-                                    <Progress percent={item.percentage} />
+                                  >
+                                    {item.fileName && item.fileName.split('/').pop(-1)}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(item.fileName, 'transcription')
+                                      }}
+                                    />
                                   </div>
-                                ) : null}
-                              </li>
-                            )
-                          })}
-                    </ul>
-                  </FormItem>
+                                  {item.percentage !== 'zeroPercent' ? (
+                                    <div style={{ display: 'inline-block', width: '20rem' }}>
+                                      <Progress percent={item.percentage} />
+                                    </div>
+                                  ) : null}
+                                </li>
+                              )
+                            })}
+                      </ul>
+                    </FormItem>
 
-                  {/* <FormItem label="Attachment">
+                    {/* <FormItem label="Attachment">
                     <ul>
                       {transcriptionFiles && transcriptionFiles.length > 0
                         ? transcriptionFiles.map(item => {
@@ -2359,42 +2381,43 @@ class AddLecture extends React.Component {
                         : null}
                     </ul>
                   </FormItem> */}
+                  </div>
+                  {/* <Progress percent={percentage} /> */}
+                  <div className="form-group">
+                    <FormItem>
+                      {/* {form.getFieldDecorator('Files2')( */}
+                      <Dragger
+                        beforeUpload={this.beforeUpload}
+                        showUploadList={false}
+                        customRequest={this.handleTranscriptionFileChange}
+                        multiple
+                        // onChange={this.handleTranscriptionFileChange}
+                      >
+                        <p className="ant-upload-drag-icon">
+                          <Icon type="inbox" />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                        <p className="ant-upload-hint">
+                          Support for a single or bulk upload. Strictly prohibit from uploading
+                          company data or other band files
+                        </p>
+                      </Dragger>
+                    </FormItem>
+                  </div>
                 </div>
-                {/* <Progress percent={percentage} /> */}
-                <div className="form-group">
-                  <FormItem>
-                    {/* {form.getFieldDecorator('Files2')( */}
-                    <Dragger
-                      beforeUpload={this.beforeUpload}
-                      showUploadList={false}
-                      customRequest={this.handleTranscriptionFileChange}
-                      multiple
-                      // onChange={this.handleTranscriptionFileChange}
-                    >
-                      <p className="ant-upload-drag-icon">
-                        <Icon type="inbox" />
-                      </p>
-                      <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                      <p className="ant-upload-hint">
-                        Support for a single or bulk upload. Strictly prohibit from uploading
-                        company data or other band files
-                      </p>
-                    </Dragger>
-                  </FormItem>
+              </section>
+            </TabPane>
+            <TabPane tab="Audit" key="4">
+              <section className="card">
+                <div className="card-body">
+                  <AuditTimeline
+                    audit={editinglecture.audit ? editinglecture.audit : lecture.lectureAudit}
+                  />
                 </div>
-              </div>
-            </section>
-          </TabPane>
-          <TabPane tab="Audit" key="4">
-            <section className="card">
-              <div className="card-body">
-                <AuditTimeline
-                  audit={editinglecture.audit ? editinglecture.audit : lecture.lectureAudit}
-                />
-              </div>
-            </section>
-          </TabPane>
-        </Tabs>
+              </section>
+            </TabPane>
+          </Tabs>
+        </div>
         <div className={styles.submit}>
           <span className="mr-3">
             <Button type="primary" onClick={this.handleFormBody}>

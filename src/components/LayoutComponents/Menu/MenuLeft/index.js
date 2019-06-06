@@ -192,13 +192,13 @@ class MenuLeft extends React.Component {
     const { isMobileView, isMenuCollapsed, isLightTheme } = this.props
     const menuSettings = isMobileView
       ? {
-          width: 256,
+          width: 180,
           collapsible: false,
           collapsed: false,
           onCollapse: this.onCollapse,
         }
       : {
-          width: 256,
+          width: 180,
           collapsible: true,
           collapsed: isMenuCollapsed,
           onCollapse: this.onCollapse,
@@ -211,17 +211,9 @@ class MenuLeft extends React.Component {
       <Sider
         {...menuSettings}
         className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
-        collapsedWidth={120}
-        width={220}
+        collapsedWidth={140}
+        width={180}
       >
-        {/* <div className={styles.logo}> */}
-        {/* <div className={styles.logoContainer}> */}
-        {/* <img
-              src={`resources/images/logo-inverse${menuSettings.collapsed ? '-mobile' : ''}.png`}
-              alt=""
-            /> */}
-        {/* </div> */}
-        {/* </div> */}
         <Scrollbars
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
@@ -249,19 +241,6 @@ class MenuLeft extends React.Component {
           >
             {menu}
           </Menu>
-          {/* <div className={styles.buyPro}>
-            <p>
-              <strong>More components, more styles, more themes, and premium support!</strong>
-            </p>
-            <a
-              href="https://themeforest.net/item/clean-ui-react-admin-template/21938700"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-sm btn-danger"
-            >
-              Buy Pro 24$
-            </a>
-          </div> */}
         </Scrollbars>
       </Sider>
     )
