@@ -1,6 +1,6 @@
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
-import { getCommentsList } from 'services/comment'
+import { getCommentsList, updateComment } from 'services/comment'
 import actions from './action'
 
 export function* getCommentsListSaga() {
@@ -25,6 +25,41 @@ export function* getCommentsListSaga() {
   }
 }
 
+export function* updateCommentSaga(payload) {
+  const { approved, uuid } = payload
+
+  const body = {
+    approved,
+  }
+
+  try {
+    const result = yield call(updateComment, uuid, body)
+    const result2 = yield call(getCommentsList)
+    const { data } = result2
+    const { comment } = data
+    if (result.status === 200) {
+      yield put({
+        type: 'comment/SET_STATE',
+        payload: {
+          comments: comment.results,
+        },
+      })
+      notification.success({
+        message: 'Success',
+        description: 'Comment is updated successfully',
+      })
+    }
+  } catch (err) {
+    notification.warning({
+      message: 'Error',
+      description: 'Some Error Occured While Updating comment',
+    })
+  }
+}
+
 export default function* rootSaga() {
-  yield all([takeEvery(actions.GET_COMMENTS, getCommentsListSaga)])
+  yield all([
+    takeEvery(actions.GET_COMMENTS, getCommentsListSaga),
+    takeEvery(actions.UPDATE_COMMENT, updateCommentSaga),
+  ])
 }

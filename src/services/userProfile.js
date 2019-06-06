@@ -5,7 +5,11 @@ import serverAddress from './config'
 export async function getUsersList(payload) {
   const { email } = payload
   const { disciple } = payload
-  const url = `${serverAddress}/api/user?email=${email ? email : ''}&disciple=${disciple}`
+  const { discipleName } = payload
+
+  const url = `${serverAddress}/api/user?email=${email ? email : ''}&disciple=${
+    disciple ? disciple : ''
+  }&discipleName=${discipleName ? discipleName : ''}`
   return axios
     .get(url)
     .then(response => {

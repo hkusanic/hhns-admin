@@ -1,0 +1,8 @@
+.ant-calendar-input-wrap,
+.ant-calendar-footer {
+  display: none;
+}
+
+.ant-calendar{
+  width: 190px
+}
