@@ -3,9 +3,10 @@ import { all, takeEvery, put, call } from 'redux-saga/effects'
 import { getCommentsList, updateComment } from 'services/comment'
 import actions from './action'
 
-export function* getCommentsListSaga() {
+export function* getCommentsListSaga(payload) {
   try {
-    const result = yield call(getCommentsList)
+    const { approved } = payload
+    const result = yield call(getCommentsList, approved)
     const { data } = result
     const { comment } = data
 

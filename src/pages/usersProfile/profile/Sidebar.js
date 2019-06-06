@@ -30,7 +30,13 @@ class Sidebar extends Component {
     return (
       <div className="card">
         <Layout>
-          <Sider width={200} breakpoint="lg" collapsedWidth="0" style={{ background: '#fff' }}>
+          <Sider
+            className="customClass"
+            width={200}
+            breakpoint="lg"
+            collapsedWidth="0"
+            style={{ background: '#fff' }}
+          >
             <Menu
               mode="inline"
               defaultSelectedKeys={[keys]}
