@@ -5,7 +5,7 @@ import { Timeline } from 'antd'
 
 const AuditTimeline = ({ audit }) => {
   if (!audit) {
-    return <div className="mt-4 mb-4">No Audit is availble</div>
+    return <div className="mt-4 mb-4">No Audit is available</div>
   }
   audit = audit.reverse()
 
