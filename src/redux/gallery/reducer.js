@@ -9,7 +9,7 @@ const initialState = {
   isGalleryCreated: false,
   isDeleted: false,
   isUpdated: false,
-  editGallery: {},
+  editGallery: '',
   error: '',
 }
 
