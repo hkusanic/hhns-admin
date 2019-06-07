@@ -201,6 +201,15 @@ class SadhanaList extends React.Component {
     )
   }
 
+  hanldeRedirect = record => {
+    const { history } = this.props
+    const { language } = this.state
+    history.push({
+      pathname: '/sadhana/add',
+      state: { uuid: record.itemIndex, language },
+    })
+  }
+
   render() {
     const { language, currentDate, sadhanas, perPage, currentPage } = this.state
     // const { totalSadhanas } = this.props
@@ -279,7 +288,7 @@ class SadhanaList extends React.Component {
       <div>
         <Helmet title="Lecture List" />
         <div className="card">
-          <div className="container card-header">
+          <div className="container card-header mb-3">
             <div className="row utils__title">
               <div className="col-lg-8">
                 <strong>Sadhana List</strong>
@@ -319,19 +328,19 @@ class SadhanaList extends React.Component {
               </div>
             </div>
           </div>
-          <div className="card-body">
+          <div className="container card-body">
             <Table
               rowKey={record => record.uuid}
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
-              // onRow={record => {
-              //   return {
-              //     onDoubleClick: () => {
-              //       this.hanldeRedirect(record)
-              //     },
-              //   }
-              // }}
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               className="utils__scrollTable"
               scroll={{ x: '100%' }}
               columns={columns}

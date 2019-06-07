@@ -47,6 +47,15 @@ const FormItem = Form.Item
 const { TabPane } = Tabs
 const { Option } = Select
 const { Dragger } = Upload
+
+function formatDate(date) {
+  const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0]
+
+  return dateString
+}
+
 @Form.create()
 @connect(({ gallery, router }) => ({ gallery, router }))
 class CreateGallery extends React.Component {
@@ -420,8 +429,8 @@ class CreateGallery extends React.Component {
       photoFiles,
       galleryBody,
       gallery,
-      createDate,
-      publishDate,
+      // createDate,
+      // publishDate,
       editGallery,
       // language,
       translationRequired,
@@ -429,8 +438,17 @@ class CreateGallery extends React.Component {
       titleRu,
     } = this.state
     // const title = form.getFieldValue('title')
+    let { publishDate, createDate } = this.state
 
     const bodyEn = draftToHtml(convertToRaw(galleryBody.getCurrentContent()))
+
+    const dateFormat = 'YYYY/MM/DD'
+    if (publishDate === '' || publishDate === null || publishDate === undefined) {
+      publishDate = formatDate(new Date())
+    }
+    if (createDate === '' || createDate === null || createDate === undefined) {
+      createDate = formatDate(new Date())
+    }
 
     if (titleEn === '' || titleEn === undefined || titleEn === null) {
       notification.error({
@@ -440,8 +458,6 @@ class CreateGallery extends React.Component {
 
       return
     }
-
-    console.log('translationRequired===>', translationRequired)
 
     const tempPhotoFiles = []
     for (let i = 0; i < photoFiles.length; i += 1) {
@@ -609,7 +625,6 @@ class CreateGallery extends React.Component {
       switchDisabled,
       formElements,
     } = this.state
-
     let customStyle = {}
     if (photoFiles.length > 5) {
       customStyle = { overflowY: 'auto', height: '250px' }
@@ -784,7 +799,7 @@ class CreateGallery extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: '34rem',
                                       paddingLeft: '15px',
                                     }}
                                   >

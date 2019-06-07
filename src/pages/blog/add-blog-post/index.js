@@ -81,6 +81,9 @@ class BlogAddPost extends React.Component {
         0,
       )
       const { id } = state
+
+      console.log('state===>', state)
+
       const uuid = id
       if (uuid !== undefined) {
         const body = {
