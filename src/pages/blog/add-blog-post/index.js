@@ -285,8 +285,32 @@ class BlogAddPost extends React.Component {
       })
       if (param === 'submit') {
         this.scrollToTopPage()
+        this.handleStateReset()
       }
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      language: true,
+      editingBlog: '',
+      switchDisabled: true,
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editedBody: '',
+      translationRequired: false,
+      upoading: true,
+      date: new Date(),
+      publishDate: new Date(),
+      titleEn: '',
+      titleRu: '',
+      tagsEn: '',
+      tagsRu: '',
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -973,7 +997,8 @@ class BlogAddPost extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline audit={editingBlog.audit ? editingBlog.audit : blog.blogAudit} />
+                {/* <AuditTimeline audit={editingBlog.audit ? editingBlog.audit : blog.blogAudit} /> */}
+                <AuditTimeline audit={editingBlog.audit && editingBlog.audit} />
               </div>
             </section>
           </TabPane>

@@ -94,8 +94,6 @@ class AddVideo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps===>', nextProps)
-
     if (nextProps.video.editVideo !== '') {
       const { video } = nextProps
       let ar = []
@@ -307,9 +305,30 @@ class AddVideo extends React.Component {
         body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
     // }
     // })
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      autoCompleteDataSource: '',
+      language: true,
+      editingvideo: '',
+      translationRequired: true,
+      nextUrls: [],
+      arKeys: [],
+      titleEn: '',
+      titleRu: '',
+      locationEn: '',
+      locationRu: '',
+      eventEn: '',
+      eventRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -900,11 +919,12 @@ class AddVideo extends React.Component {
             <TabPane tab="Audit" key="2">
               <section className="card">
                 <div className="card-body">
-                  <AuditTimeline
+                  {/* <AuditTimeline
                     audit={
                       editingvideo && editingvideo.audit ? editingvideo.audit : video.videoAudit
                     }
-                  />
+                  /> */}
+                  <AuditTimeline audit={editingvideo && editingvideo.audit && editingvideo.audit} />
                 </div>
               </section>
             </TabPane>

@@ -495,9 +495,28 @@ class CreateGallery extends React.Component {
         body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
     // }
     // })
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      photoFiles: [],
+      galleryBody: EditorState.createEmpty(),
+      createDate: new Date(),
+      publishDate: new Date(),
+      gallery: '2019',
+      editGallery: '',
+      uploading: true,
+      language: true,
+      translationRequired: false,
+      titleEn: '',
+      titleRu: '',
+      formElements: formInputElements,
+      switchDisabled: true,
+    })
   }
 
   scrollToTopPage = () => {
@@ -866,9 +885,10 @@ class CreateGallery extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline
+                {/* <AuditTimeline
                   audit={editGallery.audit ? editGallery.audit : gallery.galleryAudit}
-                />
+                /> */}
+                <AuditTimeline audit={editGallery.audit && editGallery.audit} />
               </div>
             </section>
           </TabPane>

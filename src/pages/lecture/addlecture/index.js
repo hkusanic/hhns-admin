@@ -138,26 +138,6 @@ class AddLecture extends React.Component {
       }
     }
 
-    // if (state !== undefined) {
-    //   const { id, language } = state
-    //   const uuid = id
-    //   setTimeout(
-    //     this.setState({
-    //       language,
-    //     }),
-    //     0,
-    //   )
-    //   if (uuid !== undefined) {
-    //     const body = {
-    //       uuid,
-    //     }
-
-    //     dispatch({
-    //       type: 'lecture/GET_LECTURE_BY_ID',
-    //       payload: body,
-    //     })
-    //   }
-    // }
     dispatch({
       type: 'lecture/GET_TOPICS',
     })
@@ -567,8 +547,57 @@ class AddLecture extends React.Component {
       })
       if (param === 'submit') {
         this.scrollToTopPage()
+        this.handleStateReset()
       }
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      date: new Date(),
+      // publishDate: new Date(),
+      audioLink: '',
+      transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
+      summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
+      editorState: EditorState.createEmpty(),
+      editorStateSummaryEn: EditorState.createEmpty(),
+      editorStateSummaryRu: EditorState.createEmpty(),
+      editorStateTranscriptionEn: EditorState.createEmpty(),
+      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editinglecture: '',
+      editedBody: '',
+      translation: '',
+      language: true,
+      uploading: true,
+      audioUploading: false,
+      transcriptionUploading: false,
+      summaryUploading: false,
+      translationRequired: false,
+      titleEn: '',
+      titleRu: '',
+      locationEn: '',
+      locationRu: '',
+      eventEn: '',
+      eventRu: '',
+      topicEn: '',
+      topicRu: '',
+      translationEn: '',
+      translationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      transcribe: false,
+      percentage: 0,
+      transFileInfo: null,
+      transArrayEn: [],
+      transArrayRu: [],
+      summArrayEn: [],
+      summArrayRu: [],
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -2466,9 +2495,10 @@ class AddLecture extends React.Component {
             <TabPane tab="Audit" key="4">
               <section className="card">
                 <div className="card-body">
-                  <AuditTimeline
+                  {/* <AuditTimeline
                     audit={editinglecture.audit ? editinglecture.audit : lecture.lectureAudit}
-                  />
+                  /> */}
+                  <AuditTimeline audit={editinglecture.audit && editinglecture.audit} />
                 </div>
               </section>
             </TabPane>

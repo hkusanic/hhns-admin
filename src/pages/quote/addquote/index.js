@@ -295,7 +295,26 @@ class AddQuote extends React.Component {
         payload: body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingQuote: '',
+      editedBody: '',
+      language: true,
+      translationRequired: true,
+      titleEn: '',
+      titleRu: '',
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      switchDisabled: true,
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -689,7 +708,8 @@ class AddQuote extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline audit={editingQuote.audit ? editingQuote.audit : quote.quoteAudit} />
+                {/* <AuditTimeline audit={editingQuote.audit ? editingQuote.audit : quote.quoteAudit} /> */}
+                <AuditTimeline audit={editingQuote.audit && editingQuote.audit} />
               </div>
             </section>
           </TabPane>

@@ -72,37 +72,6 @@ class AddKirtan extends React.Component {
   }
 
   componentDidMount() {
-    // const { dispatch, router } = this.props
-    // const { location } = router
-    // const { state } = location
-    // if (state !== undefined) {
-    //   const { id, language } = state
-    //   // console.log('state ====>>>>>', id, language)
-    //   const uuid = id
-    //   setTimeout(
-    //     this.setState({
-    //       language,
-    //     }),
-    //     0,
-    //   )
-    //   if (uuid !== undefined) {
-    //     const body = {
-    //       uuid,
-    //     }
-
-    //     dispatch({
-    //       type: 'kirtan/GET_KIRTAN_BY_ID',
-    //       payload: body,
-    //     })
-    //   }
-    // }
-    // dispatch({
-    //   type: 'lecture/GET_EVENTS',
-    // })
-    // dispatch({
-    //   type: 'lecture/GET_LOCATIONS',
-    // })
-
     const { dispatch, router } = this.props
     const { location } = router
     const { state } = location
@@ -559,9 +528,34 @@ class AddKirtan extends React.Component {
         payload: body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
     // }
     // })
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      language: true,
+      audioLink: '',
+      createDate: new Date(),
+      publishDate: new Date(),
+      translationRequired: false,
+      editingKirtan: '',
+      editorState: EditorState.createEmpty(),
+      titleEn: '',
+      titleRu: '',
+      eventEn: '',
+      eventRu: '',
+      locationEn: '',
+      locationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      percentage: 0,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -1130,7 +1124,8 @@ class AddKirtan extends React.Component {
               <section className="card">
                 <div className="card-body">
                   <AuditTimeline
-                    audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                    // audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                    audit={editingKirtan.audit && editingKirtan.audit}
                   />
                 </div>
               </section>
