@@ -455,6 +455,15 @@ class AddLecture extends React.Component {
       return
     }
 
+    if (audioLink === '') {
+      notification.error({
+        message: 'Error',
+        description: 'You must upload an audio.',
+      })
+
+      return
+    }
+
     body = {
       uuid: uuid || uuidv4(),
       part,
