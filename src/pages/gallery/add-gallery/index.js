@@ -799,8 +799,9 @@ class CreateGallery extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '34rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName.split('/').pop(-1)}

@@ -82,8 +82,6 @@ class BlogAddPost extends React.Component {
       )
       const { id } = state
 
-      console.log('state===>', state)
-
       const uuid = id
       if (uuid !== undefined) {
         const body = {
@@ -208,8 +206,8 @@ class BlogAddPost extends React.Component {
     }, 0)
   }
 
-  handleFormBody = event => {
-    event.preventDefault()
+  handleFormBody = param => {
+    // event.preventDefault()
     const { form, dispatch, router } = this.props
     const { language, titleEn, titleRu, tagsEn, tagsRu, bodyContentEn, bodyContentRu } = this.state
     const { location } = router
@@ -275,13 +273,17 @@ class BlogAddPost extends React.Component {
         payload,
       })
 
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     } else {
       dispatch({
         type: 'blog/CREATE_BLOG',
         payload: body,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     }
   }
 
@@ -712,7 +714,7 @@ class BlogAddPost extends React.Component {
               <div className="card-body">
                 <div className={styles.addPost}>
                   {/* <AddForm english={language} language={language} onFieldValueChange={this.onFieldValueChange} /> */}
-                  <Form className="mt-3" onSubmit={this.handleFormBody}>
+                  <Form className="mt-3">
                     <div className="form-group">
                       <FormItem label={language ? 'Title' : 'Title'}>
                         <Input
@@ -894,8 +896,9 @@ class BlogAddPost extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName.split('/').pop(-1)}
@@ -943,7 +946,11 @@ class BlogAddPost extends React.Component {
                     <FormItem>
                       <div className={styles.submit}>
                         <span className="mr-3">
-                          <Button type="primary" htmlType="submit">
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            onClick={() => this.handleFormBody('submit')}
+                          >
                             Save and Post
                           </Button>
                         </span>

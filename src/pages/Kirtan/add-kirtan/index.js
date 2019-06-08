@@ -1017,8 +1017,9 @@ class AddKirtan extends React.Component {
                                 <div
                                   style={{
                                     display: 'inline-block',
-                                    width: '20rem',
+                                    width: 'auto',
                                     paddingLeft: '15px',
+                                    marginRight: '15px',
                                   }}
                                 >
                                   {audioLink.split('/').pop(-1)}

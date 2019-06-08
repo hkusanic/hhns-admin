@@ -347,8 +347,8 @@ class AddLecture extends React.Component {
     })
   }
 
-  handleFormBody = e => {
-    e.preventDefault()
+  handleFormBody = param => {
+    // e.preventDefault()
     const { form, dispatch, router, english } = this.props
     const {
       audioLink,
@@ -533,13 +533,17 @@ class AddLecture extends React.Component {
         type: 'lecture/UPDATE_LECTURE',
         payload,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     } else {
       dispatch({
         type: 'lecture/CREATE_LECTURE',
         body,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     }
   }
 
@@ -2029,8 +2033,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {audioLink.split('/').pop(-1)}
@@ -2136,8 +2141,9 @@ class AddLecture extends React.Component {
                                     <div
                                       style={{
                                         display: 'inline-block',
-                                        width: '20rem',
+                                        width: 'auto',
                                         paddingLeft: '15px',
+                                        marginRight: '15px',
                                       }}
                                     >
                                       {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2180,8 +2186,9 @@ class AddLecture extends React.Component {
                                     <div
                                       style={{
                                         display: 'inline-block',
-                                        width: '20rem',
+                                        width: 'auto',
                                         paddingLeft: '15px',
+                                        marginRight: '15px',
                                       }}
                                     >
                                       {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2326,8 +2333,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2354,8 +2362,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2438,7 +2447,11 @@ class AddLecture extends React.Component {
         </div>
         <div className={styles.submit}>
           <span className="mr-3">
-            <Button type="primary" onClick={this.handleFormBody}>
+            <Button
+              type="primary"
+              // onClick={this.handleFormBody}
+              onClick={() => this.handleFormBody('submit')}
+            >
               Save and Post
             </Button>
           </span>
