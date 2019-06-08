@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -11,14 +12,38 @@ import { Link } from 'react-router-dom'
 class VideoList extends React.Component {
   state = {
     language: true,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'video/GET_VIDEOS',
-      page: 1,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'video/GET_VIDEOS',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'video/GET_VIDEOS',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'video/GET_VIDEOS',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,10 +79,17 @@ class VideoList extends React.Component {
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'video/GET_VIDEOS',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'video/GET_VIDEOS',
+          page: this.state.currentPage,
+        })
+      },
+    )
   }
 
   deleteVideo = uuid => {
@@ -88,17 +120,17 @@ class VideoList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
-    const { language } = this.state
+    const { language, currentPage } = this.state
     history.push({
       pathname: '/video/create',
-      state: { uuid: record.uuid, language },
+      state: { uuid: record.uuid, language, currentPage },
     })
   }
 
   render() {
     const { video } = this.props
     const { videos, totalVideos } = video
-    const { language } = this.state
+    const { language, currentPage, perPage } = this.state
     const data = videos
     const columns = [
       {
@@ -128,7 +160,12 @@ class VideoList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/video/create', state: { uuid: record.uuid, language } }}>
+            <Link
+              to={{
+                pathname: '/video/create',
+                state: { uuid: record.uuid, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -141,6 +178,13 @@ class VideoList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalVideos,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -176,6 +220,8 @@ class VideoList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
@@ -191,11 +237,7 @@ class VideoList extends React.Component {
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalVideos,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>

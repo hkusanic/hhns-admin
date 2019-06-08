@@ -59,6 +59,7 @@ class AddQuote extends React.Component {
     bodyContentRu: EditorState.createEmpty(),
     switchDisabled: true,
     formElements: formInputElements,
+    paginationCurrentPage: '',
   }
 
   componentDidMount() {
@@ -66,28 +67,30 @@ class AddQuote extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { id, language } = state
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'quote/GET_QUOTE_BY_ID',
           payload: body,
         })
+        dispatch({
+          type: 'quote/GET_TOPICS',
+        })
       }
     }
-    dispatch({
-      type: 'quote/GET_TOPICS',
-    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -422,14 +425,19 @@ class AddQuote extends React.Component {
       bodyContentRu,
       formElements,
       switchDisabled,
+      paginationCurrentPage,
     } = this.state
     const { files } = this.state
     const { topics } = quote
     const dateFormat = 'YYYY/MM/DD'
 
+    const linkState = {
+      paginationCurrentPage,
+    }
+
     return (
       <div>
-        <BackNavigation link="/quote/list" title="Quote List" />
+        <BackNavigation link="/quote/list" title="Quote List" linkState={linkState} />
         {editingQuote && editingQuote.en && editingQuote.ru ? (
           <div style={{ paddingTop: '10px' }}>
             <div>

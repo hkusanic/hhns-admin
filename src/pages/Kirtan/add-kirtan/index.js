@@ -68,27 +68,60 @@ class AddKirtan extends React.Component {
     bodyContentEn: EditorState.createEmpty(),
     bodyContentRu: EditorState.createEmpty(),
     percentage: 0,
+    paginationCurrentPage: '',
   }
 
   componentDidMount() {
+    // const { dispatch, router } = this.props
+    // const { location } = router
+    // const { state } = location
+    // if (state !== undefined) {
+    //   const { id, language } = state
+    //   // console.log('state ====>>>>>', id, language)
+    //   const uuid = id
+    //   setTimeout(
+    //     this.setState({
+    //       language,
+    //     }),
+    //     0,
+    //   )
+    //   if (uuid !== undefined) {
+    //     const body = {
+    //       uuid,
+    //     }
+
+    //     dispatch({
+    //       type: 'kirtan/GET_KIRTAN_BY_ID',
+    //       payload: body,
+    //     })
+    //   }
+    // }
+    // dispatch({
+    //   type: 'lecture/GET_EVENTS',
+    // })
+    // dispatch({
+    //   type: 'lecture/GET_LOCATIONS',
+    // })
+
     const { dispatch, router } = this.props
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { id, language } = state
-      // console.log('state ====>>>>>', id, language)
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'kirtan/GET_KIRTAN_BY_ID',
           payload: body,
@@ -665,13 +698,18 @@ class AddKirtan extends React.Component {
       bodyContentEn,
       bodyContentRu,
       percentage,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    const linkState = {
+      paginationCurrentPage,
+    }
 
     return (
       <React.Fragment>
         <div>
-          <BackNavigation link="/kirtan/list" title="Kirtan List" />
+          <BackNavigation link="/kirtan/list" title="Kirtan List" linkState={linkState} />
           {editingKirtan && editingKirtan.en && editingKirtan.ru ? (
             <div style={{ paddingTop: '10px' }}>
               <div>

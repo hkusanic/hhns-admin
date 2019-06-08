@@ -14,14 +14,43 @@ const { Option } = Select
 class QuotesList extends React.Component {
   state = {
     language: true,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'quote/GET_QUOTES',
-      page: 1,
-    })
+    // const { dispatch } = this.props
+    // dispatch({
+    //   type: 'quote/GET_QUOTES',
+    //   page: 1,
+    // })
+    const { dispatch, location } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'quote/GET_QUOTES',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'quote/GET_QUOTES',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'quote/GET_QUOTES',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,18 +76,33 @@ class QuotesList extends React.Component {
     return result
   }
 
+  // handlePageChnage = page => {
+  //   const { dispatch } = this.props
+
+  //   dispatch({
+  //     type: 'quote/GET_QUOTES',
+  //     page,
+  //   })
+  // }
+
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'quote/GET_QUOTES',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'quote/GET_QUOTES',
+          page: this.state.currentPage,
+        })
+      },
+    )
   }
 
   deleteQuote = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'quote/DELETE_QUOTE_BY_ID',
       uuid,
@@ -96,15 +140,15 @@ class QuotesList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
-    const { language } = this.state
+    const { language, currentPage } = this.state
     history.push({
       pathname: '/quote/create',
-      state: { id: record.uuid, language },
+      state: { id: record.uuid, language, currentPage },
     })
   }
 
   render() {
-    const { language } = this.state
+    const { language, currentPage, perPage } = this.state
     const { quote } = this.props
     const { quotes, totalQuotes } = quote
     const data = quotes
@@ -142,7 +186,9 @@ class QuotesList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/quote/create', state: { id: record.uuid, language } }}>
+            <Link
+              to={{ pathname: '/quote/create', state: { id: record.uuid, language, currentPage } }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -155,6 +201,13 @@ class QuotesList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalQuotes,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -175,6 +228,8 @@ class QuotesList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
@@ -190,11 +245,7 @@ class QuotesList extends React.Component {
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalQuotes,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>

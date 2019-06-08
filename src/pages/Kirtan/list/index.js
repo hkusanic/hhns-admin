@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -10,14 +11,44 @@ import { Link } from 'react-router-dom'
 class KirtanList extends React.Component {
   state = {
     language: window.localStorage['app.settings.locale'] === '"en-US"',
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'kirtan/GET_KIRTAN',
-      page: 1,
-    })
+    // const { dispatch } = this.props
+    // dispatch({
+    //   type: 'kirtan/GET_KIRTAN',
+    //   page: 1,
+    // })
+
+    const { dispatch, location } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'kirtan/GET_KIRTAN',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'kirtan/GET_KIRTAN',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'kirtan/GET_KIRTAN',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -36,15 +67,21 @@ class KirtanList extends React.Component {
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'kirtan/GET_KIRTAN',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'kirtan/GET_KIRTAN',
+          page: this.state.currentPage,
+        })
+      },
+    )
   }
 
   deleteKirtan = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'kirtan/DELETE_KIRTAN_BY_ID',
       uuid,
@@ -60,16 +97,16 @@ class KirtanList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
-    const { language } = this.state
+    const { language, currentPage } = this.state
     history.push({
       pathname: '/kirtan/create',
-      state: { id: record.uuid, language },
+      state: { id: record.uuid, language, currentPage },
     })
   }
 
   render() {
     const { kirtan } = this.props
-    const { language } = this.state
+    const { language, currentPage, perPage } = this.state
     const { kirtans, totalKirtans } = kirtan
     const data = kirtans
 
@@ -101,7 +138,9 @@ class KirtanList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/kirtan/create', state: { id: record.uuid, language } }}>
+            <Link
+              to={{ pathname: '/kirtan/create', state: { id: record.uuid, language, currentPage } }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -114,6 +153,13 @@ class KirtanList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalKirtans,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -134,6 +180,8 @@ class KirtanList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
@@ -149,11 +197,7 @@ class KirtanList extends React.Component {
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalKirtans,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>
