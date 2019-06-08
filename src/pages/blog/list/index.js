@@ -84,11 +84,6 @@ class BlogList extends React.Component {
         })
       },
     )
-
-    // dispatch({
-    //   type: 'blog/GET_LIST',
-    //   page,
-    // })
   }
 
   deleteBlog = uuid => {

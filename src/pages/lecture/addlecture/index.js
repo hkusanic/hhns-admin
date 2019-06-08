@@ -106,6 +106,7 @@ class AddLecture extends React.Component {
       transArrayRu: [],
       summArrayEn: [],
       summArrayRu: [],
+      paginationCurrentPage: '',
     }
   }
 
@@ -115,25 +116,48 @@ class AddLecture extends React.Component {
     const { state } = location
 
     if (state !== undefined) {
-      const { id, language } = state
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'lecture/GET_LECTURE_BY_ID',
           payload: body,
         })
       }
     }
+
+    // if (state !== undefined) {
+    //   const { id, language } = state
+    //   const uuid = id
+    //   setTimeout(
+    //     this.setState({
+    //       language,
+    //     }),
+    //     0,
+    //   )
+    //   if (uuid !== undefined) {
+    //     const body = {
+    //       uuid,
+    //     }
+
+    //     dispatch({
+    //       type: 'lecture/GET_LECTURE_BY_ID',
+    //       payload: body,
+    //     })
+    //   }
+    // }
     dispatch({
       type: 'lecture/GET_TOPICS',
     })
@@ -1442,6 +1466,7 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1455,9 +1480,13 @@ class AddLecture extends React.Component {
       customStyleSumm = { overflowY: 'auto', height: '250px' }
     }
 
+    const linkState = {
+      paginationCurrentPage,
+    }
+
     return (
       <React.Fragment>
-        <BackNavigation link="/lecture/list" title="Lecture List" />
+        <BackNavigation link="/lecture/list" title="Lecture List" linkState={linkState} />
         <div
           style={{
             backgroundColor: 'white',
