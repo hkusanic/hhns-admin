@@ -59,7 +59,6 @@ class ProductsList extends React.Component {
 
   deleteLecture = uuid => {
     const { dispatch } = this.props
-    console.log('uuid====????', uuid)
     dispatch({
       type: 'lecture/DELETE_LECTURE',
       uuid,
@@ -92,10 +91,15 @@ class ProductsList extends React.Component {
   }
 
   hanldeRedirect = record => {
+    const { language } = this.state
     const { history } = this.props
+
     history.push({
       pathname: '/lecture/create',
-      state: record.uuid,
+      state: {
+        id: record.uuid,
+        language,
+      },
     })
   }
 
@@ -165,7 +169,7 @@ class ProductsList extends React.Component {
       <div>
         <Helmet title="Lecture List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Lecture List</strong>
               <Switch

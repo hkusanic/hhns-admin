@@ -1,15 +1,17 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Table, Icon, DatePicker, Input, Collapse, Button } from 'antd'
+import { Table, Icon, DatePicker, Input, Collapse, Button, Select } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
 import './index.css'
 
 const { Panel } = Collapse
+const { Option } = Select
 
 function formatDate(date) {
   const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -23,6 +25,7 @@ function formatDate(date) {
 class CommentsList extends Component {
   state = {
     comments: [],
+    approvalStatus: '',
   }
 
   componentDidMount() {
@@ -79,11 +82,47 @@ class CommentsList extends Component {
     if (data === 2 || data === '2') {
       return 'Needs Approval'
     }
-    // return 2
+  }
+
+  // eslint-disable-next-line consistent-return
+  checkRowColor = data => {
+    if (data === '0' || data === 0) {
+      return 'commentApproved'
+    }
+    if (data === '1' || data === 1) {
+      return 'commentDisapproved'
+    }
+    if (data === '2' || data === 2) {
+      return 'commentNeedsApproval'
+    }
+  }
+
+  handleSelctChange = value => {
+    const { dispatch } = this.props
+    this.setState({ approvalStatus: value }, () => {
+      dispatch({
+        type: 'comment/GET_COMMENTS',
+        approved: this.state.approvalStatus,
+      })
+    })
+  }
+
+  handleResetButtonClick = () => {
+    const { dispatch } = this.props
+    this.setState(
+      {
+        approvalStatus: '',
+      },
+      () => {
+        dispatch({
+          type: 'comment/GET_COMMENTS',
+        })
+      },
+    )
   }
 
   render() {
-    const { comments } = this.state
+    const { comments, approvalStatus } = this.state
 
     const columns = [
       {
@@ -102,7 +141,7 @@ class CommentsList extends Component {
         render: (text, record, index) => formatDate(new Date(text)),
       },
       {
-        title: 'Approved',
+        title: 'Status',
         dataIndex: 'approved',
         render: (text, record, index) => this.checkApproval(record.approved),
       },
@@ -119,10 +158,35 @@ class CommentsList extends Component {
                 <strong>Comments List</strong>
               </div>
             </div>
+            <div className="row">
+              <div className="col-lg-3 mb-2">
+                <Select
+                  style={{ width: '100%' }}
+                  id="disciple"
+                  placeholder="Approved"
+                  onChange={this.handleSelctChange}
+                  // eslint-disable-next-line no-unneeded-ternary
+                  value={approvalStatus ? approvalStatus : undefined}
+                >
+                  <Option value="0">Approved</Option>
+                  <Option value="1">Disapproved</Option>
+                  <Option value="2">Needs Approval</Option>
+                </Select>
+              </div>
+              <div className="col-lg-3 mb-2">
+                <Button type="primary" onClick={this.handleResetButtonClick}>
+                  Reset
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="card-body">
+          <div className="container card-body">
             <Table
               rowKey={record => record._id}
+              rowClassName={record =>
+                // record.translation_required === true ? 'NotTranslated' : 'translated'
+                this.checkRowColor(record.approved)
+              }
               expandedRowRender={record => (
                 <div>
                   <div className="row">

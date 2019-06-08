@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { Table, Icon, DatePicker, Input, Select, Form, Button } from 'antd'
 import renderHTML from 'react-render-html'
 import { Helmet } from 'react-helmet'
+import './index.css'
 
 const { Option } = Select
 
@@ -92,6 +93,15 @@ class UsersList extends Component {
         })
       },
     )
+  }
+
+  hanldeRedirect = record => {
+    const { history } = this.props
+    const { currentPage } = this.state
+    history.push({
+      pathname: '/users/profile/basic',
+      state: { uuid: record.user_id, currentPage },
+    })
   }
 
   render() {
@@ -221,13 +231,20 @@ class UsersList extends Component {
               </div>
             </div>
           </div>
-          <div className="card-body">
+          <div className="container card-body">
             <Table
               rowKey={record => record.user_id}
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
+                }
+              }}
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={users}

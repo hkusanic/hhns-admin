@@ -10,6 +10,8 @@ import DiscipleProfile from './DiscipleProfile'
 import SadhanaSheets from './SadhanaSheets'
 import Reports from './Reports'
 
+import './index.css'
+
 @connect(({ userProfile }) => ({ userProfile }))
 class UsersProfile extends Component {
   state = {

@@ -245,24 +245,30 @@ class AddSadhana extends React.Component {
       return <div>Data not found</div>
     }
 
-    if (Object.keys(editSadhana).length > 0) {
-      fullName = `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
-    }
+    if (editSadhana !== null && editSadhana !== undefined) {
+      if (Object.keys(editSadhana).length > 0) {
+        fullName = `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
+      }
 
-    const nowDate = new Date()
-    nowDate.setHours(0, 0, 0, 0)
-    const tempCurrentDate = new Date(currentDate)
-    tempCurrentDate.setHours(0, 0, 0, 0)
+      const nowDate = new Date()
+      nowDate.setHours(0, 0, 0, 0)
+      const tempCurrentDate = new Date(currentDate)
+      tempCurrentDate.setHours(0, 0, 0, 0)
 
-    const tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
+      let tempArray = []
 
-    if (currentIndex === 0) {
-      oldLeft = { pointerEvents: 'none', opacity: '0.4' }
-    }
+      tempArray = JSON.parse(sessionStorage.getItem('sadhanaArray'))
 
-    if (tempArray.length > 0) {
-      if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
-        oldRight = { pointerEvents: 'none', opacity: '0.4' }
+      if (currentIndex === 0) {
+        oldLeft = { pointerEvents: 'none', opacity: '0.4' }
+      }
+
+      if (tempArray !== null && tempArray !== undefined) {
+        if (tempArray.length > 0) {
+          if (currentIndex === tempArray.length - 1 || Object.keys(editSadhana).length === 0) {
+            oldRight = { pointerEvents: 'none', opacity: '0.4' }
+          }
+        }
       }
     }
 

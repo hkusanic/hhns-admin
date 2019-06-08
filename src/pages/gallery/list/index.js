@@ -79,9 +79,10 @@ class GalleryList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
+    const { language } = this.state
     history.push({
       pathname: '/gallery/create',
-      state: record.uuid,
+      state: { id: record.uuid, language },
     })
   }
 
@@ -125,7 +126,7 @@ class GalleryList extends React.Component {
       <div>
         <Helmet title="Gallery List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Gallery List</strong>
               <Switch
@@ -162,28 +163,28 @@ class GalleryList extends React.Component {
                   : null}
               </Select>
             </div>
-            <div className="card-body">
-              <Table
-                rowClassName={record =>
-                  record.translation_required === true ? 'NotTranslated' : 'translated'
+          </div>
+          <div className="card-body">
+            <Table
+              rowClassName={record =>
+                record.translation_required === true ? 'NotTranslated' : 'translated'
+              }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
                 }
-                onRow={record => {
-                  return {
-                    onDoubleClick: () => {
-                      this.hanldeRedirect(record)
-                    },
-                  }
-                }}
-                className="utils__scrollTable"
-                scroll={{ x: '100%' }}
-                columns={columns}
-                dataSource={subGallery}
-                pagination={{
-                  pageSize: 20,
-                  total: totalSubGallery,
-                }}
-              />
-            </div>
+              }}
+              className="utils__scrollTable"
+              scroll={{ x: '100%' }}
+              columns={columns}
+              dataSource={subGallery}
+              pagination={{
+                pageSize: 20,
+                total: totalSubGallery,
+              }}
+            />
           </div>
         </div>
       </div>

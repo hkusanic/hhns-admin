@@ -2,8 +2,9 @@ import axios from 'axios'
 import serverAddress from './config'
 /* eslint-disable */
 
-export async function getCommentsList() {
-  const url = serverAddress + '/api/comment/getlimitedlist'
+export async function getCommentsList(approved) {
+  // const url = serverAddress + '/api/comment/getlimitedlist'
+  const url = `${serverAddress}/api/comment/getlimitedlist?approved=${approved ? approved : ''}`
   return axios
     .get(url)
     .then(response => {
