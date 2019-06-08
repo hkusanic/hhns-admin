@@ -96,9 +96,10 @@ class QuotesList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
+    const { language } = this.state
     history.push({
       pathname: '/quote/create',
-      state: record.uuid,
+      state: { id: record.uuid, language },
     })
   }
 
@@ -159,7 +160,7 @@ class QuotesList extends React.Component {
       <div>
         <Helmet title="Lecture List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Quote List</strong>
               <Switch

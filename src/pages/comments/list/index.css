@@ -1,0 +1,15 @@
+.textRender p {
+  max-width: 650px;
+  word-wrap: break-word;
+  text-align: justify;
+}
+
+.buttonDiv{
+  text-align: center
+}
+
+@media only screen and (min-width: 1440px) {
+  .card-header {
+    margin-left: -2px;
+  }
+}

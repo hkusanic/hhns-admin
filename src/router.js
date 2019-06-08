@@ -304,6 +304,61 @@ const routes = [
     exact: true,
   },
 
+  {
+    path: '/sadhana/list',
+    component: loadable(() => import('pages/sadhana/list')),
+    exact: true,
+  },
+
+  {
+    path: '/sadhana/add',
+    component: loadable(() => import('pages/sadhana/add')),
+    exact: true,
+  },
+
+  // {
+  //   path: '/users/profile/basic',
+  //   component: loadable(() => import('pages/usersProfile/profile/index.js')),
+  //   exact: true,
+  // },
+
+  {
+    path: '/users/list',
+    component: loadable(() => import('pages/usersProfile/list')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/basic',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/disciple',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/sadhana',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+  {
+    path: '/users/profile/reports',
+    component: loadable(() => import('pages/usersProfile/profile/index.js')),
+    exact: true,
+  },
+
+  {
+    path: '/comments/list',
+    component: loadable(() => import('pages/comments/list')),
+    exact: true,
+  },
+
+  {
+    path: '/single-sadhana/add',
+    component: loadable(() => import('pages/usersProfile/profile/SadhanaView.js')),
+    exact: true,
+  },
   // YouTube
   // {
   //   path: '/youtube/feed',

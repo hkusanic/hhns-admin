@@ -10,6 +10,9 @@ import quote from './quote/reducer'
 import galleryList from './galleryListing/reducer'
 import kirtan from './kirtan/reducer'
 import video from './video/reducer'
+import sadhana from './sadhana/reducer'
+import userProfile from './userProfile/reducer'
+import comment from './comment/reducer'
 
 export default history =>
   combineReducers({
@@ -24,4 +27,7 @@ export default history =>
     galleryList,
     kirtan,
     video,
+    sadhana,
+    userProfile,
+    comment,
   })

@@ -60,9 +60,10 @@ class KirtanList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
+    const { language } = this.state
     history.push({
       pathname: '/kirtan/create',
-      state: record.uuid,
+      state: { id: record.uuid, language },
     })
   }
 
@@ -118,7 +119,7 @@ class KirtanList extends React.Component {
       <div>
         <Helmet title="Kirtan List" />
         <div className="card">
-          <div className="card-header">
+          <div className="card-header mb-3">
             <div className="utils__title">
               <strong>Kirtan List</strong>
               <Switch
@@ -130,30 +131,30 @@ class KirtanList extends React.Component {
                 style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
-            <div className="card-body">
-              <Table
-                // eslint-disable-next-line no-unused-expressions
-                rowClassName={record =>
-                  record.translation_required === true ? 'NotTranslated' : 'translated'
+          </div>
+          <div className="card-body">
+            <Table
+              // eslint-disable-next-line no-unused-expressions
+              rowClassName={record =>
+                record.translation_required === true ? 'NotTranslated' : 'translated'
+              }
+              onRow={record => {
+                return {
+                  onDoubleClick: () => {
+                    this.hanldeRedirect(record)
+                  },
                 }
-                onRow={record => {
-                  return {
-                    onDoubleClick: () => {
-                      this.hanldeRedirect(record)
-                    },
-                  }
-                }}
-                className="utils__scrollTable"
-                scroll={{ x: '100%' }}
-                columns={columns}
-                dataSource={data}
-                pagination={{
-                  pageSize: 20,
-                  onChange: this.handlePageChnage,
-                  total: totalKirtans,
-                }}
-              />
-            </div>
+              }}
+              className="utils__scrollTable"
+              scroll={{ x: '100%' }}
+              columns={columns}
+              dataSource={data}
+              pagination={{
+                pageSize: 20,
+                onChange: this.handlePageChnage,
+                total: totalKirtans,
+              }}
+            />
           </div>
         </div>
       </div>

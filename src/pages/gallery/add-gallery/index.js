@@ -47,6 +47,15 @@ const FormItem = Form.Item
 const { TabPane } = Tabs
 const { Option } = Select
 const { Dragger } = Upload
+
+function formatDate(date) {
+  const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0]
+
+  return dateString
+}
+
 @Form.create()
 @connect(({ gallery, router }) => ({ gallery, router }))
 class CreateGallery extends React.Component {
@@ -287,7 +296,7 @@ class CreateGallery extends React.Component {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file.originFileObj,
+      data: file,
       headers: {
         'Content-Type': file.type,
       },
@@ -351,20 +360,37 @@ class CreateGallery extends React.Component {
       tempPhotoFiles.push(tempPhotoObject)
     }
 
+    const valueArray = tempPhotoFiles.map(function(item) {
+      return item.percentage
+    })
+
+    const result = valueArray.every((val, index, arr) => {
+      if (val === 100 || val === 'zeroPercent') {
+        if (val === arr[0] || arr[0] === 'zeroPercent') {
+          return true
+        }
+        // return false
+      }
+      return false
+    })
+
+    let arrayLength = 0
+    for (let i = 0; i < valueArray.length; i += 1) {
+      if (valueArray[i] !== 'zeroPercent') {
+        arrayLength += 1
+      }
+    }
+
+    if (result) {
+      notification.success({
+        message: 'Success',
+        description: `${arrayLength} file(s) have been uploaded successfully`,
+      })
+    }
+
     this.setState({
       photoFiles: tempPhotoFiles,
     })
-
-    // let array
-    // if (photoFiles && photoFiles.length > 0) {
-    //   array = [...photoFiles]
-    // } else {
-    //   array = []
-    // }
-    // array.push(finalUrl)
-    // this.setState({
-    //   photoFiles: array,
-    // })
   }
 
   handleCreateDate = (date, dateString) => {
@@ -403,8 +429,8 @@ class CreateGallery extends React.Component {
       photoFiles,
       galleryBody,
       gallery,
-      createDate,
-      publishDate,
+      // createDate,
+      // publishDate,
       editGallery,
       // language,
       translationRequired,
@@ -412,8 +438,17 @@ class CreateGallery extends React.Component {
       titleRu,
     } = this.state
     // const title = form.getFieldValue('title')
+    let { publishDate, createDate } = this.state
 
     const bodyEn = draftToHtml(convertToRaw(galleryBody.getCurrentContent()))
+
+    const dateFormat = 'YYYY/MM/DD'
+    if (publishDate === '' || publishDate === null || publishDate === undefined) {
+      publishDate = formatDate(new Date())
+    }
+    if (createDate === '' || createDate === null || createDate === undefined) {
+      createDate = formatDate(new Date())
+    }
 
     if (titleEn === '' || titleEn === undefined || titleEn === null) {
       notification.error({
@@ -423,8 +458,6 @@ class CreateGallery extends React.Component {
 
       return
     }
-
-    console.log('translationRequired===>', translationRequired)
 
     const tempPhotoFiles = []
     for (let i = 0; i < photoFiles.length; i += 1) {
@@ -482,13 +515,16 @@ class CreateGallery extends React.Component {
 
   deleteFile = item => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
+
+    const tempFileName = fileName.split('/').pop(-1)
+
     $.ajax({
       type: 'GET',
       url: `${serverAddress}/api/blog/deleteFile/?filename=${fileName}`,
       success: () => {
         notification.success({
           message: 'File Deleted',
-          description: 'File has been successfully deleted',
+          description: `${tempFileName} has been successfully deleted`,
         })
         this.handelDeleteSetFiles(item)
       },
@@ -589,7 +625,6 @@ class CreateGallery extends React.Component {
       switchDisabled,
       formElements,
     } = this.state
-
     let customStyle = {}
     if (photoFiles.length > 5) {
       customStyle = { overflowY: 'auto', height: '250px' }
@@ -764,7 +799,7 @@ class CreateGallery extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: '34rem',
                                       paddingLeft: '15px',
                                     }}
                                   >
@@ -795,8 +830,8 @@ class CreateGallery extends React.Component {
                             beforeUpload={this.beforeUploadAudio}
                             multiple
                             showUploadList={false}
-                            customRequest={this.dummyRequest}
-                            onChange={this.handleFileChange}
+                            customRequest={this.handleFileChange}
+                            // onChange={this.handleFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />

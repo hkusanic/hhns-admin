@@ -88,9 +88,10 @@ class VideoList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
+    const { language } = this.state
     history.push({
       pathname: '/video/create',
-      state: record.uuid,
+      state: { uuid: record.uuid, language },
     })
   }
 

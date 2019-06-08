@@ -231,12 +231,13 @@ class MainGallery extends React.Component {
                 </div>
               </Form>
             </div>
-            <div className={styles.submit}>
+            <div className={`${styles.submit} mb-3`}>
               <span className="mr-3">
                 <Button type="primary" onClick={this.handleFormBody}>
                   Add
                 </Button>
               </span>
+
               <Button type="danger" onClick={this.handleReset}>
                 Discard
               </Button>

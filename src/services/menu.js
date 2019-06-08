@@ -337,6 +337,49 @@ export async function getLeftMenuData() {
         },
       ],
     },
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/sadhana/add',
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'LIST',
+          key: 'usersList',
+          url: '/users/list',
+        },
+        {
+          title: 'PROFILE',
+          key: 'usersProfile',
+          url: '/users/profile/basic',
+        },
+      ],
+    },
+    {
+      title: 'COMMENTS',
+      key: 'comments',
+      children: [
+        {
+          title: 'LIST',
+          key: 'commentsList',
+          url: '/comments/list',
+        },
+      ],
+    },
     // {
     //   title: 'YouTube',
     //   key: 'youtube',
@@ -728,6 +771,176 @@ export async function getTopMenuData() {
         },
       ],
     },
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/sadhana/add',
+        },
+      ],
+    },
+
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'LIST',
+          key: 'usersList',
+          url: '/users/list',
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'basic',
+          children: [
+            {
+              title: 'BASIC PROFILE',
+              key: 'basicProfile',
+              url: '/users/profile/basic',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'disciple',
+          children: [
+            {
+              title: 'DISCIPLE PROFILE',
+              key: 'discipleProfile',
+              url: '/users/profile/disciple',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'sadhana',
+          children: [
+            {
+              title: 'SADHANA SHEETS',
+              key: 'sadhanaSheets',
+              url: '/users/profile/sadhana',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'USERS',
+      key: 'users',
+      children: [
+        {
+          title: 'PROFILE',
+          key: 'reports',
+          children: [
+            {
+              title: 'REPORTS',
+              key: 'reportDetails',
+              url: '/users/profile/reports',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'COMMENTS',
+      key: 'comments',
+      children: [
+        {
+          title: 'LIST',
+          key: 'commentsList',
+          url: '/comments/list',
+        },
+      ],
+    },
+
+    {
+      title: 'SADHANA',
+      key: 'sadhana',
+      children: [
+        {
+          title: 'LIST',
+          key: 'sadhanaList',
+          url: '/single-sadhana/list',
+        },
+        {
+          title: 'SADHANA SHEET',
+          key: 'addSadhana',
+          url: '/single-sadhana/add',
+        },
+      ],
+    },
+    // {
+    //   title: 'USERS',
+    //   key: 'basic',
+    //   children: [
+    //     {
+    //       title: 'BASIC PROFILE',
+    //       key: 'basicProfile',
+    //       url: '/users/profile/basic',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'disciple',
+    //   children: [
+    //     {
+    //       title: 'DISCIPLE PROFILE',
+    //       key: 'discipleProfile',
+    //       url: '/users/profile/disciple',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'sadhana',
+    //   children: [
+    //     {
+    //       title: 'SADHANA SHEETS',
+    //       key: 'sadhanaSheets',
+    //       url: '/users/profile/sadhana',
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'USERS',
+    //   key: 'reports',
+    //   children: [
+    //     {
+    //       title: 'REPORTS',
+    //       key: 'userReports',
+    //       url: '/users/profile/reports',
+    //     },
+    //   ],
+    // },
+
+    // *** old data ***
     //     {
     //       title: 'YouTube',
     //       key: 'youtube',

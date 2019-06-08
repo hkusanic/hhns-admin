@@ -1,0 +1,21 @@
+/* .leftArrow, .rightArrow {
+  cursor: pointer;
+} */
+
+.leftArrow:hover, .rightArrow:hover {
+  cursor: pointer;
+}
+
+/* .leftArrow, .rightArrow{
+  margin-top: 10px;
+} */
+
+/* .leftArrow {
+  margin-left: 520px;
+  display: inline-block;
+} */
+
+/* .rightArrow {
+  margin-left: 20px;
+  display: inline-block;
+} */
