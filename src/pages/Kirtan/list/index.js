@@ -6,6 +6,9 @@ import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import renderHTML from 'react-render-html'
+
+import './index.css'
 
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
@@ -115,7 +118,7 @@ class KirtanList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
         key: 'en.title',
-        render: title => <span>{title}</span>,
+        render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Event',
@@ -193,7 +196,7 @@ class KirtanList extends React.Component {
                   },
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}

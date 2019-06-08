@@ -1,0 +1,9 @@
+.customTable table thead tr th:first-child {
+  /* width: 30%; */
+  width: 24rem;
+}
+
+.customTable table tbody tr td:first-child {
+  /* width: 30%; */
+  width: 24rem;
+}

@@ -8,6 +8,8 @@ import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
 
+import './index.css'
+
 const { Option } = Select
 
 @connect(({ quote }) => ({ quote }))
@@ -241,7 +243,7 @@ class QuotesList extends React.Component {
                   },
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}

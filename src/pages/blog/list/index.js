@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -7,6 +8,8 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
+
+import './index.css'
 
 @connect(({ blog }) => ({ blog }))
 class BlogList extends React.Component {
@@ -121,12 +124,13 @@ class BlogList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'title_en' : 'title_ru',
         key: language ? 'title_en' : 'title_ru',
-        render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
+        render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Author',
         dataIndex: 'author',
         key: 'author',
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Date',
@@ -196,7 +200,7 @@ class BlogList extends React.Component {
                   }, // double click
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}

@@ -8,6 +8,8 @@ import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
 
+import './index.css'
+
 @connect(({ video }) => ({ video }))
 class VideoList extends React.Component {
   state = {
@@ -137,7 +139,7 @@ class VideoList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
         key: language ? 'en.title' : 'ru.title',
-        render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
+        render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Event',
@@ -233,7 +235,7 @@ class VideoList extends React.Component {
                   },
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
