@@ -65,6 +65,7 @@ class BlogAddPost extends React.Component {
       bodyContentEn: EditorState.createEmpty(),
       bodyContentRu: EditorState.createEmpty(),
       formElements: formInputElements,
+      paginationCurrentPage: '',
     }
   }
 
@@ -73,10 +74,11 @@ class BlogAddPost extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { language } = state
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
@@ -671,6 +673,7 @@ class BlogAddPost extends React.Component {
       files,
       language,
       switchDisabled,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -678,10 +681,13 @@ class BlogAddPost extends React.Component {
     if (files.length > 5) {
       customStyle = { overflowY: 'auto', height: '250px' }
     }
+    const linkState = {
+      paginationCurrentPage,
+    }
 
     return (
       <div>
-        <BackNavigation link="/blog/blog-list" title="Blog List" />
+        <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
         {editingBlog && editingBlog.title_en ? (
           <div style={{ paddingTop: '10px' }}>

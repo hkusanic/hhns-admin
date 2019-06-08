@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -11,14 +12,38 @@ import { Link } from 'react-router-dom'
 class BlogList extends React.Component {
   state = {
     language: true,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'blog/GET_LIST',
-      page: 1,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'blog/GET_LIST',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'blog/GET_LIST',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'blog/GET_LIST',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -48,10 +73,22 @@ class BlogList extends React.Component {
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'blog/GET_LIST',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'blog/GET_LIST',
+          page: this.state.currentPage,
+        })
+      },
+    )
+
+    // dispatch({
+    //   type: 'blog/GET_LIST',
+    //   page,
+    // })
   }
 
   deleteBlog = uuid => {
@@ -70,16 +107,16 @@ class BlogList extends React.Component {
   }
 
   hanldeRedirect = record => {
-    const { language } = this.state
+    const { language, currentPage } = this.state
     const { history } = this.props
     history.push({
       pathname: '/blog/add-blog-post',
-      state: { id: record.uuid, language },
+      state: { id: record.uuid, language, currentPage },
     })
   }
 
   render() {
-    const { language } = this.state
+    const { language, currentPage, perPage } = this.state
     const { blog } = this.props
     const { blogs, totalBlogs } = blog
     const data = blogs
@@ -107,7 +144,12 @@ class BlogList extends React.Component {
         key: 'uuid',
         render: record => (
           <span>
-            <Link to={{ pathname: '/blog/add-blog-post', state: { id: record.uuid, language } }}>
+            <Link
+              to={{
+                pathname: '/blog/add-blog-post',
+                state: { id: record.uuid, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -120,6 +162,13 @@ class BlogList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalBlogs,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -140,6 +189,8 @@ class BlogList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
@@ -154,11 +205,7 @@ class BlogList extends React.Component {
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalBlogs,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>
