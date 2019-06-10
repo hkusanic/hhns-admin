@@ -740,14 +740,14 @@ class AddQuote extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem label={english ? 'Body' : 'Body'}>
-                        {/* <div className={styles.editor} style={{ backgroundColor: '#fff' }}> */}
-                        <Editor
-                          wrapperClassName="demo-wrapper"
-                          editorClassName="demo-editor"
-                          editorState={language ? bodyContentEn : bodyContentRu}
-                          onEditorStateChange={this.onEditorChangeStatebodyContent}
-                        />
-                        {/* </div> */}
+                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                          <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
+                            editorState={language ? bodyContentEn : bodyContentRu}
+                            onEditorStateChange={this.onEditorChangeStatebodyContent}
+                          />
+                        </div>
 
                         {/* {form.getFieldDecorator('content', {
                           initialValue: editorState || '',

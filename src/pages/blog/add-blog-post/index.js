@@ -892,14 +892,14 @@ class BlogAddPost extends React.Component {
                     </div>
                     <div className="form-group">
                       <FormItem label={language ? 'Body' : 'Body'}>
-                        {/* <div className={styles.editor} style={{ backgroundColor: '#fff' }}> */}
-                        <Editor
-                          wrapperClassName="demo-wrapper"
-                          editorClassName="demo-editor"
-                          editorState={language ? bodyContentEn : bodyContentRu}
-                          onEditorStateChange={this.onEditorStateChangeBody}
-                        />
-                        {/* </div> */}
+                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                          <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
+                            editorState={language ? bodyContentEn : bodyContentRu}
+                            onEditorStateChange={this.onEditorStateChangeBody}
+                          />
+                        </div>
 
                         {/* {form.getFieldDecorator('content', {
                           initialValue: editorState || '',

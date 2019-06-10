@@ -2063,14 +2063,15 @@ class AddLecture extends React.Component {
                             {form.getFieldDecorator('content', {
                               initialValue: editorState || '',
                             })(
-                              // <div className={styles.editor}>
-                              <Editor
-                                wrapperClassName="demo-wrapper"
-                                editorClassName="demo-editor"
-                                editorState={editorState}
-                                onEditorStateChange={this.onEditorStateChange}
-                              />,
-                              // </div>,
+                              <div className={styles.editor}>
+                                <Editor
+                                  wrapperClassName="demo-wrapper"
+                                  editorClassName="demo-editor"
+                                  editorState={editorState}
+                                  onEditorStateChange={this.onEditorStateChange}
+                                />
+                                ,
+                              </div>,
                             )}
                           </FormItem>
                         </div>
@@ -2155,14 +2156,14 @@ class AddLecture extends React.Component {
                   <Form className="mt-3">
                     <div className="form-group">
                       <FormItem label={language ? 'Summary' : 'Summary'}>
-                        {/* <div className={styles.editor} style={{ backgroundColor: '#fff' }}> */}
-                        <Editor
-                          wrapperClassName="demo-wrapper"
-                          editorClassName="demo-editor"
-                          editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
-                          onEditorStateChange={this.onEditorChangeStateSummary}
-                        />
-                        {/* </div> */}
+                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                          <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
+                            editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
+                            onEditorStateChange={this.onEditorChangeStateSummary}
+                          />
+                        </div>
                         {/* {form.getFieldDecorator('summary', {
                         initialValue: editorStateSummary,
                       })(
@@ -2329,16 +2330,16 @@ class AddLecture extends React.Component {
                   &nbsp;
                   <div className="form-group">
                     <FormItem label={language ? 'Transcription' : 'Transcription'}>
-                      {/* <div className={styles.editor} style={{ backgroundColor: '#fff' }}> */}
-                      <Editor
-                        wrapperClassName="demo-wrapper"
-                        editorClassName="demo-editor"
-                        editorState={
-                          language ? editorStateTranscriptionEn : editorStateTranscriptionRu
-                        }
-                        onEditorStateChange={this.onEditorChangeStateTranscription}
-                      />
-                      {/* </div> */}
+                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
+                        <Editor
+                          wrapperClassName="demo-wrapper"
+                          editorClassName="demo-editor"
+                          editorState={
+                            language ? editorStateTranscriptionEn : editorStateTranscriptionRu
+                          }
+                          onEditorStateChange={this.onEditorChangeStateTranscription}
+                        />
+                      </div>
 
                       {/* {form.getFieldDecorator('transcription', {
                       initialValue: editinglecture
