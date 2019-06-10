@@ -730,7 +730,7 @@ class AddVideo extends React.Component {
                           <FormItem label="Date">
                             {form.getFieldDecorator('date', {
                               initialValue: editingvideo
-                                ? moment(editingvideo.date, dateFormat)
+                                ? moment(new Date(editingvideo.date), dateFormat)
                                 : moment(new Date(), dateFormat),
                             })(<DatePicker />)}
                           </FormItem>

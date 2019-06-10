@@ -1667,7 +1667,7 @@ class AddLecture extends React.Component {
                                 },
                               ],
                               initialValue: editinglecture
-                                ? moment(editinglecture.created_date, dateFormat)
+                                ? moment(new Date(editinglecture.created_date), dateFormat)
                                 : moment(new Date(), dateFormat),
                             })(<DatePicker onChange={this.onChange} />)}
                           </FormItem>

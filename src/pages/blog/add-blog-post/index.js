@@ -869,7 +869,7 @@ class BlogAddPost extends React.Component {
                           ],
                           initialValue:
                             editingBlog && editingBlog.date
-                              ? moment(editingBlog.date, dateFormat)
+                              ? moment(new Date(editingBlog.date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>
