@@ -681,7 +681,8 @@ class AddQuote extends React.Component {
                           ],
                           initialValue:
                             editingQuote && editingQuote.date
-                              ? moment(editingQuote.date, dateFormat)
+                              ? // ? moment(editingQuote.date, dateFormat)
+                                moment(new Date(editingQuote.date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleDate} />)}
                       </FormItem>
