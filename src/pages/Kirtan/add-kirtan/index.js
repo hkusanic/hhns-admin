@@ -68,6 +68,7 @@ class AddKirtan extends React.Component {
     bodyContentEn: EditorState.createEmpty(),
     bodyContentRu: EditorState.createEmpty(),
     percentage: 0,
+    paginationCurrentPage: '',
   }
 
   componentDidMount() {
@@ -75,20 +76,21 @@ class AddKirtan extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { id, language } = state
-      // console.log('state ====>>>>>', id, language)
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'kirtan/GET_KIRTAN_BY_ID',
           payload: body,
@@ -526,9 +528,34 @@ class AddKirtan extends React.Component {
         payload: body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
     // }
     // })
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      language: true,
+      audioLink: '',
+      createDate: new Date(),
+      publishDate: new Date(),
+      translationRequired: false,
+      editingKirtan: '',
+      editorState: EditorState.createEmpty(),
+      titleEn: '',
+      titleRu: '',
+      eventEn: '',
+      eventRu: '',
+      locationEn: '',
+      locationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      percentage: 0,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -665,13 +692,18 @@ class AddKirtan extends React.Component {
       bodyContentEn,
       bodyContentRu,
       percentage,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
+
+    const linkState = {
+      paginationCurrentPage,
+    }
 
     return (
       <React.Fragment>
         <div>
-          <BackNavigation link="/kirtan/list" title="Kirtan List" />
+          <BackNavigation link="/kirtan/list" title="Kirtan List" linkState={linkState} />
           {editingKirtan && editingKirtan.en && editingKirtan.ru ? (
             <div style={{ paddingTop: '10px' }}>
               <div>
@@ -1017,8 +1049,9 @@ class AddKirtan extends React.Component {
                                 <div
                                   style={{
                                     display: 'inline-block',
-                                    width: '20rem',
+                                    width: 'auto',
                                     paddingLeft: '15px',
+                                    marginRight: '15px',
                                   }}
                                 >
                                   {audioLink.split('/').pop(-1)}
@@ -1091,7 +1124,8 @@ class AddKirtan extends React.Component {
               <section className="card">
                 <div className="card-body">
                   <AuditTimeline
-                    audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                    // audit={editingKirtan.audit ? editingKirtan.audit : kirtan.kirtanAudit}
+                    audit={editingKirtan.audit && editingKirtan.audit}
                   />
                 </div>
               </section>

@@ -65,6 +65,7 @@ class BlogAddPost extends React.Component {
       bodyContentEn: EditorState.createEmpty(),
       bodyContentRu: EditorState.createEmpty(),
       formElements: formInputElements,
+      paginationCurrentPage: '',
     }
   }
 
@@ -73,16 +74,15 @@ class BlogAddPost extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { language } = state
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
       const { id } = state
-
-      console.log('state===>', state)
 
       const uuid = id
       if (uuid !== undefined) {
@@ -208,8 +208,8 @@ class BlogAddPost extends React.Component {
     }, 0)
   }
 
-  handleFormBody = event => {
-    event.preventDefault()
+  handleFormBody = param => {
+    // event.preventDefault()
     const { form, dispatch, router } = this.props
     const { language, titleEn, titleRu, tagsEn, tagsRu, bodyContentEn, bodyContentRu } = this.state
     const { location } = router
@@ -275,14 +275,42 @@ class BlogAddPost extends React.Component {
         payload,
       })
 
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     } else {
       dispatch({
         type: 'blog/CREATE_BLOG',
         payload: body,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+        this.handleStateReset()
+      }
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      language: true,
+      editingBlog: '',
+      switchDisabled: true,
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editedBody: '',
+      translationRequired: false,
+      upoading: true,
+      date: new Date(),
+      publishDate: new Date(),
+      titleEn: '',
+      titleRu: '',
+      tagsEn: '',
+      tagsRu: '',
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -669,6 +697,7 @@ class BlogAddPost extends React.Component {
       files,
       language,
       switchDisabled,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -676,10 +705,13 @@ class BlogAddPost extends React.Component {
     if (files.length > 5) {
       customStyle = { overflowY: 'auto', height: '250px' }
     }
+    const linkState = {
+      paginationCurrentPage,
+    }
 
     return (
       <div>
-        <BackNavigation link="/blog/blog-list" title="Blog List" />
+        <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
         {editingBlog && editingBlog.title_en ? (
           <div style={{ paddingTop: '10px' }}>
@@ -712,7 +744,7 @@ class BlogAddPost extends React.Component {
               <div className="card-body">
                 <div className={styles.addPost}>
                   {/* <AddForm english={language} language={language} onFieldValueChange={this.onFieldValueChange} /> */}
-                  <Form className="mt-3" onSubmit={this.handleFormBody}>
+                  <Form className="mt-3">
                     <div className="form-group">
                       <FormItem label={language ? 'Title' : 'Title'}>
                         <Input
@@ -894,8 +926,9 @@ class BlogAddPost extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName.split('/').pop(-1)}
@@ -943,7 +976,11 @@ class BlogAddPost extends React.Component {
                     <FormItem>
                       <div className={styles.submit}>
                         <span className="mr-3">
-                          <Button type="primary" htmlType="submit">
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            onClick={() => this.handleFormBody('submit')}
+                          >
                             Save and Post
                           </Button>
                         </span>
@@ -960,7 +997,8 @@ class BlogAddPost extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline audit={editingBlog.audit ? editingBlog.audit : blog.blogAudit} />
+                {/* <AuditTimeline audit={editingBlog.audit ? editingBlog.audit : blog.blogAudit} /> */}
+                <AuditTimeline audit={editingBlog.audit && editingBlog.audit} />
               </div>
             </section>
           </TabPane>

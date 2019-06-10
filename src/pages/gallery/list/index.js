@@ -6,7 +6,10 @@ import { Table, Select, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import renderHTML from 'react-render-html'
 import { handleFilterGallery } from '../../../services/custom'
+
+import './index.css'
 
 const { Option } = Select
 
@@ -96,7 +99,7 @@ class GalleryList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'title_en' : 'title_ru',
         key: 'title_en',
-        render: title => <span>{title}</span>,
+        render: title => (title ? renderHTML(title.substring(0, 50)) : ''),
       },
       {
         title: 'Date',
@@ -176,7 +179,7 @@ class GalleryList extends React.Component {
                   },
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={subGallery}

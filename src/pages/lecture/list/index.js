@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -8,6 +9,8 @@ import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
 
+import './index.css'
+
 const { Option } = Select
 
 @connect(({ lecture }) => ({ lecture }))
@@ -15,14 +18,39 @@ class ProductsList extends React.Component {
   state = {
     language: true,
     transcribe: false,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'lecture/GET_LECTURES',
-      page: 1,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'lecture/GET_LECTURES',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'lecture/GET_LECTURES',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'lecture/GET_LECTURES',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,10 +79,17 @@ class ProductsList extends React.Component {
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'lecture/GET_LECTURES',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'lecture/GET_LECTURES',
+          page: this.state.currentPage,
+        })
+      },
+    )
   }
 
   deleteLecture = uuid => {
@@ -91,7 +126,7 @@ class ProductsList extends React.Component {
   }
 
   hanldeRedirect = record => {
-    const { language } = this.state
+    const { language, currentPage } = this.state
     const { history } = this.props
 
     history.push({
@@ -99,6 +134,7 @@ class ProductsList extends React.Component {
       state: {
         id: record.uuid,
         language,
+        currentPage,
       },
     })
   }
@@ -119,7 +155,7 @@ class ProductsList extends React.Component {
   }
 
   render() {
-    const { language, transcribe } = this.state
+    const { language, transcribe, currentPage, perPage } = this.state
     const { lecture } = this.props
     const { lectures, totalLectures } = lecture
     const data = lectures
@@ -128,7 +164,7 @@ class ProductsList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
         key: language ? 'en.title' : 'ru.title',
-        render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
+        render: title => (title ? renderHTML(title.substring(0, 50)) : ''),
       },
       // {
       //   title: 'Event',
@@ -151,7 +187,12 @@ class ProductsList extends React.Component {
         key: 'action',
         render: record => (
           <span>
-            <Link to={{ pathname: '/lecture/create', state: { id: record.uuid, language } }}>
+            <Link
+              to={{
+                pathname: '/lecture/create',
+                state: { id: record.uuid, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -164,6 +205,13 @@ class ProductsList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalLectures,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -178,10 +226,15 @@ class ProductsList extends React.Component {
                 unCheckedChildren={language ? 'en' : 'ru'}
                 onChange={this.handleLanguage}
                 className="toggle"
-                style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
+                // style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
+                style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
-            <DatePicker style={{ paddingTop: '10px' }} onChange={this.onChangeDate} />
+            <DatePicker
+              style={{ paddingTop: '10px' }}
+              className="mr-3"
+              onChange={this.onChangeDate}
+            />
             <Select
               id="product-edit-colors"
               showSearch
@@ -215,15 +268,11 @@ class ProductsList extends React.Component {
                   },
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalLectures,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>
