@@ -717,6 +717,8 @@ class CreateGallery extends React.Component {
                         {form.getFieldDecorator('content')(
                           <div className={styles.editor}>
                             <Editor
+                              wrapperClassName="demo-wrapper"
+                              editorClassName="demo-editor"
                               editorState={galleryBody}
                               onEditorStateChange={this.onEditorStateChange}
                             />

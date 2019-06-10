@@ -681,7 +681,8 @@ class AddQuote extends React.Component {
                           ],
                           initialValue:
                             editingQuote && editingQuote.date
-                              ? moment(editingQuote.date, dateFormat)
+                              ? // ? moment(editingQuote.date, dateFormat)
+                                moment(new Date(editingQuote.date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleDate} />)}
                       </FormItem>
@@ -741,6 +742,8 @@ class AddQuote extends React.Component {
                       <FormItem label={english ? 'Body' : 'Body'}>
                         <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                           <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
                             editorState={language ? bodyContentEn : bodyContentRu}
                             onEditorStateChange={this.onEditorChangeStatebodyContent}
                           />

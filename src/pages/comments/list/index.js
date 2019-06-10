@@ -128,12 +128,12 @@ class CommentsList extends Component {
       {
         title: 'Author Name',
         dataIndex: 'author_name',
-        render: (text, record, index) => renderHTML(text),
+        render: (text, record, index) => (text ? renderHTML(text.substring(0, 20)) : ''),
       },
       {
         title: 'Author Email',
         dataIndex: 'author_email',
-        render: (text, record, index) => renderHTML(text),
+        render: (text, record, index) => (text ? renderHTML(text.substring(0, 30)) : ''),
       },
       {
         title: 'Date Created',
@@ -185,7 +185,7 @@ class CommentsList extends Component {
               rowKey={record => record._id}
               rowClassName={record =>
                 // record.translation_required === true ? 'NotTranslated' : 'translated'
-                this.checkRowColor(record.approved)
+                `${this.checkRowColor(record.approved)} customTable`
               }
               expandedRowRender={record => (
                 <div>

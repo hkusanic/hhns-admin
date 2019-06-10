@@ -1667,7 +1667,7 @@ class AddLecture extends React.Component {
                                 },
                               ],
                               initialValue: editinglecture
-                                ? moment(editinglecture.created_date, dateFormat)
+                                ? moment(new Date(editinglecture.created_date), dateFormat)
                                 : moment(new Date(), dateFormat),
                             })(<DatePicker onChange={this.onChange} />)}
                           </FormItem>
@@ -2065,9 +2065,12 @@ class AddLecture extends React.Component {
                             })(
                               <div className={styles.editor}>
                                 <Editor
+                                  wrapperClassName="demo-wrapper"
+                                  editorClassName="demo-editor"
                                   editorState={editorState}
                                   onEditorStateChange={this.onEditorStateChange}
                                 />
+                                ,
                               </div>,
                             )}
                           </FormItem>
@@ -2155,6 +2158,8 @@ class AddLecture extends React.Component {
                       <FormItem label={language ? 'Summary' : 'Summary'}>
                         <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                           <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
                             editorState={language ? editorStateSummaryEn : editorStateSummaryRu}
                             onEditorStateChange={this.onEditorChangeStateSummary}
                           />
@@ -2327,6 +2332,8 @@ class AddLecture extends React.Component {
                     <FormItem label={language ? 'Transcription' : 'Transcription'}>
                       <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                         <Editor
+                          wrapperClassName="demo-wrapper"
+                          editorClassName="demo-editor"
                           editorState={
                             language ? editorStateTranscriptionEn : editorStateTranscriptionRu
                           }

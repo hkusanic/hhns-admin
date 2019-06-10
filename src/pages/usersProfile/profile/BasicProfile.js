@@ -81,27 +81,19 @@ class BasicProfile extends Component {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem label="First Name">
-                    <Input
-                      value={user && user.name && `${user.name.first}`}
-                      placeholder="First Name"
-                      disabled
-                    />
+                    <Input value={user && user.name && `${user.name.first}`} disabled />
                   </FormItem>
                 </div>
                 <div className="col-lg-6">
                   <FormItem label="Last Name">
-                    <Input
-                      placeholder="Last Name"
-                      value={user && user.name && `${user.name.last}`}
-                      disabled
-                    />
+                    <Input value={user && user.name && `${user.name.last}`} disabled />
                   </FormItem>
                 </div>
               </div>
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem label="Email">
-                    <Input value={user.email} placeholder="Email" disabled />
+                    <Input value={user.email} disabled />
                   </FormItem>
                 </div>
                 <div className="col-lg-6">
@@ -113,7 +105,7 @@ class BasicProfile extends Component {
                           message: 'Please input your Nickname!',
                         },
                       ],
-                    })(<Input placeholder="Nickname" disabled />)}
+                    })(<Input disabled />)}
                   </FormItem>
                 </div>
               </div>
@@ -127,12 +119,7 @@ class BasicProfile extends Component {
           <div className="row">
             <div className="col-lg-4">
               <FormItem label="Timezone">
-                <Select
-                  value={user.timeZone}
-                  style={{ maxWidth: 220 }}
-                  placeholder="Timezone"
-                  disabled
-                >
+                <Select value={user.timeZone} style={{ maxWidth: 220 }} disabled>
                   {/* <Option value="China">China</Option> */}
                 </Select>
               </FormItem>
@@ -141,12 +128,7 @@ class BasicProfile extends Component {
             <div className="col-lg-8">
               <FormItem label="Phone Number">
                 {/* <PhoneView value={data.mobileNumber} /> */}
-                <Input
-                  type="number"
-                  value={user.mobileNumber}
-                  placeholder="Mobile Number"
-                  disabled
-                />
+                <Input type="number" value={user.mobileNumber} disabled />
               </FormItem>
             </div>
           </div>
@@ -158,7 +140,6 @@ class BasicProfile extends Component {
                   id="product-edit-colors"
                   showSearch
                   style={{ width: '100%' }}
-                  placeholder="Select Language"
                   optionFilterProp="children"
                   disabled
                   value={language}
@@ -190,14 +171,14 @@ class BasicProfile extends Component {
           <div className="row">
             <div className="col-lg-12">
               <FormItem label="Street Name">
-                <Input placeholder="Street Name" name="streetName" disabled />
+                <Input name="streetName" disabled />
               </FormItem>
             </div>
           </div>
           <div className="row">
             <div className="col-lg-12">
               <FormItem label="Landmark (Optional)">
-                <Input placeholder="Landmark" name="landmark" disabled />
+                <Input name="landmark" disabled />
               </FormItem>
             </div>
           </div>
@@ -211,7 +192,7 @@ class BasicProfile extends Component {
                       message: 'Please input your city name!',
                     },
                   ],
-                })(<Input placeholder="City Name" disabled />)}
+                })(<Input disabled />)}
               </FormItem>
             </div>
             <div className="col-lg-4">
@@ -223,18 +204,13 @@ class BasicProfile extends Component {
                       message: 'Please input your postal Code!',
                     },
                   ],
-                })(<Input type="number" placeholder="Postal Code" disabled />)}
+                })(<Input type="number" disabled />)}
               </FormItem>
             </div>
 
             <div className="col-lg-4">
               <FormItem label="Country">
-                <Select
-                  value={user.countryCode}
-                  style={{ maxWidth: 220 }}
-                  disabled
-                  placeholder="Country Name"
-                >
+                <Select value={user.countryCode} style={{ maxWidth: 220 }} disabled>
                   <Option value="en">EN</Option>
                   <Option value="ru">RU</Option>
                 </Select>

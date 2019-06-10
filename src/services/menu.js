@@ -283,7 +283,7 @@ export async function getLeftMenuData() {
           url: '/gallery/list',
         },
         {
-          title: 'CREATE IMAGE COLLECTION',
+          title: 'ADD GALLERY',
           key: 'createImageCollection',
           url: '/gallery/create',
         },
@@ -346,11 +346,11 @@ export async function getLeftMenuData() {
           key: 'sadhanaList',
           url: '/sadhana/list',
         },
-        {
-          title: 'SADHANA SHEET',
-          key: 'addSadhana',
-          url: '/sadhana/add',
-        },
+        // {
+        //   title: 'SADHANA SHEET',
+        //   key: 'addSadhana',
+        //   url: '/sadhana/add',
+        // },
       ],
     },
     {
@@ -362,11 +362,11 @@ export async function getLeftMenuData() {
           key: 'usersList',
           url: '/users/list',
         },
-        {
-          title: 'PROFILE',
-          key: 'usersProfile',
-          url: '/users/profile/basic',
-        },
+        // {
+        //   title: 'PROFILE',
+        //   key: 'usersProfile',
+        //   url: '/users/profile/basic',
+        // },
       ],
     },
     {
@@ -733,7 +733,7 @@ export async function getTopMenuData() {
           url: '/gallery/list',
         },
         {
-          title: 'CREATE IMAGE COLLECTION',
+          title: 'ADD GALLERY',
           key: 'createImageCollection',
           url: '/gallery/create',
         },
@@ -780,11 +780,11 @@ export async function getTopMenuData() {
           key: 'sadhanaList',
           url: '/sadhana/list',
         },
-        {
-          title: 'SADHANA SHEET',
-          key: 'addSadhana',
-          url: '/sadhana/add',
-        },
+        // {
+        //   title: 'SADHANA SHEET',
+        //   key: 'addSadhana',
+        //   url: '/sadhana/add',
+        // },
       ],
     },
 
@@ -888,11 +888,11 @@ export async function getTopMenuData() {
           key: 'sadhanaList',
           url: '/single-sadhana/list',
         },
-        {
-          title: 'SADHANA SHEET',
-          key: 'addSadhana',
-          url: '/single-sadhana/add',
-        },
+        // {
+        //   title: 'SADHANA SHEET',
+        //   key: 'addSadhana',
+        //   url: '/single-sadhana/add',
+        // },
       ],
     },
     // {

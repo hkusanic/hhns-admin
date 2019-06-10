@@ -55,7 +55,7 @@ class BlogAddPost extends React.Component {
       editorState: EditorState.createEmpty(),
       editedBody: '',
       translationRequired: false,
-      upoading: true,
+      uploading: true,
       date: new Date(),
       publishDate: new Date(),
       titleEn: '',
@@ -98,9 +98,9 @@ class BlogAddPost extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { upoading, files } = this.state
+    const { uploading, files } = this.state
 
-    if (nextProps.blog.editBlog) {
+    if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
       const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : EditorState.createEmpty()
@@ -184,7 +184,7 @@ class BlogAddPost extends React.Component {
       editingBlog: '',
       editedBody: '',
       translationRequired: false,
-      upoading: true,
+      uploading: true,
       date: new Date(),
       publishDate: new Date(),
     })
@@ -195,6 +195,7 @@ class BlogAddPost extends React.Component {
     setTimeout(() => {
       this.setState({
         date: dateString,
+        uploading: false,
       })
     }, 0)
   }
@@ -204,6 +205,7 @@ class BlogAddPost extends React.Component {
     setTimeout(() => {
       this.setState({
         publishDate: dateString,
+        uploading: false,
       })
     }, 0)
   }
@@ -299,7 +301,7 @@ class BlogAddPost extends React.Component {
       editorState: EditorState.createEmpty(),
       editedBody: '',
       translationRequired: false,
-      upoading: true,
+      uploading: true,
       date: new Date(),
       publishDate: new Date(),
       titleEn: '',
@@ -350,12 +352,19 @@ class BlogAddPost extends React.Component {
 
   handleFileChange = info => {
     // if (info.file.status === 'done') {
-    //   this.setState({ upoading: false }, () => {
+    //   this.setState({ uploading: false }, () => {
     //     this.uploads3(info.file)
     //   })
     // }
 
-    this.uploads3(info.file)
+    this.setState(
+      {
+        uploading: false,
+      },
+      () => {
+        this.uploads3(info.file)
+      },
+    )
   }
 
   uploads3 = file => {
@@ -669,12 +678,14 @@ class BlogAddPost extends React.Component {
     if (language) {
       this.setState({
         bodyContentEn: bodyContent,
+        uploading: false,
       })
     }
 
     if (!language) {
       this.setState({
         bodyContentRu: bodyContent,
+        uploading: false,
       })
     }
   }
@@ -858,7 +869,7 @@ class BlogAddPost extends React.Component {
                           ],
                           initialValue:
                             editingBlog && editingBlog.date
-                              ? moment(editingBlog.date, dateFormat)
+                              ? moment(new Date(editingBlog.date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>
@@ -883,6 +894,8 @@ class BlogAddPost extends React.Component {
                       <FormItem label={language ? 'Body' : 'Body'}>
                         <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                           <Editor
+                            wrapperClassName="demo-wrapper"
+                            editorClassName="demo-editor"
                             editorState={language ? bodyContentEn : bodyContentRu}
                             onEditorStateChange={this.onEditorStateChangeBody}
                           />
