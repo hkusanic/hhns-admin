@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -7,18 +9,44 @@ import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
 import { Link } from 'react-router-dom'
 
+import './index.css'
+
 @connect(({ blog }) => ({ blog }))
 class BlogList extends React.Component {
   state = {
     language: true,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'blog/GET_LIST',
-      page: 1,
-    })
+    const { dispatch, location } = this.props
+    const { state } = location
+    if (state !== undefined) {
+      if (state.paginationCurrentPage) {
+        this.setState(
+          {
+            currentPage: state.paginationCurrentPage,
+          },
+          () => {
+            dispatch({
+              type: 'blog/GET_LIST',
+              page: this.state.currentPage,
+            })
+          },
+        )
+      } else {
+        dispatch({
+          type: 'blog/GET_LIST',
+          page: this.state.currentPage,
+        })
+      }
+    } else {
+      dispatch({
+        type: 'blog/GET_LIST',
+        page: this.state.currentPage,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -48,10 +76,17 @@ class BlogList extends React.Component {
   handlePageChnage = page => {
     const { dispatch } = this.props
 
-    dispatch({
-      type: 'blog/GET_LIST',
-      page,
-    })
+    this.setState(
+      {
+        currentPage: page,
+      },
+      () => {
+        dispatch({
+          type: 'blog/GET_LIST',
+          page: this.state.currentPage,
+        })
+      },
+    )
   }
 
   deleteBlog = uuid => {
@@ -70,16 +105,16 @@ class BlogList extends React.Component {
   }
 
   hanldeRedirect = record => {
-    const { language } = this.state
+    const { language, currentPage } = this.state
     const { history } = this.props
     history.push({
       pathname: '/blog/add-blog-post',
-      state: { id: record.uuid, language },
+      state: { id: record.uuid, language, currentPage },
     })
   }
 
   render() {
-    const { language } = this.state
+    const { language, currentPage, perPage } = this.state
     const { blog } = this.props
     const { blogs, totalBlogs } = blog
     const data = blogs
@@ -89,12 +124,13 @@ class BlogList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'title_en' : 'title_ru',
         key: language ? 'title_en' : 'title_ru',
-        render: title => (title ? renderHTML(this.showing100Characters(title)) : ''),
+        render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Author',
         dataIndex: 'author',
         key: 'author',
+        render: text => (text ? renderHTML(this.showing100Characters(text)) : ''),
       },
       {
         title: 'Date',
@@ -107,7 +143,12 @@ class BlogList extends React.Component {
         key: 'uuid',
         render: record => (
           <span>
-            <Link to={{ pathname: '/blog/add-blog-post', state: { id: record.uuid, language } }}>
+            <Link
+              to={{
+                pathname: '/blog/add-blog-post',
+                state: { id: record.uuid, language, currentPage },
+              }}
+            >
               <i className="fa fa-edit mr-2 editIcon" />
             </Link>
             <i
@@ -120,6 +161,13 @@ class BlogList extends React.Component {
         ),
       },
     ]
+
+    const paginationConfig = {
+      current: currentPage,
+      pageSize: perPage,
+      total: totalBlogs,
+      onChange: this.handlePageChnage,
+    }
 
     return (
       <div>
@@ -140,6 +188,8 @@ class BlogList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               rowClassName={record =>
                 record.needs_translation === true ? 'NotTranslated' : 'translated'
               }
@@ -150,15 +200,11 @@ class BlogList extends React.Component {
                   }, // double click
                 }
               }}
-              className="utils__scrollTable"
+              className="utils__scrollTable customTable"
               scroll={{ x: '100%' }}
               columns={columns}
               dataSource={data}
-              pagination={{
-                pageSize: 20,
-                onChange: this.handlePageChnage,
-                total: totalBlogs,
-              }}
+              pagination={paginationConfig}
             />
           </div>
         </div>

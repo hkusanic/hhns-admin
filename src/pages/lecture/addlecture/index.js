@@ -106,6 +106,7 @@ class AddLecture extends React.Component {
       transArrayRu: [],
       summArrayEn: [],
       summArrayRu: [],
+      paginationCurrentPage: '',
     }
   }
 
@@ -115,25 +116,28 @@ class AddLecture extends React.Component {
     const { state } = location
 
     if (state !== undefined) {
-      const { id, language } = state
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'lecture/GET_LECTURE_BY_ID',
           payload: body,
         })
       }
     }
+
     dispatch({
       type: 'lecture/GET_TOPICS',
     })
@@ -347,8 +351,8 @@ class AddLecture extends React.Component {
     })
   }
 
-  handleFormBody = e => {
-    e.preventDefault()
+  handleFormBody = param => {
+    // e.preventDefault()
     const { form, dispatch, router, english } = this.props
     const {
       audioLink,
@@ -533,14 +537,67 @@ class AddLecture extends React.Component {
         type: 'lecture/UPDATE_LECTURE',
         payload,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+      }
     } else {
       dispatch({
         type: 'lecture/CREATE_LECTURE',
         body,
       })
-      this.scrollToTopPage()
+      if (param === 'submit') {
+        this.scrollToTopPage()
+        this.handleStateReset()
+      }
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      date: new Date(),
+      // publishDate: new Date(),
+      audioLink: '',
+      transcriptionFiles: [],
+      transcriptionFilesEn: [],
+      transcriptionFilesRu: [],
+      summaryFiles: [],
+      summaryFilesEn: [],
+      summaryFilesRu: [],
+      editorState: EditorState.createEmpty(),
+      editorStateSummaryEn: EditorState.createEmpty(),
+      editorStateSummaryRu: EditorState.createEmpty(),
+      editorStateTranscriptionEn: EditorState.createEmpty(),
+      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editinglecture: '',
+      editedBody: '',
+      translation: '',
+      language: true,
+      uploading: true,
+      audioUploading: false,
+      transcriptionUploading: false,
+      summaryUploading: false,
+      translationRequired: false,
+      titleEn: '',
+      titleRu: '',
+      locationEn: '',
+      locationRu: '',
+      eventEn: '',
+      eventRu: '',
+      topicEn: '',
+      topicRu: '',
+      translationEn: '',
+      translationRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      transcribe: false,
+      percentage: 0,
+      transFileInfo: null,
+      transArrayEn: [],
+      transArrayRu: [],
+      summArrayEn: [],
+      summArrayRu: [],
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -1438,6 +1495,7 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1451,9 +1509,13 @@ class AddLecture extends React.Component {
       customStyleSumm = { overflowY: 'auto', height: '250px' }
     }
 
+    const linkState = {
+      paginationCurrentPage,
+    }
+
     return (
       <React.Fragment>
-        <BackNavigation link="/lecture/list" title="Lecture List" />
+        <BackNavigation link="/lecture/list" title="Lecture List" linkState={linkState} />
         <div
           style={{
             backgroundColor: 'white',
@@ -2029,8 +2091,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {audioLink.split('/').pop(-1)}
@@ -2136,8 +2199,9 @@ class AddLecture extends React.Component {
                                     <div
                                       style={{
                                         display: 'inline-block',
-                                        width: '20rem',
+                                        width: 'auto',
                                         paddingLeft: '15px',
+                                        marginRight: '15px',
                                       }}
                                     >
                                       {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2180,8 +2244,9 @@ class AddLecture extends React.Component {
                                     <div
                                       style={{
                                         display: 'inline-block',
-                                        width: '20rem',
+                                        width: 'auto',
                                         paddingLeft: '15px',
+                                        marginRight: '15px',
                                       }}
                                     >
                                       {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2326,8 +2391,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2354,8 +2420,9 @@ class AddLecture extends React.Component {
                                   <div
                                     style={{
                                       display: 'inline-block',
-                                      width: '20rem',
+                                      width: 'auto',
                                       paddingLeft: '15px',
+                                      marginRight: '15px',
                                     }}
                                   >
                                     {item.fileName && item.fileName.split('/').pop(-1)}
@@ -2428,9 +2495,10 @@ class AddLecture extends React.Component {
             <TabPane tab="Audit" key="4">
               <section className="card">
                 <div className="card-body">
-                  <AuditTimeline
+                  {/* <AuditTimeline
                     audit={editinglecture.audit ? editinglecture.audit : lecture.lectureAudit}
-                  />
+                  /> */}
+                  <AuditTimeline audit={editinglecture.audit && editinglecture.audit} />
                 </div>
               </section>
             </TabPane>
@@ -2438,7 +2506,11 @@ class AddLecture extends React.Component {
         </div>
         <div className={styles.submit}>
           <span className="mr-3">
-            <Button type="primary" onClick={this.handleFormBody}>
+            <Button
+              type="primary"
+              // onClick={this.handleFormBody}
+              onClick={() => this.handleFormBody('submit')}
+            >
               Save and Post
             </Button>
           </span>

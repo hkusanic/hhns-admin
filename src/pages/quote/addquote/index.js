@@ -35,7 +35,7 @@ import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import { checkValidation } from '../../../utils/checkValidation'
-import { formInputElements,formInputSourceQuote } from '../../../utils/addQuoteInput'
+import { formInputElements, formInputSourceQuote } from '../../../utils/addQuoteInput'
 import './index.css'
 
 const { Option } = Select
@@ -59,9 +59,10 @@ class AddQuote extends React.Component {
     bodyContentRu: EditorState.createEmpty(),
     switchDisabled: true,
     formElements: formInputElements,
-    formSourceQuote:formInputSourceQuote,
+    formSourceQuote: formInputSourceQuote,
     sourceOfQuoteEn: '',
     sourceOfQuoteRu: '',
+    paginationCurrentPage: '',
   }
 
   componentDidMount() {
@@ -69,28 +70,30 @@ class AddQuote extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { id, language } = state
-      const uuid = id
+      const { language, currentPage } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+      const { id } = state
+
+      const uuid = id
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'quote/GET_QUOTE_BY_ID',
           payload: body,
         })
+        dispatch({
+          type: 'quote/GET_TOPICS',
+        })
       }
     }
-    dispatch({
-      type: 'quote/GET_TOPICS',
-    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,8 +107,7 @@ class AddQuote extends React.Component {
 
       const sourceOfQuoteEn = editQuote ? (editQuote.en ? editQuote.en.source_of_quote : '') : ''
       const sourceOfQuoteRu = editQuote ? (editQuote.ru ? editQuote.ru.source_of_quote : '') : ''
-      const author = editQuote ? (editQuote.author ? editQuote.author:'') :''
-
+      const author = editQuote ? (editQuote.author ? editQuote.author : '') : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -148,7 +150,7 @@ class AddQuote extends React.Component {
           sourceOfQuoteEn,
           sourceOfQuoteRu,
           // eslint-disable-next-line react/no-unused-state
-          author
+          author,
         },
         () => {
           this.onFieldValueChange()
@@ -306,7 +308,26 @@ class AddQuote extends React.Component {
         payload: body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      files: [],
+      editorState: EditorState.createEmpty(),
+      editingQuote: '',
+      editedBody: '',
+      language: true,
+      translationRequired: true,
+      titleEn: '',
+      titleRu: '',
+      bodyContentEn: EditorState.createEmpty(),
+      bodyContentRu: EditorState.createEmpty(),
+      switchDisabled: true,
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -472,14 +493,19 @@ class AddQuote extends React.Component {
       bodyContentRu,
       formElements,
       switchDisabled,
+      paginationCurrentPage,
     } = this.state
     const { files } = this.state
     const { topics } = quote
     const dateFormat = 'YYYY/MM/DD'
 
+    const linkState = {
+      paginationCurrentPage,
+    }
+
     return (
       <div>
-        <BackNavigation link="/quote/list" title="Quote List" />
+        <BackNavigation link="/quote/list" title="Quote List" linkState={linkState} />
         {editingQuote && editingQuote.en && editingQuote.ru ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
@@ -750,7 +776,8 @@ class AddQuote extends React.Component {
           <TabPane tab="Audit" key="2">
             <section className="card">
               <div className="card-body">
-                <AuditTimeline audit={editingQuote.audit ? editingQuote.audit : quote.quoteAudit} />
+                {/* <AuditTimeline audit={editingQuote.audit ? editingQuote.audit : quote.quoteAudit} /> */}
+                <AuditTimeline audit={editingQuote.audit && editingQuote.audit} />
               </div>
             </section>
           </TabPane>

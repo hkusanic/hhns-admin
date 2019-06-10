@@ -57,6 +57,7 @@ class AddVideo extends React.Component {
     eventRu: '',
     switchDisabled: true,
     formElements: formInputElements,
+    paginationCurrentPage: '',
   }
 
   componentDidMount() {
@@ -65,18 +66,19 @@ class AddVideo extends React.Component {
     const { location } = router
     const { state } = location
     if (state !== undefined) {
-      const { uuid, language } = state
+      const { language, currentPage, uuid } = state
       setTimeout(
         this.setState({
           language,
+          paginationCurrentPage: currentPage,
         }),
         0,
       )
+
       if (uuid !== undefined) {
         const body = {
           uuid,
         }
-
         dispatch({
           type: 'video/GET_VIDEO_BY_ID',
           payload: body,
@@ -92,8 +94,6 @@ class AddVideo extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps===>', nextProps)
-
     if (nextProps.video.editVideo !== '') {
       const { video } = nextProps
       let ar = []
@@ -305,9 +305,30 @@ class AddVideo extends React.Component {
         body,
       })
       this.scrollToTopPage()
+      this.handleStateReset()
     }
     // }
     // })
+  }
+
+  handleStateReset = () => {
+    this.setState({
+      autoCompleteDataSource: '',
+      language: true,
+      editingvideo: '',
+      translationRequired: true,
+      nextUrls: [],
+      arKeys: [],
+      titleEn: '',
+      titleRu: '',
+      locationEn: '',
+      locationRu: '',
+      eventEn: '',
+      eventRu: '',
+      switchDisabled: true,
+      formElements: formInputElements,
+      paginationCurrentPage: '',
+    })
   }
 
   scrollToTopPage = () => {
@@ -455,6 +476,7 @@ class AddVideo extends React.Component {
       switchDisabled,
       editingvideo,
       formElements,
+      paginationCurrentPage,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
     const { getFieldDecorator, getFieldValue } = this.props.form
@@ -514,10 +536,14 @@ class AddVideo extends React.Component {
       </Form.Item>
     ))
 
+    const linkState = {
+      paginationCurrentPage,
+    }
+
     return (
       <React.Fragment>
         <div>
-          <BackNavigation link="/video/list" title="Video List" />
+          <BackNavigation link="/video/list" title="Video List" linkState={linkState} />
           {editingvideo && editingvideo.en && editingvideo.ru ? (
             <div style={{ paddingTop: '10px' }}>
               <div>
@@ -893,11 +919,12 @@ class AddVideo extends React.Component {
             <TabPane tab="Audit" key="2">
               <section className="card">
                 <div className="card-body">
-                  <AuditTimeline
+                  {/* <AuditTimeline
                     audit={
                       editingvideo && editingvideo.audit ? editingvideo.audit : video.videoAudit
                     }
-                  />
+                  /> */}
+                  <AuditTimeline audit={editingvideo && editingvideo.audit && editingvideo.audit} />
                 </div>
               </section>
             </TabPane>
