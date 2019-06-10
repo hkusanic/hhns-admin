@@ -1025,6 +1025,8 @@ class AddKirtan extends React.Component {
                         <FormItem label={language ? 'Body' : 'Body'}>
                           <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
                             <Editor
+                              wrapperClassName="demo-wrapper"
+                              editorClassName="demo-editor"
                               editorState={language ? bodyContentEn : bodyContentRu}
                               onEditorStateChange={this.onEditorStateChange}
                             />
