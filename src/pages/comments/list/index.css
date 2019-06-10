@@ -13,3 +13,13 @@
     margin-left: -2px;
   }
 } */
+
+.customTable th:nth-child(2) {
+  /* width: 30%; */
+  width: 20rem;
+}
+
+.customTable td:nth-child(2) {
+  /* width: 30%; */
+  width: 20rem;
+}

@@ -164,7 +164,7 @@ class ProductsList extends React.Component {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
         key: language ? 'en.title' : 'ru.title',
-        render: title => (title ? renderHTML(title.substring(0, 50)) : ''),
+        render: title => (title ? renderHTML(title.substring(0, 40)) : ''),
       },
       // {
       //   title: 'Event',
