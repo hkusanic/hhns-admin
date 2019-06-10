@@ -35,7 +35,7 @@ import { uuidv4 } from '../../../services/custom'
 import styles from './style.module.scss'
 import AuditTimeline from '../../../components/CleanUIComponents/AuditTimeline'
 import { checkValidation } from '../../../utils/checkValidation'
-import { formInputElements } from '../../../utils/addQuoteInput'
+import { formInputElements,formInputSourceQuote } from '../../../utils/addQuoteInput'
 import './index.css'
 
 const { Option } = Select
@@ -59,6 +59,9 @@ class AddQuote extends React.Component {
     bodyContentRu: EditorState.createEmpty(),
     switchDisabled: true,
     formElements: formInputElements,
+    formSourceQuote:formInputSourceQuote,
+    sourceOfQuoteEn: '',
+    sourceOfQuoteRu: '',
   }
 
   componentDidMount() {
@@ -99,6 +102,11 @@ class AddQuote extends React.Component {
       const titleEn = editQuote ? (editQuote.en ? editQuote.en.title : '') : ''
       const titleRu = editQuote ? (editQuote.ru ? editQuote.ru.title : '') : ''
 
+      const sourceOfQuoteEn = editQuote ? (editQuote.en ? editQuote.en.source_of_quote : '') : ''
+      const sourceOfQuoteRu = editQuote ? (editQuote.ru ? editQuote.ru.source_of_quote : '') : ''
+      const author = editQuote ? (editQuote.author ? editQuote.author:'') :''
+
+
       let bodyContentEn = ''
       let bodyContentRu = ''
 
@@ -137,6 +145,10 @@ class AddQuote extends React.Component {
           bodyContentRu,
           titleEn,
           titleRu,
+          sourceOfQuoteEn,
+          sourceOfQuoteRu,
+          // eslint-disable-next-line react/no-unused-state
+          author
         },
         () => {
           this.onFieldValueChange()
@@ -230,6 +242,8 @@ class AddQuote extends React.Component {
       titleRu,
       bodyContentEn,
       bodyContentRu,
+      sourceOfQuoteEn,
+      sourceOfQuoteRu,
     } = this.state
     // const titleEn = form.getFieldValue('title')
     const topic = form.getFieldValue('topic')
@@ -255,7 +269,7 @@ class AddQuote extends React.Component {
     }
 
     const body = {
-      author: 'nirajanana swami',
+      author,
       uuid: uuid || uuidv4(),
       language: languageData,
       date,
@@ -263,15 +277,15 @@ class AddQuote extends React.Component {
       needs_translation: translationRequired,
       en: {
         title: titleEn,
+        source_of_quote: sourceOfQuoteEn,
         // topic: language ? topic : editingQuote ? editingQuote.en.topic : '',
         body: editorbodyContentEn,
-        author,
       },
       ru: {
         title: titleRu,
+        source_of_quote: sourceOfQuoteRu,
         // topic: language ? (editingQuote ? editingQuote.ru.topic : '') : topic,
         body: editorbodyContentRu,
-        author,
       },
     }
     if (editingQuote) {
@@ -364,6 +378,40 @@ class AddQuote extends React.Component {
     }
   }
 
+  handleSourceOfQuote = event => {
+    const { language, formSourceQuote } = this.state
+
+    const updatedFormElements = {
+      ...formSourceQuote,
+      [event.target.name]: {
+        ...formSourceQuote[event.target.name],
+        value: event.target.value,
+        touched: true,
+        valid: checkValidation(event.target.value, formSourceQuote[event.target.name].validation),
+      },
+    }
+
+    this.setState({ formSourceQuote: updatedFormElements })
+
+    if (language) {
+      this.setState(
+        {
+          sourceOfQuoteEn: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+
+    if (!language) {
+      this.setState(
+        {
+          sourceOfQuoteRu: event.target.value,
+        },
+        () => this.onFieldValueChange(),
+      )
+    }
+  }
+
   handleLanguage = () => {
     const { language } = this.state
 
@@ -418,6 +466,8 @@ class AddQuote extends React.Component {
       language,
       titleEn,
       titleRu,
+      sourceOfQuoteEn,
+      sourceOfQuoteRu,
       bodyContentEn,
       bodyContentRu,
       formElements,
@@ -528,7 +578,7 @@ class AddQuote extends React.Component {
                     <div className="form-group">
                       <FormItem label="Author">
                         {form.getFieldDecorator('author', {
-                          initialValue: editingQuote ? editingQuote.en.author : '',
+                          initialValue: editingQuote ? editingQuote.author : '',
                         })(
                           <Select
                             id="product-edit-colors"
@@ -541,6 +591,7 @@ class AddQuote extends React.Component {
                             }
                           >
                             <Option value="Niranjana Swami">Niranjana Swami</Option>
+                            <Option value="Srila Prabhupada">Srila Prabhupada</Option>
                             <Option value="Other">Other</Option>
                           </Select>,
                         )}
@@ -623,6 +674,24 @@ class AddQuote extends React.Component {
                               ? moment(editingQuote.published_date, dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker disabled />)}
+                      </FormItem>
+                    </div>
+                    <div className="form-group">
+                      <FormItem label={language ? 'Source of Quote' : 'Source of Quote'}>
+                        <Input
+                          onChange={this.handleSourceOfQuote}
+                          value={language ? sourceOfQuoteEn : sourceOfQuoteRu}
+                          placeholder="Source of Quote"
+                          name="sourceOfQuote"
+                        />
+                        {formElements.sourceOfQuote &&
+                        !formElements.sourceOfQuote.valid &&
+                        formElements.sourceOfQuote.validation &&
+                        formElements.sourceOfQuote.touched ? (
+                          <div className="invalidFeedback">
+                            {formElements.sourceOfQuote.errorMessage}
+                          </div>
+                        ) : null}
                       </FormItem>
                     </div>
                     <div className="form-group">
