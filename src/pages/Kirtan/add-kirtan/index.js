@@ -69,6 +69,7 @@ class AddKirtan extends React.Component {
     bodyContentRu: EditorState.createEmpty(),
     percentage: 0,
     paginationCurrentPage: '',
+    uploading: true,
   }
 
   componentDidMount() {
@@ -109,7 +110,10 @@ class AddKirtan extends React.Component {
     if (nextProps.kirtan.isKirtanCreated) {
       this.handleReset()
     }
-    if (nextProps.kirtan.editKirtan !== '') {
+
+    const { uploading } = this.state
+
+    if (nextProps.kirtan.editKirtan !== '' && uploading) {
       const { kirtan } = nextProps
       const { editKirtan } = kirtan
       const { language } = this.state
@@ -196,6 +200,7 @@ class AddKirtan extends React.Component {
       bodyContentEn: EditorState.createEmpty(),
       bodyContentRu: EditorState.createEmpty(),
       percentage: 0,
+      uploading: false,
     })
   }
 
@@ -210,6 +215,7 @@ class AddKirtan extends React.Component {
       }
       this.setState({
         editorState,
+        uploading: false,
       })
     }
   }
@@ -218,6 +224,7 @@ class AddKirtan extends React.Component {
     setTimeout(() => {
       this.setState({
         translationRequired: event.target.checked,
+        uploading: false,
       })
     }, 0)
   }
@@ -227,6 +234,7 @@ class AddKirtan extends React.Component {
     setTimeout(() => {
       this.setState({
         createDate: dateString,
+        uploading: false,
       })
     }, 0)
   }
@@ -236,6 +244,7 @@ class AddKirtan extends React.Component {
     setTimeout(() => {
       this.setState({
         publishDate: dateString,
+        uploading: false,
       })
     }, 0)
   }
@@ -246,12 +255,14 @@ class AddKirtan extends React.Component {
     if (language) {
       this.setState({
         bodyContentEn: editorState,
+        uploading: false,
       })
     }
 
     if (!language) {
       this.setState({
         bodyContentRu: editorState,
+        uploading: false,
       })
     }
 
@@ -261,7 +272,7 @@ class AddKirtan extends React.Component {
   }
 
   handleUploading = info => {
-    this.setState({ percentage: 0 }, () => {
+    this.setState({ percentage: 0, uploading: false }, () => {
       this.uploads3(info.file)
     })
     // if (info.file.status === 'uploading') {
@@ -392,7 +403,7 @@ class AddKirtan extends React.Component {
   }
 
   beforeUploadAudio = file => {
-    this.setState({ percentage: 0 })
+    this.setState({ percentage: 0, uploading: false })
     const isJPG = file.type === 'audio/mp3'
     if (!isJPG) {
       notification.error({
@@ -555,6 +566,7 @@ class AddKirtan extends React.Component {
       bodyContentRu: EditorState.createEmpty(),
       percentage: 0,
       paginationCurrentPage: '',
+      uploading: true,
     })
   }
 
@@ -593,6 +605,7 @@ class AddKirtan extends React.Component {
       bodyContentEn: EditorState.createEmpty(),
       bodyContentRu: EditorState.createEmpty(),
       percentage: 0,
+      uploading: true,
     })
   }
 
@@ -603,6 +616,7 @@ class AddKirtan extends React.Component {
     }
     this.setState({
       language: !language,
+      uploading: false,
     })
   }
 
