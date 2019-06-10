@@ -59,18 +59,14 @@ class DiscipleProfile extends Component {
           <div className="row">
             <div className="col-lg-6">
               <FormItem label="Disciple Name">
-                <Input value={user.discipleName} placeholder="Disciple Name" disabled />
+                <Input value={user.discipleName} disabled />
               </FormItem>
             </div>
             {/* <div className="col-lg-2" /> */}
 
             <div className="col-lg-6">
               <FormItem label="Temple Name">
-                <Input
-                  value={user.disciple_profile && user.disciple_profile.temple}
-                  placeholder="Temple Name"
-                  disabled
-                />
+                <Input value={user.disciple_profile && user.disciple_profile.temple} disabled />
               </FormItem>
             </div>
           </div>
@@ -110,7 +106,6 @@ class DiscipleProfile extends Component {
               <FormItem label="Marital Status">
                 <Input
                   value={user.disciple_profile && user.disciple_profile.marital_status}
-                  placeholder="Marital Status"
                   disabled
                 />
               </FormItem>
@@ -118,11 +113,7 @@ class DiscipleProfile extends Component {
 
             <div className="col-lg-6">
               <FormItem label="Verifier">
-                <Input
-                  value={user.disciple_profile && user.disciple_profile.verifier}
-                  placeholder="Verifier"
-                  disabled
-                />
+                <Input value={user.disciple_profile && user.disciple_profile.verifier} disabled />
               </FormItem>
             </div>
           </div>
