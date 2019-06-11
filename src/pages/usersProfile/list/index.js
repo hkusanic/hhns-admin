@@ -162,7 +162,7 @@ class UsersList extends Component {
         <Helmet title="Users List" />
 
         <div className="card">
-          <div className="container card-header">
+          <div className="card-header">
             <div className="row utils__title">
               <div className="col-lg-8">
                 <strong>Users List</strong>
@@ -231,7 +231,7 @@ class UsersList extends Component {
               </div>
             </div>
           </div>
-          <div className="container card-body">
+          <div className="card-body">
             <Table
               rowKey={record => record.user_id}
               onRow={record => {

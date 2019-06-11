@@ -152,14 +152,12 @@ class CommentsList extends Component {
         <Helmet title="Comments List" />
 
         <div className="card">
-          <div className="container card-header">
-            <div className="row utils__title">
-              <div className="col-lg-8">
-                <strong>Comments List</strong>
-              </div>
+          <div className="card-header">
+            <div className="utils__title">
+              <strong>Comments List</strong>
             </div>
-            <div className="row">
-              <div className="col-lg-3 mb-2">
+            <div className="headerDiv">
+              <div className="mb-2 mr-3" style={{ width: '16rem' }}>
                 <Select
                   style={{ width: '100%' }}
                   id="disciple"
@@ -173,14 +171,14 @@ class CommentsList extends Component {
                   <Option value="2">Needs Approval</Option>
                 </Select>
               </div>
-              <div className="col-lg-3 mb-2">
+              <div className="mb-2">
                 <Button type="primary" onClick={this.handleResetButtonClick}>
                   Reset
                 </Button>
               </div>
             </div>
           </div>
-          <div className="container card-body">
+          <div className="card-body">
             <Table
               rowKey={record => record._id}
               rowClassName={record =>
