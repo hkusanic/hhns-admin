@@ -26,6 +26,7 @@ export function* getStaticGallerySage() {
           isDeleted: false,
           isUpdated: false,
           loading: false,
+          editGallery: '',
         },
       })
     }

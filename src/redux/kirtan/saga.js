@@ -70,6 +70,7 @@ export function* getKirtanListSaga(payload) {
           isKirtanCreated: false,
           isDeleted: false,
           isUpdated: false,
+          editKirtan: '',
         },
       })
     }
