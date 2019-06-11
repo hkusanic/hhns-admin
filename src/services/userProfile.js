@@ -38,3 +38,19 @@ export async function getUserByUuid(request) {
       return error
     })
 }
+
+export async function updateSadhanaSheetEnable(payload) {
+  const body = payload
+  const url = `${serverAddress}/api/user/approveSadhanaSheet`
+  return axios
+    .post(url, body)
+    .then(response => {
+      if (response.status === 200) {
+        return response
+      }
+      return false
+    })
+    .catch(error => {
+      return error
+    })
+}

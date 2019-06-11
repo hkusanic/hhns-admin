@@ -1,6 +1,8 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { Component, Fragment } from 'react'
 import { Form, Input, Select, Button, Upload } from 'antd'
 import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 import './BasicProfile.css'
 
 const FormItem = Form.Item
@@ -22,16 +24,23 @@ const AvatarView = ({ profilePic }) => (
 )
 
 @Form.create()
+@connect(({ userProfile }) => ({ userProfile }))
 class BasicProfile extends Component {
   state = {
     user: {},
     language: '',
+    sadhanaSheetEnable: '',
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.userDetails !== prevState.user) {
       return {
         user: nextProps.userDetails,
+        sadhanaSheetEnable:
+          nextProps.userDetails.sadhanaSheetEnable !== null &&
+          nextProps.userDetails.sadhanaSheetEnable !== undefined
+            ? nextProps.userDetails.sadhanaSheetEnable.toString()
+            : '',
         language: nextProps.userDetails.language,
       }
     }
@@ -52,12 +61,40 @@ class BasicProfile extends Component {
     })
   }
 
+  handleSadhanaSheetEnable = value => {
+    this.setState(
+      {
+        sadhanaSheetEnable: value,
+      },
+      () => {
+        this.updateSadhanSheetStatus()
+      },
+    )
+  }
+
+  updateSadhanSheetStatus = () => {
+    const { dispatch } = this.props
+    const { user } = this.state
+    let sadhanaSheetEnable
+    if (this.state.sadhanaSheetEnable === false || this.state.sadhanaSheetEnable === 'false') {
+      sadhanaSheetEnable = false
+    } else {
+      sadhanaSheetEnable = true
+    }
+    if (this.state)
+      dispatch({
+        type: 'userProfile/SADHANA_SHEET_ENABLE',
+        sadhanaSheetEnable,
+        user_id: user.user_id,
+      })
+  }
+
   render() {
     const {
       form: { getFieldDecorator },
     } = this.props
 
-    const { user } = this.state
+    const { user, sadhanaSheetEnable } = this.state
 
     let { language } = this.state
 
@@ -163,6 +200,24 @@ class BasicProfile extends Component {
                   >
                     Russian
                   </Option>
+                </Select>
+              </FormItem>
+            </div>
+            <div className="col-lg-4">
+              <FormItem label="Sadhana Sheets Enable / Disable">
+                <Select
+                  id="product-edit-colors"
+                  showSearch
+                  style={{ width: '100%' }}
+                  optionFilterProp="children"
+                  onChange={this.handleSadhanaSheetEnable}
+                  value={sadhanaSheetEnable}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  <Option value="true">Enable</Option>
+                  <Option value="false">Disable</Option>
                 </Select>
               </FormItem>
             </div>

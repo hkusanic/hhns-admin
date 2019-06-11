@@ -1,6 +1,6 @@
 import { notification } from 'antd'
 import { all, takeEvery, put, call } from 'redux-saga/effects'
-import { getUsersList, getUserByUuid } from 'services/userProfile'
+import { getUsersList, getUserByUuid, updateSadhanaSheetEnable } from 'services/userProfile'
 import actions from './action'
 
 export function* getUsersListSaga(payload) {
@@ -47,7 +47,35 @@ export function* getUserByUuidSaga(body) {
   }
 }
 
+export function* updateSadhanaSheetEnableSaga(body) {
+  try {
+    const result = yield call(updateSadhanaSheetEnable, body)
+
+    const { data } = result
+    if (result.status === 200) {
+      notification.success({
+        message: 'Success',
+        description: 'Sadhana Sheet Status updated successfully',
+      })
+      yield put({
+        type: actions.SET_STATE,
+        payload: {
+          userDetails: data.userDetails,
+        },
+      })
+    }
+  } catch (err) {
+    notification.error({
+      message: 'Error',
+      description: 'Error Occured while while updating',
+    })
+  }
+}
+
 export default function* rootSaga() {
-  yield all([takeEvery(actions.GET_USERS, getUsersListSaga)])
-  yield all([takeEvery(actions.GET_USER_BY_ID, getUserByUuidSaga)])
+  yield all([
+    takeEvery(actions.GET_USERS, getUsersListSaga),
+    takeEvery(actions.GET_USER_BY_ID, getUserByUuidSaga),
+    takeEvery(actions.SADHANA_SHEET_ENABLE, updateSadhanaSheetEnableSaga),
+  ])
 }
