@@ -171,9 +171,8 @@ class QuotesList extends React.Component {
       },
       {
         title: 'Author',
-        dataIndex:
-          window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.author' : 'en.author',
-        key: window.localStorage['app.settings.locale'] === '"ru-RU"' ? 'ru.author' : 'en.author',
+        dataIndex: 'author',
+        key: 'author',
         render: author =>
           author ? renderHTML(this.showing100Characters(author)) : 'Translation missing',
       },
