@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable */
 import React from 'react'
-import { Table, DatePicker, Select, Switch } from 'antd'
+import { Table, DatePicker, Select, Switch, Button } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -18,14 +18,10 @@ class QuotesList extends React.Component {
     language: true,
     currentPage: 1,
     perPage: 20,
+    author: '',
   }
 
   componentDidMount() {
-    // const { dispatch } = this.props
-    // dispatch({
-    //   type: 'quote/GET_QUOTES',
-    //   page: 1,
-    // })
     const { dispatch, location } = this.props
     const { state } = location
     if (state !== undefined) {
@@ -149,8 +145,40 @@ class QuotesList extends React.Component {
     })
   }
 
+  handleSelectChange = value => {
+    const { dispatch } = this.props
+    this.setState(
+      {
+        author: value,
+      },
+      () => {
+        dispatch({
+          type: 'quote/GET_QUOTES',
+          page: this.state.currentPage,
+          author: this.state.author,
+        })
+      },
+    )
+  }
+
+  handleResetButtonClick = () => {
+    const { dispatch } = this.props
+    this.setState(
+      {
+        author: '',
+      },
+      () => {
+        dispatch({
+          type: 'quote/GET_QUOTES',
+          page: this.state.currentPage,
+          author: this.state.author,
+        })
+      },
+    )
+  }
+
   render() {
-    const { language, currentPage, perPage } = this.state
+    const { language, currentPage, perPage, author } = this.state
     const { quote } = this.props
     const { quotes, totalQuotes } = quote
     const data = quotes
@@ -215,16 +243,38 @@ class QuotesList extends React.Component {
         <Helmet title="Lecture List" />
         <div className="card">
           <div className="card-header mb-3">
-            <div className="utils__title">
-              <strong>Quote List</strong>
-              <Switch
-                defaultChecked
-                checkedChildren={language ? 'en' : 'ru'}
-                unCheckedChildren={language ? 'en' : 'ru'}
-                onChange={this.handleLanguage}
-                className="toggle"
-                style={{ width: '100px', marginLeft: '10px' }}
-              />
+            <div className="row utils__title">
+              <div className="col-lg-8 mb-3">
+                <strong>Quote List</strong>
+                <Switch
+                  defaultChecked
+                  checkedChildren={language ? 'en' : 'ru'}
+                  unCheckedChildren={language ? 'en' : 'ru'}
+                  onChange={this.handleLanguage}
+                  className="toggle"
+                  style={{ width: '100px', marginLeft: '10px' }}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-lg-3">
+                <Select
+                  style={{ width: '100%' }}
+                  id="disciple"
+                  placeholder="Author"
+                  onChange={this.handleSelectChange}
+                  // eslint-disable-next-line no-unneeded-ternary
+                  value={author ? author : 'Select Author'}
+                >
+                  <Option value="Niranjana Swami">Niranjana Swami</Option>
+                  <Option value="Srila Prabhupada">Srila Prabhupada</Option>
+                </Select>
+              </div>
+              <div className="col-lg-3">
+                <Button type="primary" onClick={this.handleResetButtonClick}>
+                  Reset
+                </Button>
+              </div>
             </div>
           </div>
           <div className="card-body">
