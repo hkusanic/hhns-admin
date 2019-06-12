@@ -833,13 +833,12 @@ class AddLecture extends React.Component {
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
-    const { onSuccess, onError, action, onProgress, file } = info
     axios({
       method: 'PUT',
       url: presignedUrl,
       data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)

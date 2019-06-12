@@ -273,7 +273,7 @@ class AddKirtan extends React.Component {
 
   handleUploading = info => {
     this.setState({ percentage: 0, uploading: false }, () => {
-      this.uploads3(info.file)
+      this.uploads3(info)
     })
     // if (info.file.status === 'uploading') {
     //   notification.success({
@@ -286,9 +286,9 @@ class AddKirtan extends React.Component {
     // }
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
 
     axios({
       method: 'GET',
@@ -298,7 +298,7 @@ class AddKirtan extends React.Component {
         const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
       })
       .catch(error => {
         notification.error({
@@ -325,13 +325,13 @@ class AddKirtan extends React.Component {
     // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file,
+      data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)

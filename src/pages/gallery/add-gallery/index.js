@@ -222,7 +222,7 @@ class CreateGallery extends React.Component {
       },
       () => {
         // this.handleUploading(info)
-        this.uploads3(info.file)
+        this.uploads3(info)
       },
     )
   }
@@ -245,9 +245,9 @@ class CreateGallery extends React.Component {
     reader.readAsDataURL(img)
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
 
     const { photoFiles } = this.state
 
@@ -269,7 +269,7 @@ class CreateGallery extends React.Component {
         }
       }
 
-      this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+      this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
     })
 
     // $.ajax({
@@ -292,13 +292,13 @@ class CreateGallery extends React.Component {
     // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file,
+      data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
