@@ -1064,7 +1064,10 @@ class AddKirtan extends React.Component {
                               <li className="filesList">
                                 <div className="fileDisplay">
                                   <div className="uploadedFileName">
-                                    {audioLink.split('/').pop(-1)}
+                                    {audioLink
+                                      .split('/')
+                                      .pop(-1)
+                                      .substring(0, 30)}
                                   </div>
                                   <div className="deleteIcon">
                                     <i
@@ -1075,9 +1078,7 @@ class AddKirtan extends React.Component {
                                     />
                                   </div>
                                   <div className="progressBar">
-                                    {percentage !== 'zeroPercent' ? (
-                                      <Progress percent={percentage} />
-                                    ) : null}
+                                    {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                   </div>
                                 </div>
                                 {/* <div

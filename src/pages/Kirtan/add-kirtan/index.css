@@ -27,6 +27,7 @@
 .uploadedFileName{
   width: 20rem;
   display: inline-block;
+  margin-right: 0.5rem;
 }
 
 .deleteIcon {

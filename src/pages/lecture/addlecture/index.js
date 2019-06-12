@@ -2093,7 +2093,10 @@ class AddLecture extends React.Component {
                                 <li className="filesList">
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
-                                      {audioLink.split('/').pop(-1)}
+                                      {audioLink
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
                                     </div>
                                     <div className="deleteIcon">
                                       <i
@@ -2104,9 +2107,7 @@ class AddLecture extends React.Component {
                                       />
                                     </div>
                                     <div className="progressBar">
-                                      {percentage !== 'zeroPercent' ? (
-                                        <Progress percent={percentage} />
-                                      ) : null}
+                                      {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                     </div>
                                   </div>
                                   {/* <div
@@ -2221,7 +2222,10 @@ class AddLecture extends React.Component {
                                   <li className="filesList" key={index}>
                                     <div className="fileDisplay">
                                       <div className="uploadedFileName">
-                                        {item.fileName.split('/').pop(-1)}
+                                        {item.fileName
+                                          .split('/')
+                                          .pop(-1)
+                                          .substring(0, 30)}
                                       </div>
                                       <div className="deleteIcon">
                                         <i
@@ -2284,7 +2288,10 @@ class AddLecture extends React.Component {
                                   <li className="filesList" key={index}>
                                     <div className="fileDisplay">
                                       <div className="uploadedFileName">
-                                        {item.fileName.split('/').pop(-1)}
+                                        {item.fileName
+                                          .split('/')
+                                          .pop(-1)
+                                          .substring(0, 30)}
                                       </div>
                                       <div className="deleteIcon">
                                         <i
@@ -2450,7 +2457,10 @@ class AddLecture extends React.Component {
                                 <li className="filesList" key={index}>
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
-                                      {item.fileName.split('/').pop(-1)}
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
                                     </div>
                                     <div className="deleteIcon">
                                       <i
@@ -2497,7 +2507,10 @@ class AddLecture extends React.Component {
                                 <li className="filesList" key={index}>
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
-                                      {item.fileName.split('/').pop(-1)}
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
                                     </div>
                                     <div className="deleteIcon">
                                       <i

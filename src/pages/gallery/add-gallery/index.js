@@ -819,7 +819,10 @@ class CreateGallery extends React.Component {
                                 <li className="filesList" key={index}>
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
-                                      {item.fileName.split('/').pop(-1)}
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
                                     </div>
                                     <div className="deleteIcon">
                                       <i
