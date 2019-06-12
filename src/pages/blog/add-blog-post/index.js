@@ -1015,7 +1015,7 @@ class BlogAddPost extends React.Component {
                             Save and Post
                           </Button>
                         </span>
-                        <Button type="danger" onClick={this.handleReset}>
+                        <Button type="danger" onClick={this.handleStateReset}>
                           Discard
                         </Button>
                       </div>
