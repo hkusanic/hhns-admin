@@ -741,6 +741,7 @@ class AddLecture extends React.Component {
       summArrayRu,
       transcriptionUploading,
       summaryUploading,
+      uploading,
     } = this.state
 
     axios({
@@ -754,7 +755,7 @@ class AddLecture extends React.Component {
         // this.setUploadedFiles(finalUrl)
 
         if (language) {
-          if (transcriptionUploading) {
+          if (transcriptionUploading && !uploading) {
             for (let i = 0; i < transArrayEn.length; i += 1) {
               if (transArrayEn[i].fileName === finalUrl) {
                 notification.warning({
@@ -766,7 +767,7 @@ class AddLecture extends React.Component {
             }
           }
 
-          if (summaryUploading) {
+          if (summaryUploading && !uploading) {
             for (let i = 0; i < summArrayEn.length; i += 1) {
               if (summArrayEn[i].fileName === finalUrl) {
                 notification.warning({
@@ -778,7 +779,7 @@ class AddLecture extends React.Component {
             }
           }
         } else {
-          if (transcriptionUploading) {
+          if (transcriptionUploading && !uploading) {
             for (let i = 0; i < transArrayRu.length; i += 1) {
               if (transArrayRu[i].fileName === finalUrl) {
                 notification.warning({
@@ -790,7 +791,7 @@ class AddLecture extends React.Component {
             }
           }
 
-          if (summaryUploading) {
+          if (summaryUploading && !uploading) {
             for (let i = 0; i < summArrayRu.length; i += 1) {
               if (summArrayRu[i].fileName === finalUrl) {
                 notification.warning({
@@ -1281,7 +1282,7 @@ class AddLecture extends React.Component {
   }
 
   beforeUploadAudio = file => {
-    this.setState({ percentage: 0 })
+    // this.setState({ percentage: 0 })
     const isJPG = file.type === 'audio/mp3'
     if (!isJPG) {
       notification.error({
