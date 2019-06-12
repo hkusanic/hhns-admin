@@ -39,6 +39,7 @@ export function* getStaticGallerySage() {
 }
 
 export function* getSubGalleryByGallerySaga(payload) {
+  console.log('payload===>', payload)
   try {
     const { body } = payload
     const result = yield call(getSubGalleryByGallery, body)

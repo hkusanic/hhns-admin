@@ -649,9 +649,13 @@ class CreateGallery extends React.Component {
       customStyle = { overflowY: 'auto', height: '250px' }
     }
 
+    const linkState = {
+      galleryYear: editGallery.gallery,
+    }
+
     return (
       <div>
-        <BackNavigation link="/gallery/list" title="Gallery List" />
+        <BackNavigation link="/gallery/list" title="Gallery List" linkState={linkState} />
         {editGallery ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
@@ -730,7 +734,8 @@ class CreateGallery extends React.Component {
                       <FormItem label="Gallery">
                         <Select
                           id="gallery-item"
-                          defaultValue="2019"
+                          // defaultValue="2019"
+                          value={editGallery.gallery}
                           showSearch
                           style={{ width: '25%' }}
                           onChange={this.hadleSelectGallery}
