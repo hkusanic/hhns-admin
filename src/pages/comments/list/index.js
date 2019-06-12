@@ -136,6 +136,11 @@ class CommentsList extends Component {
         render: (text, record, index) => (text ? renderHTML(text.substring(0, 30)) : ''),
       },
       {
+        title: 'Comment Subject',
+        dataIndex: 'subject',
+        render: (text, record, index) => (text ? renderHTML(text.substring(0, 30)) : ''),
+      },
+      {
         title: 'Date Created',
         dataIndex: 'dateCreated',
         render: (text, record, index) => formatDate(new Date(text)),

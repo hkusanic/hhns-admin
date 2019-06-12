@@ -15,7 +15,7 @@ export function* LOGIN({ payload }) {
   if (success) {
     notification.success({
       message: 'Logged In',
-      description: 'You have successfully logged in to Clean UI React Admin Template!',
+      description: 'You have successfully logged in!',
     })
     yield put({
       type: 'user/LOAD_CURRENT_ACCOUNT',
