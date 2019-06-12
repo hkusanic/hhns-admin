@@ -936,7 +936,25 @@ class BlogAddPost extends React.Component {
                             files.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName.split('/').pop(-1)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName)
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -957,7 +975,7 @@ class BlogAddPost extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })}

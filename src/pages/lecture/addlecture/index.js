@@ -2091,7 +2091,25 @@ class AddLecture extends React.Component {
                               </li> */}
 
                                 <li className="filesList">
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {audioLink.split('/').pop(-1)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(audioLink, 'audio')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {percentage !== 'zeroPercent' ? (
+                                        <Progress percent={percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2112,7 +2130,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               </ul>
                             ) : (
@@ -2201,7 +2219,25 @@ class AddLecture extends React.Component {
                               summArrayEn.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
-                                    <div
+                                    <div className="fileDisplay">
+                                      <div className="uploadedFileName">
+                                        {item.fileName.split('/').pop(-1)}
+                                      </div>
+                                      <div className="deleteIcon">
+                                        <i
+                                          className="fa fa-trash closeIcon"
+                                          onClick={() => {
+                                            this.deleteFile(item.fileName, 'summary')
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="progressBar">
+                                        {item.percentage !== 'zeroPercent' ? (
+                                          <Progress percent={item.percentage} />
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                    {/* <div
                                       style={{
                                         display: 'inline-block',
                                         width: 'auto',
@@ -2222,7 +2258,7 @@ class AddLecture extends React.Component {
                                       <div style={{ display: 'inline-block', width: '20rem' }}>
                                         <Progress percent={item.percentage} />
                                       </div>
-                                    ) : null}
+                                    ) : null} */}
                                   </li>
                                 )
                               })
@@ -2246,7 +2282,25 @@ class AddLecture extends React.Component {
                               summArrayRu.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
-                                    <div
+                                    <div className="fileDisplay">
+                                      <div className="uploadedFileName">
+                                        {item.fileName.split('/').pop(-1)}
+                                      </div>
+                                      <div className="deleteIcon">
+                                        <i
+                                          className="fa fa-trash closeIcon"
+                                          onClick={() => {
+                                            this.deleteFile(item.fileName, 'summary')
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="progressBar">
+                                        {item.percentage !== 'zeroPercent' ? (
+                                          <Progress percent={item.percentage} />
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                    {/* <div
                                       style={{
                                         display: 'inline-block',
                                         width: 'auto',
@@ -2267,7 +2321,7 @@ class AddLecture extends React.Component {
                                       <div style={{ display: 'inline-block', width: '20rem' }}>
                                         <Progress percent={item.percentage} />
                                       </div>
-                                    ) : null}
+                                    ) : null} */}
                                   </li>
                                 )
                               })}
@@ -2394,8 +2448,25 @@ class AddLecture extends React.Component {
                             transArrayEn.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  {' '}
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName.split('/').pop(-1)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'transcription')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2416,7 +2487,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })
@@ -2424,7 +2495,25 @@ class AddLecture extends React.Component {
                             transArrayRu.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName.split('/').pop(-1)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'transcription')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2445,7 +2534,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })}

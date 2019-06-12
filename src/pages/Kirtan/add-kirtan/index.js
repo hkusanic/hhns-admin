@@ -1062,7 +1062,25 @@ class AddKirtan extends React.Component {
                               </li> */}
 
                               <li className="filesList">
-                                <div
+                                <div className="fileDisplay">
+                                  <div className="uploadedFileName">
+                                    {audioLink.split('/').pop(-1)}
+                                  </div>
+                                  <div className="deleteIcon">
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(audioLink)
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="progressBar">
+                                    {percentage !== 'zeroPercent' ? (
+                                      <Progress percent={percentage} />
+                                    ) : null}
+                                  </div>
+                                </div>
+                                {/* <div
                                   style={{
                                     display: 'inline-block',
                                     width: 'auto',
@@ -1083,7 +1101,7 @@ class AddKirtan extends React.Component {
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={percentage} />
                                   </div>
-                                ) : null}
+                                ) : null} */}
                               </li>
                             </ul>
                           ) : (

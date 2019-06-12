@@ -18,3 +18,23 @@
   padding: 5px !important;
   border-radius: 2px !important;
 }
+
+.fileDisplay {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.uploadedFileName{
+  width: 20rem;
+  display: inline-block;
+}
+
+.deleteIcon {
+  width: 2rem;
+  display: inline-block;
+}
+
+.progressBar{
+  width: 20rem;
+  display: inline-block;
+}
