@@ -273,7 +273,7 @@ class AddKirtan extends React.Component {
 
   handleUploading = info => {
     this.setState({ percentage: 0, uploading: false }, () => {
-      this.uploads3(info.file)
+      this.uploads3(info)
     })
     // if (info.file.status === 'uploading') {
     //   notification.success({
@@ -286,9 +286,9 @@ class AddKirtan extends React.Component {
     // }
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
 
     axios({
       method: 'GET',
@@ -298,7 +298,7 @@ class AddKirtan extends React.Component {
         const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
       })
       .catch(error => {
         notification.error({
@@ -325,13 +325,13 @@ class AddKirtan extends React.Component {
     // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file,
+      data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
@@ -1062,7 +1062,26 @@ class AddKirtan extends React.Component {
                               </li> */}
 
                               <li className="filesList">
-                                <div
+                                <div className="fileDisplay">
+                                  <div className="uploadedFileName">
+                                    {audioLink
+                                      .split('/')
+                                      .pop(-1)
+                                      .substring(0, 30)}
+                                  </div>
+                                  <div className="deleteIcon">
+                                    <i
+                                      className="fa fa-trash closeIcon"
+                                      onClick={() => {
+                                        this.deleteFile(audioLink)
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="progressBar">
+                                    {percentage !== 0 ? <Progress percent={percentage} /> : null}
+                                  </div>
+                                </div>
+                                {/* <div
                                   style={{
                                     display: 'inline-block',
                                     width: 'auto',
@@ -1083,7 +1102,7 @@ class AddKirtan extends React.Component {
                                   <div style={{ display: 'inline-block', width: '20rem' }}>
                                     <Progress percent={percentage} />
                                   </div>
-                                ) : null}
+                                ) : null} */}
                               </li>
                             </ul>
                           ) : (
@@ -1126,7 +1145,7 @@ class AddKirtan extends React.Component {
                               Save and Post
                             </Button>
                           </span>
-                          <Button type="danger" onClick={this.handleReset}>
+                          <Button type="danger" onClick={this.handleStateReset}>
                             Discard
                           </Button>
                         </div>

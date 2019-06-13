@@ -18,9 +18,9 @@ export async function createQuote(body) {
     })
 }
 
-export async function getQuoteList(page) {
-  const pageNumber = page || 1
-  const url = serverAddress + '/api/quote?page=' + pageNumber
+export async function getQuoteList(page, author) {
+  // const url = serverAddress + '/api/quote?page=' + pageNumber
+  const url = `${serverAddress}/api/quote?page=${page}&author=${author ? author : ''}`
   return axios
     .get(url)
     .then(response => {

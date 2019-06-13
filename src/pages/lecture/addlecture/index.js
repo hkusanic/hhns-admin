@@ -741,6 +741,7 @@ class AddLecture extends React.Component {
       summArrayRu,
       transcriptionUploading,
       summaryUploading,
+      uploading,
     } = this.state
 
     axios({
@@ -754,7 +755,7 @@ class AddLecture extends React.Component {
         // this.setUploadedFiles(finalUrl)
 
         if (language) {
-          if (transcriptionUploading) {
+          if (transcriptionUploading && !uploading) {
             for (let i = 0; i < transArrayEn.length; i += 1) {
               if (transArrayEn[i].fileName === finalUrl) {
                 notification.warning({
@@ -766,7 +767,7 @@ class AddLecture extends React.Component {
             }
           }
 
-          if (summaryUploading) {
+          if (summaryUploading && !uploading) {
             for (let i = 0; i < summArrayEn.length; i += 1) {
               if (summArrayEn[i].fileName === finalUrl) {
                 notification.warning({
@@ -778,7 +779,7 @@ class AddLecture extends React.Component {
             }
           }
         } else {
-          if (transcriptionUploading) {
+          if (transcriptionUploading && !uploading) {
             for (let i = 0; i < transArrayRu.length; i += 1) {
               if (transArrayRu[i].fileName === finalUrl) {
                 notification.warning({
@@ -790,7 +791,7 @@ class AddLecture extends React.Component {
             }
           }
 
-          if (summaryUploading) {
+          if (summaryUploading && !uploading) {
             for (let i = 0; i < summArrayRu.length; i += 1) {
               if (summArrayRu[i].fileName === finalUrl) {
                 notification.warning({
@@ -832,13 +833,12 @@ class AddLecture extends React.Component {
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
-    const { onSuccess, onError, action, onProgress, file } = info
     axios({
       method: 'PUT',
       url: presignedUrl,
       data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -1281,7 +1281,7 @@ class AddLecture extends React.Component {
   }
 
   beforeUploadAudio = file => {
-    this.setState({ percentage: 0 })
+    // this.setState({ percentage: 0 })
     const isJPG = file.type === 'audio/mp3'
     if (!isJPG) {
       notification.error({
@@ -2091,7 +2091,26 @@ class AddLecture extends React.Component {
                               </li> */}
 
                                 <li className="filesList">
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {audioLink
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(audioLink, 'audio')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {percentage !== 0 ? <Progress percent={percentage} /> : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2112,7 +2131,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               </ul>
                             ) : (
@@ -2201,7 +2220,28 @@ class AddLecture extends React.Component {
                               summArrayEn.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
-                                    <div
+                                    <div className="fileDisplay">
+                                      <div className="uploadedFileName">
+                                        {item.fileName
+                                          .split('/')
+                                          .pop(-1)
+                                          .substring(0, 30)}
+                                      </div>
+                                      <div className="deleteIcon">
+                                        <i
+                                          className="fa fa-trash closeIcon"
+                                          onClick={() => {
+                                            this.deleteFile(item.fileName, 'summary')
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="progressBar">
+                                        {item.percentage !== 'zeroPercent' ? (
+                                          <Progress percent={item.percentage} />
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                    {/* <div
                                       style={{
                                         display: 'inline-block',
                                         width: 'auto',
@@ -2222,7 +2262,7 @@ class AddLecture extends React.Component {
                                       <div style={{ display: 'inline-block', width: '20rem' }}>
                                         <Progress percent={item.percentage} />
                                       </div>
-                                    ) : null}
+                                    ) : null} */}
                                   </li>
                                 )
                               })
@@ -2246,7 +2286,28 @@ class AddLecture extends React.Component {
                               summArrayRu.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
-                                    <div
+                                    <div className="fileDisplay">
+                                      <div className="uploadedFileName">
+                                        {item.fileName
+                                          .split('/')
+                                          .pop(-1)
+                                          .substring(0, 30)}
+                                      </div>
+                                      <div className="deleteIcon">
+                                        <i
+                                          className="fa fa-trash closeIcon"
+                                          onClick={() => {
+                                            this.deleteFile(item.fileName, 'summary')
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="progressBar">
+                                        {item.percentage !== 'zeroPercent' ? (
+                                          <Progress percent={item.percentage} />
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                    {/* <div
                                       style={{
                                         display: 'inline-block',
                                         width: 'auto',
@@ -2267,7 +2328,7 @@ class AddLecture extends React.Component {
                                       <div style={{ display: 'inline-block', width: '20rem' }}>
                                         <Progress percent={item.percentage} />
                                       </div>
-                                    ) : null}
+                                    ) : null} */}
                                   </li>
                                 )
                               })}
@@ -2394,8 +2455,28 @@ class AddLecture extends React.Component {
                             transArrayEn.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  {' '}
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'transcription')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2416,7 +2497,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })
@@ -2424,7 +2505,28 @@ class AddLecture extends React.Component {
                             transArrayRu.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName, 'transcription')
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -2445,7 +2547,7 @@ class AddLecture extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })}
@@ -2521,7 +2623,7 @@ class AddLecture extends React.Component {
               Save and Post
             </Button>
           </span>
-          <Button type="danger" onClick={this.handleReset}>
+          <Button type="danger" onClick={this.handleStateReset}>
             Discard
           </Button>
         </div>

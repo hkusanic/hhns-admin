@@ -362,14 +362,14 @@ class BlogAddPost extends React.Component {
         uploading: false,
       },
       () => {
-        this.uploads3(info.file)
+        this.uploads3(info)
       },
     )
   }
 
-  uploads3 = file => {
-    const fileName = file.name
-    const fileType = file.type
+  uploads3 = info => {
+    const fileName = info.file.name
+    const fileType = info.file.type
 
     const { files } = this.state
 
@@ -392,7 +392,7 @@ class BlogAddPost extends React.Component {
           }
         }
 
-        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
       })
       .catch(error => {
         notification.error({
@@ -423,13 +423,13 @@ class BlogAddPost extends React.Component {
     // })
   }
 
-  uploadFileToS3UsingPresignedUrl = (presignedUrl, file, finalUrl) => {
+  uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: file,
+      data: info.file,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
@@ -936,7 +936,28 @@ class BlogAddPost extends React.Component {
                             files.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
-                                  <div
+                                  <div className="fileDisplay">
+                                    <div className="uploadedFileName">
+                                      {item.fileName
+                                        .split('/')
+                                        .pop(-1)
+                                        .substring(0, 30)}
+                                    </div>
+                                    <div className="deleteIcon">
+                                      <i
+                                        className="fa fa-trash closeIcon"
+                                        onClick={() => {
+                                          this.deleteFile(item.fileName)
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="progressBar">
+                                      {item.percentage !== 'zeroPercent' ? (
+                                        <Progress percent={item.percentage} />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  {/* <div
                                     style={{
                                       display: 'inline-block',
                                       width: 'auto',
@@ -957,7 +978,7 @@ class BlogAddPost extends React.Component {
                                     <div style={{ display: 'inline-block', width: '20rem' }}>
                                       <Progress percent={item.percentage} />
                                     </div>
-                                  ) : null}
+                                  ) : null} */}
                                 </li>
                               )
                             })}
@@ -997,7 +1018,7 @@ class BlogAddPost extends React.Component {
                             Save and Post
                           </Button>
                         </span>
-                        <Button type="danger" onClick={this.handleReset}>
+                        <Button type="danger" onClick={this.handleStateReset}>
                           Discard
                         </Button>
                       </div>

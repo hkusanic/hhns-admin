@@ -240,14 +240,14 @@ export async function getLeftMenuData() {
         //   url: '/blog/post',
         // },
         {
-          title: 'ADD BLOG',
-          key: 'blogAddPost',
-          url: '/blog/add-blog-post',
-        },
-        {
           title: 'LIST',
           key: 'blogList',
           url: '/blog/blog-list',
+        },
+        {
+          title: 'ADD BLOG',
+          key: 'blogAddPost',
+          url: '/blog/add-blog-post',
         },
       ],
     },

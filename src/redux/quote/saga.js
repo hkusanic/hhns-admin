@@ -76,8 +76,8 @@ export function* createQuoteSaga({ payload }) {
 
 export function* getQuoteListSaga(payload) {
   try {
-    const { page } = payload
-    const result = yield call(getQuoteList, page)
+    const { page, author } = payload
+    const result = yield call(getQuoteList, page, author)
     const { data } = result
     const { quote } = data
 

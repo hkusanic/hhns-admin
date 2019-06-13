@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-plusplus */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -16,22 +17,46 @@ const { Option } = Select
 @connect(({ gallery }) => ({ gallery }))
 class GalleryList extends React.Component {
   state = {
-    gallery: '2019',
+    galleryYear: '2019',
     language: true,
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    const body = {
-      gallery: '2019',
+    const { dispatch, location } = this.props
+    const { state } = location
+
+    if (state !== undefined) {
+      if (state.galleryYear) {
+        this.setState(
+          {
+            galleryYear: state.galleryYear,
+          },
+          () => {
+            const body = {
+              gallery: this.state.galleryYear,
+            }
+            dispatch({
+              type: 'gallery/GET_SUB_GALLERY',
+              body,
+            })
+            dispatch({
+              type: 'gallery/GET_GALLERY_LIST',
+            })
+          },
+        )
+      }
+    } else {
+      const body = {
+        gallery: this.state.galleryYear,
+      }
+      dispatch({
+        type: 'gallery/GET_SUB_GALLERY',
+        body,
+      })
+      dispatch({
+        type: 'gallery/GET_GALLERY_LIST',
+      })
     }
-    dispatch({
-      type: 'gallery/GET_SUB_GALLERY',
-      body,
-    })
-    dispatch({
-      type: 'gallery/GET_GALLERY_LIST',
-    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,16 +78,20 @@ class GalleryList extends React.Component {
 
   hadleSelectGallery = gallery => {
     const { dispatch } = this.props
-    this.setState({
-      gallery,
-    })
-    const body = {
-      gallery,
-    }
-    dispatch({
-      type: 'gallery/GET_SUB_GALLERY',
-      body,
-    })
+    this.setState(
+      {
+        galleryYear: gallery,
+      },
+      () => {
+        const body = {
+          gallery: this.state.galleryYear,
+        }
+        dispatch({
+          type: 'gallery/GET_SUB_GALLERY',
+          body,
+        })
+      },
+    )
   }
 
   handleDeleteGallery = uuid => {
@@ -92,7 +121,7 @@ class GalleryList extends React.Component {
   render() {
     const { gallery } = this.props
     const { mainGallery, subGallery, totalSubGallery } = gallery
-    const { language } = this.state
+    const { language, galleryYear } = this.state
     const mainGalleryFiltered = handleFilterGallery(mainGallery)
     const columns = [
       {
@@ -145,7 +174,8 @@ class GalleryList extends React.Component {
               <strong style={{ paddingRight: '20px' }}>Select Gallery</strong>
               <Select
                 id="gallery-item"
-                defaultValue="2019"
+                // defaultValue="2019"
+                value={galleryYear}
                 showSearch
                 style={{ width: '20%' }}
                 onChange={this.hadleSelectGallery}
@@ -169,6 +199,8 @@ class GalleryList extends React.Component {
           </div>
           <div className="card-body">
             <Table
+              // eslint-disable-next-line no-underscore-dangle
+              rowKey={record => record._id}
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }
