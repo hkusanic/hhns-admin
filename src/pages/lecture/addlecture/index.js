@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable eqeqeq */
@@ -107,6 +108,7 @@ class AddLecture extends React.Component {
       summArrayEn: [],
       summArrayRu: [],
       paginationCurrentPage: '',
+      fileList: [],
     }
   }
 
@@ -627,12 +629,6 @@ class AddLecture extends React.Component {
     })
   }
 
-  // onEditorChangeStateSummary: Function = editorStateSummary => {
-  //   this.setState({
-  //     editorStateSummary,
-  //   })
-  // }
-
   onEditorChangeStateSummary = summary => {
     const { language } = this.state
 
@@ -677,64 +673,59 @@ class AddLecture extends React.Component {
   //   reader.readAsDataURL(img)
   // }
 
+  dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess('ok')
+    }, 0)
+  }
+
   handleFileChange = info => {
-    this.setState(
-      {
-        audioUploading: true,
-        uploading: false,
-        percentage: 0,
-      },
-      () => {
-        // this.handleUploading(info)
-        this.uploads3(info)
-      },
-    )
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          audioUploading: true,
+          uploading: false,
+          percentage: 0,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   handleSummaryFileChange = info => {
-    this.setState(
-      {
-        summaryUploading: true,
-        transcriptionUploading: false,
-        audioUploading: false,
-        uploading: false,
-      },
-      () => {
-        this.uploads3(info)
-      },
-    )
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          summaryUploading: true,
+          transcriptionUploading: false,
+          audioUploading: false,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   handleTranscriptionFileChange = info => {
-    this.setState(
-      {
-        transcriptionUploading: true,
-        summaryUploading: false,
-        audioUploading: false,
-        uploading: false,
-      },
-      () => {
-        this.uploads3(info)
-      },
-    )
-  }
-
-  // dummyRequest = info => {
-  //   this.handleUploading(info)
-  //   setTimeout(() => {
-  //     onSuccess('ok')
-  //   }, 0)
-  // }
-
-  handleUploading = info => {
     if (info.file.status === 'uploading') {
-      notification.success({
-        message: 'Uploading Started',
-        description: 'File uploading is started',
-      })
-    }
-    if (info.file.status === 'done') {
-      this.uploads3(info)
+      this.setState(
+        {
+          fileList: info.fileList,
+          transcriptionUploading: true,
+          summaryUploading: false,
+          audioUploading: false,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
     }
   }
 
@@ -760,7 +751,6 @@ class AddLecture extends React.Component {
         const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        // this.setUploadedFiles(finalUrl)
 
         if (language) {
           if (transcriptionUploading && !uploading) {
@@ -769,6 +759,9 @@ class AddLecture extends React.Component {
                 notification.warning({
                   message: 'error',
                   description: `You can't upload file with the same name.`,
+                })
+                this.setState({
+                  fileList: [],
                 })
                 return
               }
@@ -782,6 +775,9 @@ class AddLecture extends React.Component {
                   message: 'error',
                   description: `You can't upload file with the same name.`,
                 })
+                this.setState({
+                  fileList: [],
+                })
                 return
               }
             }
@@ -794,6 +790,9 @@ class AddLecture extends React.Component {
                   message: 'error',
                   description: `You can't upload file with the same name.`,
                 })
+                this.setState({
+                  fileList: [],
+                })
                 return
               }
             }
@@ -805,6 +804,9 @@ class AddLecture extends React.Component {
                 notification.warning({
                   message: 'error',
                   description: `You can't upload file with the same name.`,
+                })
+                this.setState({
+                  fileList: [],
                 })
                 return
               }
@@ -820,47 +822,33 @@ class AddLecture extends React.Component {
           description: `Some error occured. Please check your internet connection`,
         })
       })
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     console.log('data===>',data)
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     this.setUploadedFiles(finalUrl)
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info.file)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'Error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
-        // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
         this.setState({ percentage: percentCompleted })
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
         notification.warning({
@@ -868,32 +856,9 @@ class AddLecture extends React.Component {
           description: 'Error occured during uploading, try again',
         })
       })
-
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: data => {
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.warning({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
-  setUploadedFiles = (finalUrl, percentCompleted) => {
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
     const {
       transcriptionFiles,
       transcriptionFilesEn,
@@ -909,23 +874,27 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
+      percentage,
     } = this.state
 
     if (audioUploading) {
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'File has been uploaded successfully',
-        })
-      }
-
-      this.setState({
-        audioLink: finalUrl,
-        transcriptionUploading: false,
-        summaryUploading: false,
-        audioUploading: true,
-        percentage: 0,
-      })
+      this.setState(
+        {
+          audioLink: finalUrl,
+          transcriptionUploading: false,
+          summaryUploading: false,
+          audioUploading: true,
+          percentage: percentCompleted,
+        },
+        () => {
+          if (this.state.percentage === 100) {
+            notification.success({
+              message: 'Success',
+              description: 'File has been uploaded successfully',
+            })
+          }
+        },
+      )
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
       const arrayEn = [...transcriptionFilesEn]
@@ -948,40 +917,52 @@ class AddLecture extends React.Component {
           transEnTemp.push(tempObjectEn)
         }
 
-        // let arrayLength = 0
-        // for (let i = 0; i < transEnTemp.length; i += 1) {
-        //   if (transEnTemp[i].percentage !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
+        const tempFileList = [...fileList]
 
-        const valueArray = transEnTemp.map(function(item) {
-          return item.percentage
-        })
-
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
+
+        // const valueArray = transEnTemp.map(function(item) {
+        //   return item.percentage
+        // })
+
+        // const result = valueArray.every((val, index, arr) => {
+        //   if (val === 100 || val === 'zeroPercent') {
+        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
+        //       return true
+        //     }
+        //     // return false
+        //   }
+        //   return false
+        // })
+
+        // let arrayLength = 0
+        // for (let i = 0; i < valueArray.length; i += 1) {
+        //   if (valueArray[i] !== 'zeroPercent') {
+        //     arrayLength += 1
+        //   }
+        // }
+
+        // if (result) {
+        //   notification.success({
+        //     message: 'Success',
+        //     description: `${arrayLength} file(s) have been uploaded successfully`,
+        //   })
+        // }
       } else {
         arrayRu.push(finalUrl)
 
@@ -997,33 +978,52 @@ class AddLecture extends React.Component {
           transRuTemp.push(tempObjectRu)
         }
 
-        const valueArray = transRuTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
+
+        // const valueArray = transRuTemp.map(function(item) {
+        //   return item.percentage
+        // })
+
+        // const result = valueArray.every((val, index, arr) => {
+        //   if (val === 100 || val === 'zeroPercent') {
+        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
+        //       return true
+        //     }
+        //     // return false
+        //   }
+        //   return false
+        // })
+
+        // let arrayLength = 0
+        // for (let i = 0; i < valueArray.length; i += 1) {
+        //   if (valueArray[i] !== 'zeroPercent') {
+        //     arrayLength += 1
+        //   }
+        // }
+
+        // if (result) {
+        //   notification.success({
+        //     message: 'Success',
+        //     description: `${arrayLength} file(s) have been uploaded successfully`,
+        //   })
+        // }
       }
       array.push(finalUrl)
 
@@ -1059,33 +1059,52 @@ class AddLecture extends React.Component {
           summEnTemp.push(tempObjectEnSumm)
         }
 
-        const valueArray = summEnTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
+
+        // const valueArray = summEnTemp.map(function(item) {
+        //   return item.percentage
+        // })
+
+        // const result = valueArray.every((val, index, arr) => {
+        //   if (val === 100 || val === 'zeroPercent') {
+        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
+        //       return true
+        //     }
+        //     // return false
+        //   }
+        //   return false
+        // })
+
+        // let arrayLength = 0
+        // for (let i = 0; i < valueArray.length; i += 1) {
+        //   if (valueArray[i] !== 'zeroPercent') {
+        //     arrayLength += 1
+        //   }
+        // }
+
+        // if (result) {
+        //   notification.success({
+        //     message: 'Success',
+        //     description: `${arrayLength} file(s) have been uploaded successfully`,
+        //   })
+        // }
       } else {
         newArrayRu.push(finalUrl)
 
@@ -1101,33 +1120,52 @@ class AddLecture extends React.Component {
           summRuTemp.push(tempObjectRuSumm)
         }
 
-        const valueArray = summRuTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
+
+        // const valueArray = summRuTemp.map(function(item) {
+        //   return item.percentage
+        // })
+
+        // const result = valueArray.every((val, index, arr) => {
+        //   if (val === 100 || val === 'zeroPercent') {
+        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
+        //       return true
+        //     }
+        //     // return false
+        //   }
+        //   return false
+        // })
+
+        // let arrayLength = 0
+        // for (let i = 0; i < valueArray.length; i += 1) {
+        //   if (valueArray[i] !== 'zeroPercent') {
+        //     arrayLength += 1
+        //   }
+        // }
+
+        // if (result) {
+        //   notification.success({
+        //     message: 'Success',
+        //     description: `${arrayLength} file(s) have been uploaded successfully`,
+        //   })
+        // }
       }
       newArray.push(finalUrl)
 
@@ -1143,12 +1181,6 @@ class AddLecture extends React.Component {
       })
     }
   }
-
-  // dummyRequest = ({ file, onSuccess }) => {
-  //   setTimeout(() => {
-  //     onSuccess('ok')
-  //   }, 0)
-  // }
 
   deleteFile = (item, type) => {
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
@@ -2154,8 +2186,8 @@ class AddLecture extends React.Component {
                                 beforeUpload={this.beforeUploadAudio}
                                 multiple={false}
                                 showUploadList={false}
-                                customRequest={this.handleFileChange}
-                                // onChange={this.handleFileChange}
+                                customRequest={this.dummyRequest}
+                                onChange={this.handleFileChange}
                               >
                                 <p className="ant-upload-drag-icon">
                                   <Icon type="inbox" />
@@ -2372,8 +2404,9 @@ class AddLecture extends React.Component {
                             beforeUpload={this.beforeUpload}
                             showUploadList={false}
                             multiple
-                            customRequest={this.handleSummaryFileChange}
-                            // onChange={this.handleSummaryFileChange}
+                            fileList={this.state.fileList}
+                            customRequest={this.dummyRequest}
+                            onChange={this.handleSummaryFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />
@@ -2589,11 +2622,12 @@ class AddLecture extends React.Component {
                     <FormItem>
                       {/* {form.getFieldDecorator('Files2')( */}
                       <Dragger
+                        fileList={this.state.fileList}
                         beforeUpload={this.beforeUpload}
                         showUploadList={false}
-                        customRequest={this.handleTranscriptionFileChange}
+                        customRequest={this.dummyRequest}
                         multiple
-                        // onChange={this.handleTranscriptionFileChange}
+                        onChange={this.handleTranscriptionFileChange}
                       >
                         <p className="ant-upload-drag-icon">
                           <Icon type="inbox" />

@@ -44,6 +44,17 @@ class GalleryList extends React.Component {
             })
           },
         )
+      } else {
+        const body = {
+          gallery: this.state.galleryYear,
+        }
+        dispatch({
+          type: 'gallery/GET_SUB_GALLERY',
+          body,
+        })
+        dispatch({
+          type: 'gallery/GET_GALLERY_LIST',
+        })
       }
     } else {
       const body = {

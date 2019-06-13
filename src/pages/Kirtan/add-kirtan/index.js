@@ -70,6 +70,7 @@ class AddKirtan extends React.Component {
     percentage: 0,
     paginationCurrentPage: '',
     uploading: true,
+    fileList: [],
   }
 
   componentDidMount() {
@@ -276,18 +277,18 @@ class AddKirtan extends React.Component {
   }
 
   handleUploading = info => {
-    this.setState({ percentage: 0, uploading: false }, () => {
-      this.uploads3(info)
-    })
-    // if (info.file.status === 'uploading') {
-    //   notification.success({
-    //     message: 'Uploading Started',
-    //     description: 'File uploading is started',
-    //   })
-    // }
-    // if (info.file.status === 'done') {
-    //   this.uploads3(info.file)
-    // }
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          percentage: 0,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   uploads3 = info => {
@@ -310,75 +311,56 @@ class AddKirtan extends React.Component {
           description: `Some error occured. Please check your internet connection`,
         })
       })
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     // this.setUploadedFiles(finalUrl)
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'Error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
-        // notification.warning({
-        //   message: 'error',
-        //   description: 'Error occured during uploading, try again',
-        // })
+        notification.warning({
+          message: 'error',
+          description: 'Error occured during uploading, try again',
+        })
       })
+  }
 
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: data => {
-    //     console.info(data)
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.warning({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
+    this.setState(
+      {
+        audioLink: finalUrl,
+        percentage: percentCompleted,
+      },
+      () => {
+        if (this.state.percentage === 100) {
+          notification.success({
+            message: 'Success',
+            description: 'File has been uploaded successfully',
+          })
+        }
+      },
+    )
   }
 
   deleteFile = item => {
@@ -420,23 +402,6 @@ class AddKirtan extends React.Component {
 
   handelDeleteSetFiles = () => {
     this.setState({ audioLink: '' })
-  }
-
-  setUploadedFiles = (finalUrl, percentCompleted) => {
-    this.setState(
-      {
-        audioLink: finalUrl,
-        percentage: percentCompleted,
-      },
-      () => {
-        if (this.state.percentage === 100) {
-          notification.success({
-            message: 'Success',
-            description: 'File has been uploaded successfully',
-          })
-        }
-      },
-    )
   }
 
   dummyRequest = ({ file, onSuccess }) => {
@@ -1121,8 +1086,9 @@ class AddKirtan extends React.Component {
                               beforeUpload={this.beforeUploadAudio}
                               multiple={false}
                               showUploadList={false}
-                              customRequest={this.handleUploading}
-                              // onChange={this.handleUploading}
+                              fileList={this.state.fileList}
+                              customRequest={this.dummyRequest}
+                              onChange={this.handleUploading}
                             >
                               <p className="ant-upload-drag-icon">
                                 <Icon type="inbox" />
