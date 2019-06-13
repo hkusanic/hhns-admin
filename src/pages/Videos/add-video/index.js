@@ -571,28 +571,27 @@ class AddVideo extends React.Component {
                       unCheckedChildren={language ? 'en' : 'ru'}
                       onChange={this.handleLanguage}
                       className="toggle"
-                      style={{ width: '100px', marginLeft: '10px' }}
+                      style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                     />
                   </div>
-                  <div className="card-body">
-                    <div className={styles.addPost}>
-                      <Form className="mt-3">
-                        <div className="form-group">
-                          <FormItem label={language ? 'Title' : 'Title'}>
-                            <Input
-                              onChange={this.handleTitleChange}
-                              value={language ? titleEn : titleRu}
-                              placeholder="video title"
-                              name="title"
-                            />
-                            {!formElements.title.valid &&
-                            formElements.title.validation &&
-                            formElements.title.touched ? (
-                              <div className="invalidFeedback">
-                                {formElements.title.errorMessage}
-                              </div>
-                            ) : null}
-                            {/* {form.getFieldDecorator('title', {
+                </div>
+                <div className="card-body">
+                  <div className={styles.addPost}>
+                    <Form className="mt-3">
+                      <div className="form-group">
+                        <FormItem label={language ? 'Title' : 'Title'}>
+                          <Input
+                            onChange={this.handleTitleChange}
+                            value={language ? titleEn : titleRu}
+                            placeholder="video title"
+                            name="title"
+                          />
+                          {!formElements.title.valid &&
+                          formElements.title.validation &&
+                          formElements.title.touched ? (
+                            <div className="invalidFeedback">{formElements.title.errorMessage}</div>
+                          ) : null}
+                          {/* {form.getFieldDecorator('title', {
                               rules: [
                                 {
                                   required: true,
@@ -606,180 +605,171 @@ class AddVideo extends React.Component {
                                     : editingvideo.ru.title
                                   : '',
                             })(<Input placeholder="Video Title" />)} */}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Author">
-                            {form.getFieldDecorator('author', {
-                              initialValue:
-                                editingvideo && (editingvideo.en || editingvideo.ru)
-                                  ? editingvideo.author
-                                  : '',
-                            })(
-                              <Select
-                                id="product-edit-colors"
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Select Author"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                  option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                }
-                              >
-                                <Option value="Niranjana Swami">Niranjana Swami</Option>
-                                <Option value="Other">Other</Option>
-                              </Select>,
-                            )}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Language">
-                            {form.getFieldDecorator('language', {
-                              initialValue: editingvideo ? editingvideo.language : '',
-                            })(
-                              <Select
-                                id="product-edit-colors"
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Select language"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                  option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                }
-                              >
-                                <Option value="english">English</Option>
-                                <Option value="russian">Russian</Option>
-                              </Select>,
-                            )}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Type">
-                            {form.getFieldDecorator('type', {
-                              initialValue: editingvideo ? editingvideo.type : null,
-                            })(
-                              <Select
-                                id="product-edit-colors"
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Select Type"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                  option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                }
-                              >
-                                <Option value="kirtan">Kirtan</Option>
-                                <Option value="lecture">Lecture</Option>
-                                <Option value="other">Other</Option>
-                              </Select>,
-                            )}
-                          </FormItem>
-                        </div>
-                        {form.getFieldValue('type') === 'kirtan' ||
-                        form.getFieldValue('type') === 'lecture' ? (
-                          <div className="form-group">
-                            <FormItem label="Reference">
-                              {form.getFieldDecorator('reference', {
-                                rules: [
-                                  {
-                                    required: form.getFieldValue('type') === 'lecture',
-                                    message: 'Reference is required',
-                                  },
-                                ],
-                                initialValue: editingvideo.reference
-                                  ? editingvideo.reference
-                                  : null,
-                              })(
-                                <AutoComplete
-                                  id="product-edit-colors"
-                                  dataSource={this.state.autoCompleteDataSource}
-                                  style={{ width: '100%' }}
-                                  placeholder="Reference"
-                                  optionFilterProp="children"
-                                  onSearch={this.handleVideoReferenceSearch}
-                                />,
-                              )}
-                            </FormItem>
-                          </div>
-                        ) : (
-                          ''
-                        )}
-                        <div className="form-group">
-                          <FormItem>
-                            {form.getFieldDecorator('translation', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Need Translation is required',
-                                },
-                              ],
-                              initialValue: editingvideo ? editingvideo.translation_required : '',
-                            })(
-                              <Checkbox
-                                checked={translationRequired}
-                                onChange={this.handleCheckbox}
-                              >
-                                &nbsp; Need Translation ?
-                              </Checkbox>,
-                            )}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Date">
-                            {form.getFieldDecorator('date', {
-                              initialValue: editingvideo
-                                ? moment(new Date(editingvideo.date), dateFormat)
-                                : moment(new Date(), dateFormat),
-                            })(<DatePicker />)}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Publish Date">
-                            {form.getFieldDecorator('publish_date', {
-                              initialValue: editingvideo
-                                ? moment(editingvideo.published_date, dateFormat)
-                                : moment(new Date(), dateFormat),
-                            })(<DatePicker disabled />)}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Event">
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Author">
+                          {form.getFieldDecorator('author', {
+                            initialValue:
+                              editingvideo && (editingvideo.en || editingvideo.ru)
+                                ? editingvideo.author
+                                : '',
+                          })(
                             <Select
                               id="product-edit-colors"
                               showSearch
                               style={{ width: '100%' }}
-                              placeholder="Select Event"
+                              placeholder="Select Author"
                               optionFilterProp="children"
-                              value={language ? eventEn : eventRu}
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
                                 0
                               }
                             >
-                              {events && events.length > 0
-                                ? events.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleEventChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>
+                              <Option value="Niranjana Swami">Niranjana Swami</Option>
+                              <Option value="Other">Other</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Language">
+                          {form.getFieldDecorator('language', {
+                            initialValue: editingvideo ? editingvideo.language : '',
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select language"
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="english">English</Option>
+                              <Option value="russian">Russian</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Type">
+                          {form.getFieldDecorator('type', {
+                            initialValue: editingvideo ? editingvideo.type : null,
+                          })(
+                            <Select
+                              id="product-edit-colors"
+                              showSearch
+                              style={{ width: '100%' }}
+                              placeholder="Select Type"
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                                0
+                              }
+                            >
+                              <Option value="kirtan">Kirtan</Option>
+                              <Option value="lecture">Lecture</Option>
+                              <Option value="other">Other</Option>
+                            </Select>,
+                          )}
+                        </FormItem>
+                      </div>
+                      {form.getFieldValue('type') === 'kirtan' ||
+                      form.getFieldValue('type') === 'lecture' ? (
+                        <div className="form-group">
+                          <FormItem label="Reference">
+                            {form.getFieldDecorator('reference', {
+                              rules: [
+                                {
+                                  required: form.getFieldValue('type') === 'lecture',
+                                  message: 'Reference is required',
+                                },
+                              ],
+                              initialValue: editingvideo.reference ? editingvideo.reference : null,
+                            })(
+                              <AutoComplete
+                                id="product-edit-colors"
+                                dataSource={this.state.autoCompleteDataSource}
+                                style={{ width: '100%' }}
+                                placeholder="Reference"
+                                optionFilterProp="children"
+                                onSearch={this.handleVideoReferenceSearch}
+                              />,
+                            )}
+                          </FormItem>
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                      <div className="form-group">
+                        <FormItem>
+                          {form.getFieldDecorator('translation', {
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Need Translation is required',
+                              },
+                            ],
+                            initialValue: editingvideo ? editingvideo.translation_required : '',
+                          })(
+                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
+                              &nbsp; Need Translation ?
+                            </Checkbox>,
+                          )}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Date">
+                          {form.getFieldDecorator('date', {
+                            initialValue: editingvideo
+                              ? moment(new Date(editingvideo.date), dateFormat)
+                              : moment(new Date(), dateFormat),
+                          })(<DatePicker />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Publish Date">
+                          {form.getFieldDecorator('publish_date', {
+                            initialValue: editingvideo
+                              ? moment(editingvideo.published_date, dateFormat)
+                              : moment(new Date(), dateFormat),
+                          })(<DatePicker disabled />)}
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Event">
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Event"
+                            optionFilterProp="children"
+                            value={language ? eventEn : eventRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {events && events.length > 0
+                              ? events.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleEventChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
 
-                            {/* {form.getFieldDecorator('event', {
+                          {/* {form.getFieldDecorator('event', {
                               // initialValue:
                               //   editingvideo && (editingvideo.en || editingvideo.ru)
                               //     ? language
@@ -817,40 +807,39 @@ class AddVideo extends React.Component {
                                   : null}
                               </Select>,
                             )} */}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          <FormItem label="Location">
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Location"
-                              optionFilterProp="children"
-                              value={language ? locationEn : locationRu}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {locations && locations.length > 0
-                                ? locations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleLocationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label="Location">
+                          <Select
+                            id="product-edit-colors"
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Select Location"
+                            optionFilterProp="children"
+                            value={language ? locationEn : locationRu}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {locations && locations.length > 0
+                              ? locations.map(item => {
+                                  return (
+                                    <Option
+                                      onClick={() => {
+                                        this.handleLocationChange(item)
+                                      }}
+                                      key={item._id}
+                                      value={language ? item.title_en : item.title_ru}
+                                    >
+                                      {language ? item.title_en : item.title_ru}
+                                    </Option>
+                                  )
+                                })
+                              : null}
+                          </Select>
 
-                            {/* {form.getFieldDecorator('location', {
+                          {/* {form.getFieldDecorator('location', {
                               // initialValue:
                               //   editingvideo && (editingvideo.en || editingvideo.ru)
                               //     ? language
@@ -888,34 +877,33 @@ class AddVideo extends React.Component {
                                   : null}
                               </Select>,
                             )} */}
-                          </FormItem>
-                        </div>
-                        <div className="form-group">
-                          {formItems}
-                          <Form.Item {...formItemLayoutWithOutLabel}>
-                            <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-                              <Icon type="plus" /> Add field
-                            </Button>
-                          </Form.Item>
-                        </div>
-                        <FormItem>
-                          <div className={styles.submit}>
-                            <span className="mr-3">
-                              <Button
-                                type="primary"
-                                htmlType="submit"
-                                onClick={this.handleSubmitForm}
-                              >
-                                Save and Post
-                              </Button>
-                            </span>
-                            <Button type="danger" onClick={this.handleStateReset}>
-                              Discard
-                            </Button>
-                          </div>
                         </FormItem>
-                      </Form>
-                    </div>
+                      </div>
+                      <div className="form-group">
+                        {formItems}
+                        <Form.Item {...formItemLayoutWithOutLabel}>
+                          <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
+                            <Icon type="plus" /> Add field
+                          </Button>
+                        </Form.Item>
+                      </div>
+                      <FormItem>
+                        <div className={styles.submit}>
+                          <span className="mr-3">
+                            <Button
+                              type="primary"
+                              htmlType="submit"
+                              onClick={this.handleSubmitForm}
+                            >
+                              Save and Post
+                            </Button>
+                          </span>
+                          <Button type="danger" onClick={this.handleStateReset}>
+                            Discard
+                          </Button>
+                        </div>
+                      </FormItem>
+                    </Form>
                   </div>
                 </div>
               </section>

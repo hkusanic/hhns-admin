@@ -706,7 +706,7 @@ class BlogAddPost extends React.Component {
                     unCheckedChildren={language ? 'en' : 'ru'}
                     onChange={this.handleLanguage}
                     className="toggle"
-                    style={{ width: '100px', marginLeft: '10px' }}
+                    style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                   />
                 </div>
               </div>
