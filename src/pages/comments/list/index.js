@@ -33,6 +33,14 @@ class CommentsList extends Component {
     dispatch({
       type: 'comment/GET_COMMENTS',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {

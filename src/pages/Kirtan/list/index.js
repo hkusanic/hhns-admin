@@ -52,6 +52,10 @@ class KirtanList extends React.Component {
         page: this.state.currentPage,
       })
     }
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

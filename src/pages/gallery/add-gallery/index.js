@@ -106,6 +106,14 @@ class CreateGallery extends React.Component {
     dispatch({
       type: 'gallery/GET_GALLERY_LIST',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

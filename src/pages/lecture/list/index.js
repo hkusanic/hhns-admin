@@ -51,6 +51,14 @@ class ProductsList extends React.Component {
         page: this.state.currentPage,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

@@ -104,6 +104,10 @@ class AddKirtan extends React.Component {
     dispatch({
       type: 'lecture/GET_LOCATIONS',
     })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

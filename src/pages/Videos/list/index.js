@@ -46,6 +46,10 @@ class VideoList extends React.Component {
         page: this.state.currentPage,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

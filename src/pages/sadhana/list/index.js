@@ -71,6 +71,14 @@ class SadhanaList extends React.Component {
         date: currentDate,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

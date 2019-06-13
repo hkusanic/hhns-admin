@@ -29,6 +29,14 @@ class MainGallery extends React.Component {
     dispatch({
       type: 'galleryListing/GET_MAIN_GALLERY_LIST',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {

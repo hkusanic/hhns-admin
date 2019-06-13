@@ -91,6 +91,10 @@ class AddVideo extends React.Component {
     dispatch({
       type: 'lecture/GET_LOCATIONS',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
