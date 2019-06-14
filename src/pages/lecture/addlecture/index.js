@@ -58,12 +58,6 @@ class AddLecture extends React.Component {
   constructor(props) {
     super(props)
 
-    // console.log('props from constructor ====>', props)
-
-    // const transcriptionText =
-    //   props.lecture.editLecture.en.transcription.text &&
-    //   props.lecture.editLecture.en.transcription.text
-
     this.state = {
       date: new Date(),
       // publishDate: new Date(),
@@ -74,11 +68,11 @@ class AddLecture extends React.Component {
       summaryFiles: [],
       summaryFilesEn: [],
       summaryFilesRu: [],
-      editorState: EditorState.createEmpty(),
-      editorStateSummaryEn: EditorState.createEmpty(),
-      editorStateSummaryRu: EditorState.createEmpty(),
-      editorStateTranscriptionEn: EditorState.createEmpty(),
-      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editorState: '',
+      editorStateSummaryEn: '',
+      editorStateSummaryRu: '',
+      editorStateTranscriptionEn: '',
+      editorStateTranscriptionRu: '',
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -176,9 +170,7 @@ class AddLecture extends React.Component {
       const htmlTranscriptionEn = lecture.editLecture
         ? lecture.editLecture.en.transcription.text
         : ''
-      const htmlSummaryEn = lecture.editLecture
-        ? lecture.editLecture.en.summary.text
-        : EditorState.createEmpty()
+      const htmlSummaryEn = lecture.editLecture ? lecture.editLecture.en.summary.text : ''
 
       const titleEn = lecture.editLecture ? lecture.editLecture.en.title : ''
       const titleRu = lecture.editLecture ? lecture.editLecture.ru.title : ''
@@ -201,8 +193,6 @@ class AddLecture extends React.Component {
           const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
           editorStateTranscriptionEn = EditorState.createWithContent(contentStateEn)
         }
-      } else {
-        editorStateTranscriptionEn = EditorState.createEmpty()
       }
 
       if (htmlSummaryEn && htmlSummaryEn.length > 0) {
@@ -211,16 +201,12 @@ class AddLecture extends React.Component {
           const csEn = ContentState.createFromBlockArray(cbEn.contentBlocks)
           editorStateSummaryEn = EditorState.createWithContent(csEn)
         }
-      } else {
-        editorStateSummaryEn = EditorState.createEmpty()
       }
 
       const htmlTranscriptionRu = lecture.editLecture
         ? lecture.editLecture.ru.transcription.text
         : ''
-      const htmlSummaryRu = lecture.editLecture
-        ? lecture.editLecture.ru.summary.text
-        : EditorState.createEmpty()
+      const htmlSummaryRu = lecture.editLecture ? lecture.editLecture.ru.summary.text : ''
 
       if (htmlTranscriptionRu && htmlTranscriptionRu.length > 0) {
         const contentBlockRu = htmlToDraft(htmlTranscriptionRu)
@@ -228,8 +214,6 @@ class AddLecture extends React.Component {
           const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
           editorStateTranscriptionRu = EditorState.createWithContent(contentStateRu)
         }
-      } else {
-        editorStateTranscriptionRu = EditorState.createEmpty()
       }
 
       if (htmlSummaryRu && htmlSummaryRu.length > 0) {
@@ -238,8 +222,6 @@ class AddLecture extends React.Component {
           const csRu = ContentState.createFromBlockArray(cbRu.contentBlocks)
           editorStateSummaryRu = EditorState.createWithContent(csRu)
         }
-      } else {
-        editorStateSummaryRu = EditorState.createEmpty()
       }
 
       const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
@@ -340,11 +322,11 @@ class AddLecture extends React.Component {
       audioLink: '',
       transcriptionFiles: [],
       summaryFiles: [],
-      editorState: EditorState.createEmpty(),
-      editorStateSummaryEn: EditorState.createEmpty(),
-      editorStateSummaryRu: EditorState.createEmpty(),
-      editorStateTranscriptionEn: EditorState.createEmpty(),
-      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editorState: '',
+      editorStateSummaryEn: '',
+      editorStateSummaryRu: '',
+      editorStateTranscriptionEn: '',
+      editorStateTranscriptionRu: '',
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -401,24 +383,19 @@ class AddLecture extends React.Component {
       const { id } = state
       uuid = id
     }
-    // const title = form.getFieldValue('title')
+
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
     const tag = form.getFieldValue('tag')
-    // const language = form.getFieldValue('language')
-    const bodylecture = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     const author = form.getFieldValue('author')
-    // const locationlecture = form.getFieldValue('location')
-    // const event = form.getFieldValue('event')
-    // const topic = form.getFieldValue('topic')
     const part = form.getFieldValue('part')
     const chapter = form.getFieldValue('chapter')
     const verse = form.getFieldValue('verse')
 
-    let editorTranscriptionEn = null
-    let editorTranscriptionRu = null
-    let editorSummaryEn = null
-    let editorSummaryRu = null
+    let editorTranscriptionEn = ''
+    let editorTranscriptionRu = ''
+    let editorSummaryEn = ''
+    let editorSummaryRu = ''
 
     const transcriptionFilesEn = []
     for (let i = 0; i < transArrayEn.length; i += 1) {
@@ -438,15 +415,25 @@ class AddLecture extends React.Component {
       summaryFilesRu.push(summArrayRu[i].fileName)
     }
 
-    editorTranscriptionEn = draftToHtml(
-      convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
-    )
-    editorTranscriptionRu = draftToHtml(
-      convertToRaw(editorStateTranscriptionRu.getCurrentContent()),
-    )
+    if (editorStateTranscriptionEn && editorStateTranscriptionEn) {
+      editorTranscriptionEn = draftToHtml(
+        convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
+      )
+    }
 
-    editorSummaryEn = draftToHtml(convertToRaw(editorStateSummaryEn.getCurrentContent()))
-    editorSummaryRu = draftToHtml(convertToRaw(editorStateSummaryRu.getCurrentContent()))
+    if (editorStateTranscriptionRu) {
+      editorTranscriptionRu = draftToHtml(
+        convertToRaw(editorStateTranscriptionRu.getCurrentContent()),
+      )
+    }
+
+    if (editorStateSummaryEn) {
+      editorSummaryEn = draftToHtml(convertToRaw(editorStateSummaryEn.getCurrentContent()))
+    }
+
+    if (editorStateSummaryRu) {
+      editorSummaryRu = draftToHtml(convertToRaw(editorStateSummaryRu.getCurrentContent()))
+    }
 
     let body = {}
 
