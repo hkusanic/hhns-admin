@@ -62,8 +62,8 @@ class BlogAddPost extends React.Component {
       titleRu: '',
       tagsEn: '',
       tagsRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
       fileList: [],
@@ -112,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : EditorState.createEmpty()
-      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : EditorState.createEmpty()
+      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : ''
+      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -238,8 +238,16 @@ class BlogAddPost extends React.Component {
     const languageField = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
 
-    const bodyContentStateEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    const bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    let bodyContentStateEn = ''
+    let bodyContentStateRu = ''
+
+    if (bodyContentEn) {
+      bodyContentStateEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    }
+
+    if (bodyContentRu) {
+      bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    }
 
     if (titleEn === '' || tagsEn === '') {
       notification.error({
@@ -317,8 +325,8 @@ class BlogAddPost extends React.Component {
       titleRu: '',
       tagsEn: '',
       tagsRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
     })

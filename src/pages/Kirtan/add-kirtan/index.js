@@ -65,8 +65,8 @@ class AddKirtan extends React.Component {
     locationRu: '',
     switchDisabled: true,
     formElements: formInputElements,
-    bodyContentEn: EditorState.createEmpty(),
-    bodyContentRu: EditorState.createEmpty(),
+    bodyContentEn: '',
+    bodyContentRu: '',
     percentage: 0,
     paginationCurrentPage: '',
     uploading: true,
@@ -443,8 +443,11 @@ class AddKirtan extends React.Component {
     let editorbodyContentEn = null
     let editorbodyContentRu = null
 
-    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    if (bodyContentEn)
+      editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+
+    if (bodyContentRu)
+      editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
 
     if (titleEn === '' || locationEn === '' || eventEn === '') {
       notification.error({

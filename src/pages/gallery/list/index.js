@@ -14,6 +14,14 @@ import './index.css'
 
 const { Option } = Select
 
+function formatDate(date) {
+  const dateString = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0]
+
+  return dateString
+}
+
 @connect(({ gallery }) => ({ gallery }))
 class GalleryList extends React.Component {
   state = {
@@ -119,6 +127,14 @@ class GalleryList extends React.Component {
       type: 'gallery/REMOVE_GALLERY',
       uuid,
     })
+
+    const body = {
+      gallery: this.state.galleryYear,
+    }
+    dispatch({
+      type: 'gallery/GET_SUB_GALLERY',
+      body,
+    })
   }
 
   handleLanguage = () => {
@@ -153,6 +169,7 @@ class GalleryList extends React.Component {
         title: 'Date',
         dataIndex: 'date',
         key: 'date',
+        render: text => (text ? formatDate(new Date(text)) : ''),
       },
 
       {
@@ -207,7 +224,8 @@ class GalleryList extends React.Component {
                 {mainGalleryFiltered && mainGalleryFiltered.length > 0
                   ? mainGalleryFiltered.map(item => {
                       return (
-                        <Option value={item.name_en}>
+                        // eslint-disable-next-line no-underscore-dangle
+                        <Option value={item.name_en} key={item._id}>
                           {language ? item.name_en : item.name_ru}
                         </Option>
                       )

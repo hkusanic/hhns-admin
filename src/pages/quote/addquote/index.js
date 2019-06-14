@@ -55,8 +55,8 @@ class AddQuote extends React.Component {
     translationRequired: true,
     titleEn: '',
     titleRu: '',
-    bodyContentEn: EditorState.createEmpty(),
-    bodyContentRu: EditorState.createEmpty(),
+    bodyContentEn: '',
+    bodyContentRu: '',
     switchDisabled: true,
     formElements: formInputElements,
     formSourceQuote: formInputSourceQuote,
@@ -120,17 +120,9 @@ class AddQuote extends React.Component {
       let bodyContentEn = ''
       let bodyContentRu = ''
 
-      const htmlbodyContentEn = editQuote
-        ? editQuote.en
-          ? editQuote.en.body
-          : EditorState.createEmpty()
-        : EditorState.createEmpty()
+      const htmlbodyContentEn = editQuote ? (editQuote.en ? editQuote.en.body : '') : ''
 
-      const htmlbodyContentRu = editQuote
-        ? editQuote.ru
-          ? editQuote.ru.body
-          : EditorState.createEmpty()
-        : EditorState.createEmpty()
+      const htmlbodyContentRu = editQuote ? (editQuote.ru ? editQuote.ru.body : '') : ''
 
       if (htmlbodyContentEn && htmlbodyContentEn.length > 0) {
         const contentBlockEn = htmlToDraft(htmlbodyContentEn)
@@ -238,11 +230,16 @@ class AddQuote extends React.Component {
     const languageData = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
 
-    let editorbodyContentEn = null
-    let editorbodyContentRu = null
+    let editorbodyContentEn = ''
+    let editorbodyContentRu = ''
 
-    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    if (bodyContentEn) {
+      editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    }
+
+    if (bodyContentRu) {
+      editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    }
 
     if (titleEn === '') {
       notification.error({
@@ -305,8 +302,8 @@ class AddQuote extends React.Component {
       translationRequired: true,
       titleEn: '',
       titleRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       switchDisabled: true,
       formElements: formInputElements,
       paginationCurrentPage: '',
