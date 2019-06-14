@@ -471,6 +471,7 @@ class AddKirtan extends React.Component {
       locationRu,
       bodyContentEn,
       bodyContentRu,
+      audioDuration,
     } = this.state
 
     const type = form.getFieldValue('type')
@@ -511,6 +512,7 @@ class AddKirtan extends React.Component {
       language: kirtanLanguage,
       audio_link: audioLink,
       translation_required: translationRequired,
+      duration: audioDuration,
       artist,
       type,
       en: {
