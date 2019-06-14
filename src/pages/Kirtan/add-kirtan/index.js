@@ -412,7 +412,6 @@ class AddKirtan extends React.Component {
 
   handleSubmitForm = () => {
     const { form, dispatch, router } = this.props
-    // const uuid = router.location.state
     const { location } = router
     const { state } = location
 
@@ -451,6 +450,15 @@ class AddKirtan extends React.Component {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
+      })
+
+      return
+    }
+
+    if (audioLink === '') {
+      notification.error({
+        message: 'Error',
+        description: 'You must upload an audio.',
       })
 
       return
