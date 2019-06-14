@@ -387,10 +387,7 @@ class CreateGallery extends React.Component {
       photoFiles,
       galleryBody,
       gallery,
-      // createDate,
-      // publishDate,
       editGallery,
-      // language,
       translationRequired,
       titleEn,
       titleRu,
@@ -422,9 +419,6 @@ class CreateGallery extends React.Component {
       tempPhotoFiles.push(photoFiles[i].fileName)
     }
 
-    // form.validateFields(['title', 'create_date', 'publish_date'], (err, values) => {
-    // console.info(values)
-    // if (!err) {
     const body = {
       uuid: uuid || uuidv4(),
       gallery,
@@ -455,8 +449,6 @@ class CreateGallery extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
-    // }
-    // })
   }
 
   handleStateReset = () => {
@@ -660,21 +652,6 @@ class CreateGallery extends React.Component {
                         formElements.title.touched ? (
                           <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                         ) : null}
-
-                        {/* {form.getFieldDecorator('title', {
-                          rules: [
-                            {
-                              required: true,
-                              message: 'Title is required',
-                            },
-                          ],
-                          initialValue:
-                            editGallery && editGallery.uuid
-                              ? language
-                                ? editGallery.title_en
-                                : editGallery.title_ru
-                              : '',
-                        })(<Input placeholder="Enter Title" />)} */}
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -803,7 +780,6 @@ class CreateGallery extends React.Component {
                             fileList={this.state.fileList}
                             multiple
                             showUploadList={false}
-                            // customRequest={this.handleFileChange}
                             customRequest={this.dummyRequest}
                             onChange={this.handleFileChange}
                           >

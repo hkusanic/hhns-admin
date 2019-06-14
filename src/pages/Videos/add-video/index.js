@@ -221,12 +221,6 @@ class AddVideo extends React.Component {
     const { location } = router
     const { state } = location
 
-    // let uuid = ''
-    // if (state !== undefined) {
-    //   const { id } = state
-    //   uuid = id
-    // }
-
     const uuid = this.props.video.editVideo.uuid
 
     const {
@@ -336,9 +330,6 @@ class AddVideo extends React.Component {
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -591,20 +582,6 @@ class AddVideo extends React.Component {
                           formElements.title.touched ? (
                             <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                           ) : null}
-                          {/* {form.getFieldDecorator('title', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Title is required',
-                                },
-                              ],
-                              initialValue:
-                                editingvideo && (editingvideo.en || editingvideo.ru)
-                                  ? language
-                                    ? editingvideo.en.title
-                                    : editingvideo.ru.title
-                                  : '',
-                            })(<Input placeholder="Video Title" />)} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -768,45 +745,6 @@ class AddVideo extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('event', {
-                              // initialValue:
-                              //   editingvideo && (editingvideo.en || editingvideo.ru)
-                              //     ? language
-                              //       ? editingvideo.en.event
-                              //       : editingvideo.ru.event
-                              //     : '',
-                              initialValue: language ? eventEn : eventRu,
-                            })(
-                              <Select
-                                id="product-edit-colors"
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Select Event"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                  option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                }
-                              >
-                                {events && events.length > 0
-                                  ? events.map(item => {
-                                      return (
-                                        <Option
-                                          onClick={() => {
-                                            this.handleEventChange(item)
-                                          }}
-                                          key={item._id}
-                                          value={language ? item.title_en : item.title_ru}
-                                        >
-                                          {language ? item.title_en : item.title_ru}
-                                        </Option>
-                                      )
-                                    })
-                                  : null}
-                              </Select>,
-                            )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -838,45 +776,6 @@ class AddVideo extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('location', {
-                              // initialValue:
-                              //   editingvideo && (editingvideo.en || editingvideo.ru)
-                              //     ? language
-                              //       ? editingvideo.en.location
-                              //       : editingvideo.ru.location
-                              //     : '',
-                              initialValue: language ? locationEn : locationRu,
-                            })(
-                              <Select
-                                id="product-edit-colors"
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Select Location"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                  option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                                }
-                              >
-                                {locations && locations.length > 0
-                                  ? locations.map(item => {
-                                      return (
-                                        <Option
-                                          onClick={() => {
-                                            this.handleLocationChange(item)
-                                          }}
-                                          key={item._id}
-                                          value={language ? item.title_en : item.title_ru}
-                                        >
-                                          {language ? item.title_en : item.title_ru}
-                                        </Option>
-                                      )
-                                    })
-                                  : null}
-                              </Select>,
-                            )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">

@@ -208,21 +208,6 @@ class VideoList extends React.Component {
                 style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
-            {/* <DatePicker onChange={this.onChangeDate} />
-            <Select
-              id="product-edit-colors"
-              showSearch
-              style={{ width: '20%' }}
-              onChange={this.onChangeDateSort}
-              placeholder="Select Order"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Option value="asc">Ascending</Option>
-              <Option value="desc">Descending</Option>
-            </Select> */}
           </div>
           <div className="card-body">
             <Table

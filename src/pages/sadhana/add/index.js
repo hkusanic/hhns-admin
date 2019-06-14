@@ -232,8 +232,6 @@ class AddSadhana extends React.Component {
     const { form } = this.props
 
     let fullName = ''
-    // let customStyleLeft = {}
-    // let customStyleRight = {}
     let oldRight = {}
     let oldLeft = {}
 
@@ -294,16 +292,6 @@ class AddSadhana extends React.Component {
             </span>
           </Link>
 
-          {/* <div className="col-lg-3">
-              <Switch
-                defaultChecked
-                checkedChildren={language ? 'en' : 'ru'}
-                unCheckedChildren={language ? 'en' : 'ru'}
-                onChange={this.handleLanguage}
-                className="toggle"
-                style={{ width: '100px', marginLeft: '10px' }}
-              />
-            </div> */}
           <div className="col-lg-3 pl-5">
             <span>{editSadhana.date}</span>
           </div>
@@ -322,18 +310,6 @@ class AddSadhana extends React.Component {
             <div className="card-body">
               <div className={styles.addPost}>
                 <Form className="mt-2">
-                  {/* <div className="customContainer">
-                    <div className="leftArrowDiv" style={customStyleLeft}>
-                      <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
-                    </div>
-                    <div className="">
-                      <span className="font-weight-bold">{editSadhana.date}</span>
-                    </div>
-                    <div className="rightArrowDiv" style={customStyleRight}>
-                      <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
-                    </div>
-                  </div> */}
-
                   <div className="container">
                     <div className="row">
                       <div className="col-lg-6">

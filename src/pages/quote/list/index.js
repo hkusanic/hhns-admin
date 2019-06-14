@@ -82,15 +82,6 @@ class QuotesList extends React.Component {
     return result
   }
 
-  // handlePageChnage = page => {
-  //   const { dispatch } = this.props
-
-  //   dispatch({
-  //     type: 'quote/GET_QUOTES',
-  //     page,
-  //   })
-  // }
-
   handlePageChnage = page => {
     const { dispatch } = this.props
 

@@ -14,7 +14,7 @@ class Reports extends Component {
       //     </List.Item>
       //   )}
       // />
-      'hello'
+      'reports'
     )
   }
 }

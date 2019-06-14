@@ -270,10 +270,6 @@ class AddKirtan extends React.Component {
         uploading: false,
       })
     }
-
-    // this.setState({
-    //   editorState,
-    // })
   }
 
   handleUploading = info => {
@@ -426,12 +422,10 @@ class AddKirtan extends React.Component {
       uuid = id
     }
     const {
-      // language,
       audioLink,
       createDate,
       publishDate,
       translationRequired,
-      // editorState,
       editingKirtan,
       titleEn,
       titleRu,
@@ -442,10 +436,7 @@ class AddKirtan extends React.Component {
       bodyContentEn,
       bodyContentRu,
     } = this.state
-    // const titlekirtan = form.getFieldValue('title')
-    // const kirtanBody = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    // const locationKirtan = form.getFieldValue('location')
-    // const event = form.getFieldValue('event')
+
     const type = form.getFieldValue('type')
     const artist = form.getFieldValue('artist')
     const kirtanLanguage = form.getFieldValue('language')
@@ -455,10 +446,6 @@ class AddKirtan extends React.Component {
 
     editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
     editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
-
-    // form.validateFields(['title', 'create_date'], (err, values) => {
-    //   console.info(values)
-    //   if (!err) {
 
     if (titleEn === '' || locationEn === '' || eventEn === '') {
       notification.error({
@@ -513,8 +500,6 @@ class AddKirtan extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
-    // }
-    // })
   }
 
   handleStateReset = () => {
@@ -543,9 +528,6 @@ class AddKirtan extends React.Component {
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -882,45 +864,6 @@ class AddKirtan extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('location', {
-                            // initialValue:
-                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
-                            //     ? language
-                            //       ? editingKirtan.en.location
-                            //       : editingKirtan.ru.location
-                            //     : '',
-                            initialValue: language ? locationEn : locationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Location"
-                              optionFilterProp="children"
-                              // onChange={this.handleSelectLocation}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {locations && locations.length > 0
-                                ? locations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleLocationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -952,45 +895,6 @@ class AddKirtan extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('event', {
-                            // initialValue:
-                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
-                            //     ? language
-                            //       ? editingKirtan.en.event
-                            //       : editingKirtan.ru.event
-                            //     : '',
-                            initialValue: language ? eventEn : eventRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Event"
-                              optionFilterProp="children"
-                              // onChange={this.handleSelectEvent}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {events && events.length > 0
-                                ? events.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleEventChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -1004,19 +908,6 @@ class AddKirtan extends React.Component {
                             />
                           </div>
                         </FormItem>
-
-                        {/* <FormItem label="Body">
-                          {form.getFieldDecorator('content', {
-                            initialValue: editorState || '',
-                          })(
-                            <div className={styles.editor}>
-                              <Editor
-                                editorState={editorState}
-                                onEditorStateChange={this.onEditorStateChange}
-                              />
-                            </div>,
-                          )}
-                        </FormItem> */}
                       </div>
                       <div className="form-group">
                         <FormItem label="Attachment">
@@ -1042,28 +933,6 @@ class AddKirtan extends React.Component {
                                     {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                   </div>
                                 </div>
-                                {/* <div
-                                  style={{
-                                    display: 'inline-block',
-                                    width: 'auto',
-                                    paddingLeft: '15px',
-                                    marginRight: '15px',
-                                  }}
-                                >
-                                  {audioLink.split('/').pop(-1)}
-                                  &nbsp;&nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(audioLink)
-                                    }}
-                                  />
-                                </div>
-                                {percentage !== 0 ? (
-                                  <div style={{ display: 'inline-block', width: '20rem' }}>
-                                    <Progress percent={percentage} />
-                                  </div>
-                                ) : null} */}
                               </li>
                             </ul>
                           ) : (

@@ -132,17 +132,6 @@ class SadhanaList extends React.Component {
     })
   }
 
-  // handlePageChange = page => {
-  //   const { dispatch } = this.props
-  //   const { currentDate } = this.state
-
-  //   dispatch({
-  //     type: 'sadhana/GET_SADHANAS',
-  //     page,
-  //     date: currentDate,
-  //   })
-  // }
-
   handlePageChange = page => {
     this.setState({
       currentPage: page,
@@ -220,7 +209,6 @@ class SadhanaList extends React.Component {
 
   render() {
     const { language, currentDate, sadhanas, perPage, currentPage } = this.state
-    // const { totalSadhanas } = this.props
 
     const nowDate = formatDate(new Date())
 

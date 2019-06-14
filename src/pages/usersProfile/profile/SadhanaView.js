@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
-// import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 import './SadhanaView.css'
 
@@ -126,8 +125,6 @@ class SadhanaView extends React.Component {
 
     const { form } = this.props
 
-    // let customStyleLeft = {}
-    // let customStyleRight = {}
     let oldRight = {}
     let oldLeft = {}
 
@@ -163,8 +160,6 @@ class SadhanaView extends React.Component {
     return (
       <React.Fragment>
         <div className="container headerDiv">
-          {/* <BackNavigation link="/sadhana/list" title="Sadhana List" /> */}
-
           <Link
             to={{
               pathname: '/users/profile/sadhana',
@@ -199,18 +194,6 @@ class SadhanaView extends React.Component {
             <div className="card-body">
               <div className={styles.addPost}>
                 <Form className="mt-2">
-                  {/* <div className="customContainer">
-                    <div className="leftArrowDiv" style={customStyleLeft}>
-                      <Icon className="leftArrow" type="left" onClick={this.nextSadhana} />
-                    </div>
-                    <div className="">
-                      <span className="font-weight-bold">{editSadhana.date}</span>
-                    </div>
-                    <div className="rightArrowDiv" style={customStyleRight}>
-                      <Icon className="rightArrow" type="right" onClick={this.previousSadhana} />
-                    </div>
-                  </div> */}
-
                   <div className="container">
                     <div className="row">
                       <div className="col-lg-6">
