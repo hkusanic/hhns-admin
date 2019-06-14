@@ -364,6 +364,9 @@ class AddKirtan extends React.Component {
   }
 
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -1019,17 +1022,6 @@ class AddKirtan extends React.Component {
                         <FormItem label="Attachment">
                           {audioLink ? (
                             <ul>
-                              {/* <li className="filesList">
-                                {audioLink}
-                                &nbsp;&nbsp;
-                                <i
-                                  className="fa fa-close closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
-                              </li> */}
-
                               <li className="filesList">
                                 <div className="fileDisplay">
                                   <div className="uploadedFileName">
@@ -1038,7 +1030,7 @@ class AddKirtan extends React.Component {
                                       .pop(-1)
                                       .substring(0, 30)}
                                   </div>
-                                  <div className="deleteIcon">
+                                  <div className="deleteIcon" key={audioLink} id={audioLink}>
                                     <i
                                       className="fa fa-trash closeIcon"
                                       onClick={() => {

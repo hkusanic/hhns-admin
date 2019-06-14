@@ -325,9 +325,6 @@ class BlogAddPost extends React.Component {
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -489,6 +486,9 @@ class BlogAddPost extends React.Component {
   }
 
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -515,10 +515,10 @@ class BlogAddPost extends React.Component {
           files,
         })
       },
-      error() {
+      error(err) {
         notification.error({
           message: 'error',
-          description: 'Error occured during uploading, Please try again',
+          description: 'Error occured during deleting, Please try again',
         })
       },
     })
@@ -728,27 +728,8 @@ class BlogAddPost extends React.Component {
                           <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                         ) : null}
                       </FormItem>
-
-                      {/* <FormItem label={english ? 'Title' : 'Title'}>
-                            {form.getFieldDecorator('title', {
-                              initialValue: editingBlog
-                                ? english
-                                  ? editingBlog.title_en
-                                  : editingBlog.title_ru
-                                : '',
-                            })(<Input placeholder="Post title" />)}
-                          </FormItem> */}
                     </div>
                     <div className="form-group">
-                      {/* <FormItem label={english ? 'Tags' : 'Tags'}>
-                            {form.getFieldDecorator('tag', {
-                              initialValue: editingBlog
-                                ? english
-                                  ? editingBlog.tags_en
-                                  : editingBlog.tags_ru
-                                : '',
-                            })(<Input placeholder="Tags" />)}
-                          </FormItem> */}
                       <FormItem label={language ? 'Tags' : 'Tags'}>
                         <Input
                           onChange={this.handleTagsChange}
@@ -858,38 +839,11 @@ class BlogAddPost extends React.Component {
                             onEditorStateChange={this.onEditorStateChangeBody}
                           />
                         </div>
-
-                        {/* {form.getFieldDecorator('content', {
-                          initialValue: editorState || '',
-                        })(
-                          <div className={styles.editor}>
-                            <Editor
-                              editorState={editorState}
-                              onEditorStateChange={this.onEditorStateChange}
-                            />
-                          </div>,
-                        )} */}
                       </FormItem>
                     </div>
                     <div className="form-group" style={customStyle}>
                       <FormItem label="Attachment">
                         <ul>
-                          {/* {files && files.length > 0
-                            ? files.map(item => {
-                                return (
-                                  <li className="filesList">
-                                    {item}
-                                    <i
-                                      className="fa fa-close closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item)
-                                      }}
-                                    />
-                                  </li>
-                                )
-                              })
-                            : null} */}
-
                           {files.length > 0 &&
                             files.map((item, index) => {
                               return (
@@ -901,7 +855,11 @@ class BlogAddPost extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {

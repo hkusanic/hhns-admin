@@ -392,10 +392,6 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
-      // transcriptionFilesRu,
-      // transcriptionFilesEn,
-      // summaryFilesEn,
-      // summaryFilesRu,
     } = this.state
     const { location } = router
     const { state } = location
@@ -645,12 +641,6 @@ class AddLecture extends React.Component {
     }
   }
 
-  // onEditorChangeStateTranscription: Function = editorStateTranscription => {
-  //   this.setState({
-  //     editorStateTranscription,
-  //   })
-  // }
-
   onEditorChangeStateTranscription = transcription => {
     const { language } = this.state
 
@@ -666,12 +656,6 @@ class AddLecture extends React.Component {
       })
     }
   }
-
-  // getBase64 = (img, callback) => {
-  //   const reader = new FileReader()
-  //   reader.addEventListener('load', () => callback(reader.result))
-  //   reader.readAsDataURL(img)
-  // }
 
   dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
@@ -885,6 +869,7 @@ class AddLecture extends React.Component {
           summaryUploading: false,
           audioUploading: true,
           percentage: percentCompleted,
+          fileList: [],
         },
         () => {
           if (this.state.percentage === 100) {
@@ -935,34 +920,6 @@ class AddLecture extends React.Component {
             fileList: [],
           })
         }
-
-        // const valueArray = transEnTemp.map(function(item) {
-        //   return item.percentage
-        // })
-
-        // const result = valueArray.every((val, index, arr) => {
-        //   if (val === 100 || val === 'zeroPercent') {
-        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
-        //       return true
-        //     }
-        //     // return false
-        //   }
-        //   return false
-        // })
-
-        // let arrayLength = 0
-        // for (let i = 0; i < valueArray.length; i += 1) {
-        //   if (valueArray[i] !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
-
-        // if (result) {
-        //   notification.success({
-        //     message: 'Success',
-        //     description: `${arrayLength} file(s) have been uploaded successfully`,
-        //   })
-        // }
       } else {
         arrayRu.push(finalUrl)
 
@@ -996,34 +953,6 @@ class AddLecture extends React.Component {
             fileList: [],
           })
         }
-
-        // const valueArray = transRuTemp.map(function(item) {
-        //   return item.percentage
-        // })
-
-        // const result = valueArray.every((val, index, arr) => {
-        //   if (val === 100 || val === 'zeroPercent') {
-        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
-        //       return true
-        //     }
-        //     // return false
-        //   }
-        //   return false
-        // })
-
-        // let arrayLength = 0
-        // for (let i = 0; i < valueArray.length; i += 1) {
-        //   if (valueArray[i] !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
-
-        // if (result) {
-        //   notification.success({
-        //     message: 'Success',
-        //     description: `${arrayLength} file(s) have been uploaded successfully`,
-        //   })
-        // }
       }
       array.push(finalUrl)
 
@@ -1077,34 +1006,6 @@ class AddLecture extends React.Component {
             fileList: [],
           })
         }
-
-        // const valueArray = summEnTemp.map(function(item) {
-        //   return item.percentage
-        // })
-
-        // const result = valueArray.every((val, index, arr) => {
-        //   if (val === 100 || val === 'zeroPercent') {
-        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
-        //       return true
-        //     }
-        //     // return false
-        //   }
-        //   return false
-        // })
-
-        // let arrayLength = 0
-        // for (let i = 0; i < valueArray.length; i += 1) {
-        //   if (valueArray[i] !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
-
-        // if (result) {
-        //   notification.success({
-        //     message: 'Success',
-        //     description: `${arrayLength} file(s) have been uploaded successfully`,
-        //   })
-        // }
       } else {
         newArrayRu.push(finalUrl)
 
@@ -1138,34 +1039,6 @@ class AddLecture extends React.Component {
             fileList: [],
           })
         }
-
-        // const valueArray = summRuTemp.map(function(item) {
-        //   return item.percentage
-        // })
-
-        // const result = valueArray.every((val, index, arr) => {
-        //   if (val === 100 || val === 'zeroPercent') {
-        //     if (val === arr[0] || arr[0] === 'zeroPercent') {
-        //       return true
-        //     }
-        //     // return false
-        //   }
-        //   return false
-        // })
-
-        // let arrayLength = 0
-        // for (let i = 0; i < valueArray.length; i += 1) {
-        //   if (valueArray[i] !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
-
-        // if (result) {
-        //   notification.success({
-        //     message: 'Success',
-        //     description: `${arrayLength} file(s) have been uploaded successfully`,
-        //   })
-        // }
       }
       newArray.push(finalUrl)
 
@@ -1183,6 +1056,9 @@ class AddLecture extends React.Component {
   }
 
   deleteFile = (item, type) => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -1224,16 +1100,6 @@ class AddLecture extends React.Component {
       this.setState({ audioLink: '' })
     }
     if (type === 'transcription') {
-      // for (let i = 0; i < transcriptionFiles.length; i += 1) {
-      //   if (transcriptionFiles[i] === item) {
-      //     transcriptionFiles.splice(i, 1)
-      //     break
-      //   }
-      // }
-      // this.setState({
-      //   transcriptionFiles,
-      // })
-
       if (language) {
         for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
           if (transcriptionFilesEn[i] === item) {
@@ -1272,16 +1138,6 @@ class AddLecture extends React.Component {
       }
     }
     if (type === 'summary') {
-      // for (let i = 0; i < summaryFiles.length; i += 1) {
-      //   if (summaryFiles[i] === item) {
-      //     summaryFiles.splice(i, 1)
-      //     break
-      //   }
-      // }
-      // this.setState({
-      //   summaryFiles,
-      // })
-
       if (language) {
         for (let i = 0; i < summaryFilesEn.length; i += 1) {
           if (summaryFilesEn[i] === item) {
@@ -1608,34 +1464,6 @@ class AddLecture extends React.Component {
                               </div>
                             ) : null}
                           </FormItem>
-
-                          {/* <FormItem label={language ? 'Title' : 'Title'}>
-                          {form.getFieldDecorator('title', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Title is required',
-                              },
-                            ],
-                            initialValue: language ? titleEn : titleRu,
-                          })(
-                            <Input
-                              placeholder="lecture title"
-                              onChange={this.handleTitleChange}
-                            />,
-                          )}
-                        </FormItem> */}
-
-                          {/* <FormItem label={language ? 'Title' : 'Title'}>
-                          {form.getFieldDecorator('title', {
-                            initialValue:
-                              editinglecture && editinglecture.en && editinglecture.ru
-                                ? language
-                                  ? editinglecture.en.title
-                                  : editinglecture.ru.title
-                                : '',
-                          })(<Input placeholder="lecture title" />)}
-                        </FormItem> */}
                         </div>
                         <div className="form-group">
                           <FormItem label="Author">
@@ -1780,50 +1608,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('location', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Location is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.location
-                            //       : editinglecture.ru.location
-                            //     : '',
-                            initialValue: language ? locationEn : locationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Location"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {locations && locations.length > 0
-                                ? locations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleLocationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -1856,50 +1640,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('event', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Event is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.event
-                            //       : editinglecture.ru.event
-                            //     : '',
-                            initialValue: language ? eventEn : eventRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Event"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {events && events.length > 0
-                                ? events.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleEventChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -1932,50 +1672,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('topic', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Topic is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.topic
-                            //       : editinglecture.ru.topic
-                            //     : '',
-                            initialValue: language ? topicEn : topicRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Topic"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {topics && topics.length > 0
-                                ? topics.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleTopicChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -2030,51 +1726,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('translation', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Translation is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.translation
-                            //       : editinglecture.ru.translation
-                            //     : '',
-                            initialValue: language ? translationEn : translationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Artist"
-                              // onChange={this.handleSelectTranslation}
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {translations && translations.length > 0
-                                ? translations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleTranslationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -2082,20 +1733,6 @@ class AddLecture extends React.Component {
                             <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
                               &nbsp; Need Transcribe ?
                             </Checkbox>
-
-                            {/* {form.getFieldDecorator('transcribe', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Need Transcribe is required',
-                              },
-                            ],
-                            initialValue: editinglecture ? editinglecture.translation_required : '',
-                          })(
-                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                              &nbsp; Need Translation ?
-                            </Checkbox>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -2119,17 +1756,6 @@ class AddLecture extends React.Component {
                           <FormItem label="Attachment">
                             {audioLink ? (
                               <ul>
-                                {/* <li className="filesList">
-                                {audioLink}
-                                &nbsp;&nbsp;
-                                <i
-                                  className="fa fa-close closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
-                              </li> */}
-
                                 <li className="filesList">
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
@@ -2138,7 +1764,7 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div className="deleteIcon" key={audioLink} id={audioLink}>
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2150,28 +1776,6 @@ class AddLecture extends React.Component {
                                       {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {audioLink.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(audioLink, 'audio')
-                                      }}
-                                    />
-                                  </div>
-                                  {percentage !== 0 ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               </ul>
                             ) : (
@@ -2223,40 +1827,13 @@ class AddLecture extends React.Component {
                             onEditorStateChange={this.onEditorChangeStateSummary}
                           />
                         </div>
-                        {/* {form.getFieldDecorator('summary', {
-                        initialValue: editorStateSummary,
-                      })(
-                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                          <Editor
-                            editorState={editorStateSummary}
-                            onEditorStateChange={this.onEditorChangeStateSummary}
-                          />
-                        </div>,
-                      )} */}
                       </FormItem>
                     </div>
                     <div className="form-group" style={customStyleSumm}>
                       <FormItem label="Attachment">
                         <ul>
                           {language
-                            ? // summaryFilesEn.length > 0 &&
-                              //   summaryFilesEn.map((item, index) => {
-                              //     if (item !== '') {
-                              //       return (
-                              //         <li className="filesList">
-                              //           {item} &nbsp;&nbsp;
-                              //           <i
-                              //             className="fa fa-close closeIcon"
-                              //             onClick={() => {
-                              //               this.deleteFile(item, 'transcription')
-                              //             }}
-                              //           />
-                              //         </li>
-                              //       )
-                              //     }
-                              //   })
-
-                              summArrayEn.length > 0 &&
+                            ? summArrayEn.length > 0 &&
                               summArrayEn.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
@@ -2267,7 +1844,11 @@ class AddLecture extends React.Component {
                                           .pop(-1)
                                           .substring(0, 30)}
                                       </div>
-                                      <div className="deleteIcon">
+                                      <div
+                                        className="deleteIcon"
+                                        key={item.fileName}
+                                        id={item.fileName}
+                                      >
                                         <i
                                           className="fa fa-trash closeIcon"
                                           onClick={() => {
@@ -2281,48 +1862,10 @@ class AddLecture extends React.Component {
                                         ) : null}
                                       </div>
                                     </div>
-                                    {/* <div
-                                      style={{
-                                        display: 'inline-block',
-                                        width: 'auto',
-                                        paddingLeft: '15px',
-                                        marginRight: '15px',
-                                      }}
-                                    >
-                                      {item.fileName && item.fileName.split('/').pop(-1)}
-                                      &nbsp;&nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-trash closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item.fileName, 'summary')
-                                        }}
-                                      />
-                                    </div>
-                                    {item.percentage !== 'zeroPercent' ? (
-                                      <div style={{ display: 'inline-block', width: '20rem' }}>
-                                        <Progress percent={item.percentage} />
-                                      </div>
-                                    ) : null} */}
                                   </li>
                                 )
                               })
-                            : // summaryFilesRu.length > 0 &&
-                              //   summaryFilesRu.map((item, index) => {
-                              //     if (item !== '') {
-                              //       return (
-                              //         <li className="filesList">
-                              //           {item} &nbsp;&nbsp;
-                              //           <i
-                              //             className="fa fa-close closeIcon"
-                              //             onClick={() => {
-                              //               this.deleteFile(item, 'transcription')
-                              //             }}
-                              //           />
-                              //         </li>
-                              //       )
-                              //     }
-                              //   })
-                              summArrayRu.length > 0 &&
+                            : summArrayRu.length > 0 &&
                               summArrayRu.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
@@ -2333,7 +1876,11 @@ class AddLecture extends React.Component {
                                           .pop(-1)
                                           .substring(0, 30)}
                                       </div>
-                                      <div className="deleteIcon">
+                                      <div
+                                        className="deleteIcon"
+                                        key={item.fileName}
+                                        id={item.fileName}
+                                      >
                                         <i
                                           className="fa fa-trash closeIcon"
                                           onClick={() => {
@@ -2347,55 +1894,11 @@ class AddLecture extends React.Component {
                                         ) : null}
                                       </div>
                                     </div>
-                                    {/* <div
-                                      style={{
-                                        display: 'inline-block',
-                                        width: 'auto',
-                                        paddingLeft: '15px',
-                                        marginRight: '15px',
-                                      }}
-                                    >
-                                      {item.fileName && item.fileName.split('/').pop(-1)}
-                                      &nbsp;&nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-trash closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item.fileName, 'summary')
-                                        }}
-                                      />
-                                    </div>
-                                    {item.percentage !== 'zeroPercent' ? (
-                                      <div style={{ display: 'inline-block', width: '20rem' }}>
-                                        <Progress percent={item.percentage} />
-                                      </div>
-                                    ) : null} */}
                                   </li>
                                 )
                               })}
                         </ul>
                       </FormItem>
-
-                      {/* <FormItem label="Attachment">
-                      <ul>
-                        {summaryFiles && summaryFiles.length > 0
-                          ? summaryFiles.map(item => {
-                              if (item !== '') {
-                                return (
-                                  <li className="filesList">
-                                    {item} &nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-close closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item, 'summary')
-                                      }}
-                                    />
-                                  </li>
-                                )
-                              }
-                            })
-                          : null}
-                      </ul>
-                    </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem>
@@ -2442,57 +1945,13 @@ class AddLecture extends React.Component {
                           onEditorStateChange={this.onEditorChangeStateTranscription}
                         />
                       </div>
-
-                      {/* {form.getFieldDecorator('transcription', {
-                      initialValue: editinglecture
-                        ? language
-                          ? editorStateTranscriptionEn
-                          : editorStateTranscriptionRu
-                        : '',
-                    })(
-                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                        <Editor
-                          editorState={
-                            language ? editorStateTranscriptionEn : editorStateTranscriptionRu
-                          }
-                          onEditorStateChange={this.onEditorChangeStateTranscription}
-                        />
-                      </div>,
-                    )} */}
                     </FormItem>
                   </div>
                   <div className="form-group" style={customStyleTrans}>
                     <FormItem label="Attachment">
                       <ul>
                         {language
-                          ? // transcriptionFilesEn.length > 0 &&
-                            //   transcriptionFilesEn.map((item, index) => {
-                            //     if (item !== '') {
-                            //       return (
-                            //         <li className="filesList">
-                            //           <i
-                            //             className="fa fa-trash closeIcon"
-                            //             onClick={() => {
-                            //               this.deleteFile(item, 'transcription')
-                            //             }}
-                            //           />
-                            //           <div
-                            //             style={{
-                            //               display: 'inline-block',
-                            //               width: '20rem',
-                            //               paddingLeft: '15px',
-                            //             }}
-                            //           >
-                            //             {item.split('/').pop(-1)}
-                            //           </div>
-                            //           <div style={{ display: 'inline-block', width: '20rem' }}>
-                            //             <Progress percent={percentage} />
-                            //           </div>
-                            //         </li>
-                            //       )
-                            //     }
-                            //   })
-                            transArrayEn.length > 0 &&
+                          ? transArrayEn.length > 0 &&
                             transArrayEn.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
@@ -2503,7 +1962,11 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2517,28 +1980,6 @@ class AddLecture extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'transcription')
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })
@@ -2553,7 +1994,11 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2567,55 +2012,11 @@ class AddLecture extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'transcription')
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })}
                       </ul>
                     </FormItem>
-
-                    {/* <FormItem label="Attachment">
-                    <ul>
-                      {transcriptionFiles && transcriptionFiles.length > 0
-                        ? transcriptionFiles.map(item => {
-                            if (item !== '') {
-                              return (
-                                <li className="filesList">
-                                  {item} &nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-close closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item, 'transcription')
-                                    }}
-                                  />
-                                </li>
-                              )
-                            }
-                          })
-                        : null}
-                    </ul>
-                  </FormItem> */}
                   </div>
                   {/* <Progress percent={percentage} /> */}
                   <div className="form-group">

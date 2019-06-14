@@ -491,6 +491,9 @@ class CreateGallery extends React.Component {
   }
 
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -758,24 +761,6 @@ class CreateGallery extends React.Component {
                     <div className="form-group" style={customStyle}>
                       <FormItem label="Uploaded Photos">
                         <ul>
-                          {/* {photoFiles && photoFiles.length > 0
-                            ? photoFiles.map(item => {
-                                if (item !== '') {
-                                  return (
-                                    <li className="filesList">
-                                      {item} &nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-close closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item)
-                                        }}
-                                      />
-                                    </li>
-                                  )
-                                }
-                              })
-                            : null} */}
-
                           {photoFiles.length > 0 &&
                             photoFiles.map((item, index) => {
                               return (
@@ -787,7 +772,11 @@ class CreateGallery extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
