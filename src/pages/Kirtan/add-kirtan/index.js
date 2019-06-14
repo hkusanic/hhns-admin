@@ -71,6 +71,7 @@ class AddKirtan extends React.Component {
     paginationCurrentPage: '',
     uploading: true,
     fileList: [],
+    audioDuration: '',
   }
 
   componentDidMount() {
@@ -272,7 +273,43 @@ class AddKirtan extends React.Component {
     }
   }
 
+  getAudioFileDuration = file => {
+    return new Promise(resolve => {
+      const objectURL = URL.createObjectURL(file)
+      const mySound = new Audio([objectURL])
+      mySound.addEventListener(
+        'canplaythrough',
+        () => {
+          URL.revokeObjectURL(objectURL)
+          resolve({
+            file,
+            duration: mySound.duration,
+          })
+        },
+        false,
+      )
+    })
+  }
+
   handleUploading = info => {
+    this.getAudioFileDuration(info.file.originFileObj)
+      .then(response => {
+        const second = response.duration.toString().split('.')[0]
+
+        let audioDuration = `${second} second`
+
+        if (second > 60) {
+          const minute = Number(second) / 60
+          audioDuration = `${minute.toString()} minute`
+        }
+        this.setState({
+          audioDuration,
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
     if (info.file.status === 'uploading') {
       this.setState(
         {
@@ -672,12 +709,15 @@ class AddKirtan extends React.Component {
       bodyContentRu,
       percentage,
       paginationCurrentPage,
+      audioDuration,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
     const linkState = {
       paginationCurrentPage,
     }
+
+    console.log('audioDuration===>', audioDuration)
 
     return (
       <React.Fragment>
@@ -918,6 +958,16 @@ class AddKirtan extends React.Component {
                               onEditorStateChange={this.onEditorStateChange}
                             />
                           </div>
+                        </FormItem>
+                      </div>
+                      <div className="form-group">
+                        <FormItem label={language ? 'Audio Duration' : 'Audio Duration'}>
+                          <Input
+                            disabled
+                            value={this.state.audioDuration}
+                            placeholder="Audio Duration"
+                            name="audioDuration"
+                          />
                         </FormItem>
                       </div>
                       <div className="form-group">
