@@ -1,12 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable eqeqeq */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
-/* eslint-disable react/no-access-state-in-setstate */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable array-callback-return */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-nested-ternary */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react'
@@ -134,6 +127,7 @@ class AddVideo extends React.Component {
       )
       if (initialize) {
         const arKeys = []
+        // eslint-disable-next-line array-callback-return
         video.editVideo.urls.map((k, index) => {
           arKeys.push(index)
         })
@@ -176,6 +170,7 @@ class AddVideo extends React.Component {
   add = () => {
     const { form } = this.props
     const keys = form.getFieldValue('keys')
+    // eslint-disable-next-line no-plusplus
     const nextKeys = keys.concat(++id)
     form.setFieldsValue({
       keys: nextKeys,
@@ -203,10 +198,12 @@ class AddVideo extends React.Component {
     const ar = []
     if (this.props.video.suggestions) {
       if (this.state.language) {
+        // eslint-disable-next-line array-callback-return
         this.props.video.suggestions.map(a => {
           ar.push(a.en.title)
         })
       } else {
+        // eslint-disable-next-line array-callback-return
         this.props.video.suggestions.map(a => {
           ar.push(a.ru.title)
         })
@@ -216,10 +213,7 @@ class AddVideo extends React.Component {
   }
 
   handleSubmitForm = () => {
-    const { form, dispatch, router } = this.props
-    // const uuid = this.props.location.state
-    const { location } = router
-    const { state } = location
+    const { form, dispatch } = this.props
 
     const uuid = this.props.video.editVideo.uuid
 
@@ -233,13 +227,11 @@ class AddVideo extends React.Component {
       locationRu,
       eventRu,
     } = this.state
-    // const titleVideo = form.getFieldValue('title')
+
     const author = form.getFieldValue('author')
     const videoLanguage = form.getFieldValue('language')
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
-    // const event = form.getFieldValue('event')
-    // const location = form.getFieldValue('location')
     const type = form.getFieldValue('type')
     const videoReference = form.getFieldValue('reference')
 
@@ -252,18 +244,16 @@ class AddVideo extends React.Component {
       return
     }
 
-    // form.validateFields(['title', 'create_date'], (err, values) => {
-    // console.info(values)
     const dynamicFieldValues = []
     const keys = form.getFieldValue('keys')
 
+    // eslint-disable-next-line array-callback-return
     keys.map((k, index) => {
       console.info(index)
       const val = form.getFieldValue(`url-[${k}]`)
       dynamicFieldValues.push(val)
     })
 
-    // if (!err) {
     const body = {
       uuid: uuid || uuidv4(),
       date,
@@ -305,8 +295,6 @@ class AddVideo extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
-    // }
-    // })
   }
 
   handleStateReset = () => {
@@ -333,7 +321,7 @@ class AddVideo extends React.Component {
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
-        if (window.scrollY != 0) {
+        if (window.scrollY !== 0) {
           window.scrollBy(0, scrollStep)
         } else clearInterval(scrollInterval)
       }, 10)
@@ -457,7 +445,7 @@ class AddVideo extends React.Component {
   }
 
   render() {
-    const { form, lecture, video } = this.props
+    const { form, lecture } = this.props
     const { events, locations } = lecture
     const {
       language,
@@ -736,6 +724,7 @@ class AddVideo extends React.Component {
                                       onClick={() => {
                                         this.handleEventChange(item)
                                       }}
+                                      // eslint-disable-next-line no-underscore-dangle
                                       key={item._id}
                                       value={language ? item.title_en : item.title_ru}
                                     >
@@ -767,6 +756,7 @@ class AddVideo extends React.Component {
                                       onClick={() => {
                                         this.handleLocationChange(item)
                                       }}
+                                      // eslint-disable-next-line no-underscore-dangle
                                       key={item._id}
                                       value={language ? item.title_en : item.title_ru}
                                     >

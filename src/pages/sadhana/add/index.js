@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Helmet } from 'react-helmet'
 import moment from 'moment'
-// import BackNavigation from '../../../common/BackNavigation/index'
 import styles from './style.module.scss'
 import './index.css'
 

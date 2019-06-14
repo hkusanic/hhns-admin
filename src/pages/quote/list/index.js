@@ -1,8 +1,8 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable */
 import React from 'react'
-import { Table, DatePicker, Select, Switch, Button } from 'antd'
+import { Table, Select, Switch, Button } from 'antd'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import renderHTML from 'react-render-html'
@@ -200,8 +200,8 @@ class QuotesList extends React.Component {
         title: 'Author',
         dataIndex: 'author',
         key: 'author',
-        render: author =>
-          author ? renderHTML(this.showing100Characters(author)) : 'Translation missing',
+        render: text =>
+          text ? renderHTML(this.showing100Characters(text)) : 'Translation missing',
       },
       {
         title: 'Date',

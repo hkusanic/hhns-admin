@@ -1,6 +1,6 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
