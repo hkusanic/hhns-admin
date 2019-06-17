@@ -172,6 +172,7 @@ class AddKirtan extends React.Component {
           eventRu,
           bodyContentEn,
           bodyContentRu,
+          audioDuration: editKirtan.duration,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -294,16 +295,43 @@ class AddKirtan extends React.Component {
   handleUploading = info => {
     this.getAudioFileDuration(info.file.originFileObj)
       .then(response => {
-        const second = response.duration.toString().split('.')[0]
-
-        let audioDuration = `${second} second`
-
-        if (second > 60) {
-          const minute = Number(second) / 60
-          audioDuration = `${minute.toString()} minute`
+        let second = parseInt('00', 10)
+        let minute = parseInt('00', 10)
+        let hour = parseInt('00', 10)
+        let totalDuration = `${hour}:${minute}:${second}`
+        const totalSecond = parseInt(response.duration, 10)
+        if (totalSecond < 60) {
+          second = totalSecond
+          totalDuration = `0${hour}:0${minute}:${second}`
         }
+        if (totalSecond >= 60) {
+          minute = totalSecond / 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        if (totalSecond >= 3600) {
+          minute = totalSecond / 60
+          const tempMinute = parseInt(minute, 10)
+
+          minute = tempMinute % 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          hour = parseInt(tempMinute / 60, 10)
+          hour = parseInt(hour, 10)
+          hour = hour.toString().length > 1 ? hour : `0${hour}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
         this.setState({
-          audioDuration,
+          audioDuration: totalDuration,
         })
       })
       .catch(err => {
@@ -718,8 +746,6 @@ class AddKirtan extends React.Component {
     const linkState = {
       paginationCurrentPage,
     }
-
-    console.log('audioDuration===>', audioDuration)
 
     return (
       <React.Fragment>
