@@ -103,6 +103,7 @@ class AddLecture extends React.Component {
       summArrayRu: [],
       paginationCurrentPage: '',
       fileList: [],
+      audioDuration: '',
     }
   }
 
@@ -301,6 +302,7 @@ class AddLecture extends React.Component {
           transArrayRu,
           summArrayEn,
           summArrayRu,
+          audioDuration: lecture.editLecture.duration,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -374,6 +376,7 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
+      audioDuration,
     } = this.state
     const { location } = router
     const { state } = location
@@ -463,6 +466,7 @@ class AddLecture extends React.Component {
 
     body = {
       uuid: uuid || uuidv4(),
+      duration: audioDuration,
       part,
       verse,
       chapter,
@@ -650,7 +654,70 @@ class AddLecture extends React.Component {
     }, 0)
   }
 
+  getAudioFileDuration = file => {
+    return new Promise(resolve => {
+      const objectURL = URL.createObjectURL(file)
+      const mySound = new Audio([objectURL])
+      mySound.addEventListener(
+        'canplaythrough',
+        () => {
+          URL.revokeObjectURL(objectURL)
+          resolve({
+            file,
+            duration: mySound.duration,
+          })
+        },
+        false,
+      )
+    })
+  }
+
   handleFileChange = info => {
+    this.getAudioFileDuration(info.file.originFileObj)
+      .then(response => {
+        let second = parseInt('00', 10)
+        let minute = parseInt('00', 10)
+        let hour = parseInt('00', 10)
+        let totalDuration = `${hour}:${minute}:${second}`
+        const totalSecond = parseInt(response.duration, 10)
+        if (totalSecond < 60) {
+          second = totalSecond
+          totalDuration = `0${hour}:0${minute}:${second}`
+        }
+        if (totalSecond >= 60) {
+          minute = totalSecond / 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        if (totalSecond >= 3600) {
+          minute = totalSecond / 60
+          const tempMinute = parseInt(minute, 10)
+
+          minute = tempMinute % 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          hour = parseInt(tempMinute / 60, 10)
+          hour = parseInt(hour, 10)
+          hour = hour.toString().length > 1 ? hour : `0${hour}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        this.setState({
+          audioDuration: totalDuration,
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
     if (info.file.status === 'uploading') {
       this.setState(
         {
@@ -1379,6 +1446,7 @@ class AddLecture extends React.Component {
       summArrayEn,
       summArrayRu,
       paginationCurrentPage,
+      audioDuration,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1737,6 +1805,16 @@ class AddLecture extends React.Component {
                                 ,
                               </div>,
                             )}
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
+                          <FormItem label={language ? 'Audio Duration' : 'Audio Duration'}>
+                            <Input
+                              disabled
+                              value={this.state.audioDuration}
+                              placeholder="Audio Duration"
+                              name="audioDuration"
+                            />
                           </FormItem>
                         </div>
                         <div className="form-group">
