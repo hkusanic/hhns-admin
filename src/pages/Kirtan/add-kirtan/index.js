@@ -155,7 +155,7 @@ class AddKirtan extends React.Component {
         {
           editingKirtan: editKirtan,
           audioLink: editKirtan.audio_link,
-          createDate: editKirtan ? editKirtan.created_date : '',
+          createDate: editKirtan ? editKirtan.created_date_time : '',
           publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
           translationRequired: editKirtan ? editKirtan.translation_required : false,
           titleEn,
@@ -499,7 +499,7 @@ class AddKirtan extends React.Component {
 
     const body = {
       uuid: uuid || uuidv4(),
-      created_date: createDate,
+      created_date_time: createDate,
       published_date: publishDate,
       language: kirtanLanguage,
       audio_link: audioLink,
@@ -842,8 +842,8 @@ class AddKirtan extends React.Component {
                               },
                             ],
                             initialValue:
-                              editingKirtan && editingKirtan.created_date
-                                ? moment(editingKirtan.created_date, dateFormat)
+                              editingKirtan && editingKirtan.created_date_time
+                                ? moment(editingKirtan.created_date_time, dateFormat)
                                 : moment(new Date(), dateFormat),
                           })(<DatePicker onChange={this.handleCreateDate} />)}
                         </FormItem>
