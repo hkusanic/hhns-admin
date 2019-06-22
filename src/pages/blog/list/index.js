@@ -122,8 +122,8 @@ class BlogList extends React.Component {
     const columns = [
       {
         title: 'Title',
-        dataIndex: language ? 'title_en' : 'title_ru',
-        key: language ? 'title_en' : 'title_ru',
+        dataIndex: language ? 'en.title' : 'ru.title',
+        key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
@@ -134,8 +134,8 @@ class BlogList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
+        dataIndex: 'blog_creation_date',
+        key: 'blog_creation_date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {

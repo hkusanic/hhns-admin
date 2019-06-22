@@ -206,8 +206,8 @@ class QuotesList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
+        dataIndex: 'quote_date',
+        key: 'quote_date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
