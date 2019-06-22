@@ -112,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : ''
-      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : ''
+      const htmlbodyContentEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.body : ''
+      const htmlbodyContentRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.body : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -134,11 +134,11 @@ class BlogAddPost extends React.Component {
         }
       }
 
-      const titleEn = blog.editBlog ? blog.editBlog.title_en : ''
-      const titleRu = blog.editBlog ? blog.editBlog.title_ru : ''
+      const titleEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.title : ''
+      const titleRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.title : ''
 
-      const tagsEn = blog.editBlog ? blog.editBlog.tags_en : ''
-      const tagsRu = blog.editBlog ? blog.editBlog.tags_ru : ''
+      const tagsEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.tags : ''
+      const tagsRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.tags : ''
 
       let tempFilesArray = []
       let tempFilesObject = {}
@@ -269,18 +269,21 @@ class BlogAddPost extends React.Component {
       author,
       files: tempFilesArray,
       needs_translation: translationRequired,
-      date,
+      blog_creation_date: date,
       publish_date: publishDate,
+      created_date_time: new Date(),
+      en: {},
+      ru: {},
     }
 
-    body.title_en = titleEn
-    body.body_en = bodyContentStateEn
-    body.tags_en = tagsEn
+    body.en.title = titleEn
+    body.en.body = bodyContentStateEn
+    body.en.tags = tagsEn
     body.needs_translation = translationRequired
 
-    body.title_ru = titleRu
-    body.body_ru = bodyContentStateRu
-    body.tags_ru = tagsRu
+    body.ru.title = titleRu
+    body.ru.body = bodyContentStateRu
+    body.ru.tags = tagsRu
     body.needs_translation = translationRequired
 
     if (editingBlog) {
@@ -690,13 +693,17 @@ class BlogAddPost extends React.Component {
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
-        {editingBlog && editingBlog.title_en ? (
+        {editingBlog && editingBlog.en.title ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
-                {language ? editingBlog.title_en : editingBlog.title_ru ? editingBlog.title_ru : ''}
+                {language
+                  ? editingBlog.en.title
+                  : editingBlog.ru && editingBlog.ru.title
+                  ? editingBlog.ru.title
+                  : ''}
               </span>
             </div>
           </div>
@@ -815,8 +822,8 @@ class BlogAddPost extends React.Component {
                             },
                           ],
                           initialValue:
-                            editingBlog && editingBlog.date
-                              ? moment(new Date(editingBlog.date), dateFormat)
+                            editingBlog && editingBlog.blog_creation_date
+                              ? moment(new Date(editingBlog.blog_creation_date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>

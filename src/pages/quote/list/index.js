@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -14,16 +13,20 @@ const { Option } = Select
 
 @connect(({ quote }) => ({ quote }))
 class QuotesList extends React.Component {
-  state = {
-    language: true,
-    currentPage: 1,
-    perPage: 20,
-    author: '',
+  constructor(props) {
+    super(props)
+    this.state = {
+      language: true,
+      currentPage: 1,
+      perPage: 20,
+      author: '',
+    }
   }
 
   componentDidMount() {
     const { dispatch, location } = this.props
     const { state } = location
+    const { currentPage } = this.state
     if (state !== undefined) {
       if (state.paginationCurrentPage) {
         this.setState(
@@ -33,20 +36,20 @@ class QuotesList extends React.Component {
           () => {
             dispatch({
               type: 'quote/GET_QUOTES',
-              page: this.state.currentPage,
+              page: currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       }
     } else {
       dispatch({
         type: 'quote/GET_QUOTES',
-        page: this.state.currentPage,
+        page: currentPage,
       })
     }
 
@@ -84,6 +87,7 @@ class QuotesList extends React.Component {
 
   handlePageChnage = page => {
     const { dispatch } = this.props
+    const { currentPage } = this.state
 
     this.setState(
       {
@@ -92,7 +96,7 @@ class QuotesList extends React.Component {
       () => {
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       },
     )
@@ -151,10 +155,11 @@ class QuotesList extends React.Component {
         author: value,
       },
       () => {
+        const { currentPage, author } = this.state
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: this.state.currentPage,
-          author: this.state.author,
+          page: currentPage,
+          author,
         })
       },
     )
@@ -167,10 +172,11 @@ class QuotesList extends React.Component {
         author: '',
       },
       () => {
+        const { currentPage, author } = this.state
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: this.state.currentPage,
-          author: this.state.author,
+          page: currentPage,
+          author,
         })
       },
     )

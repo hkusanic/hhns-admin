@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -15,16 +13,20 @@ const { Option } = Select
 
 @connect(({ lecture }) => ({ lecture }))
 class ProductsList extends React.Component {
-  state = {
-    language: true,
-    transcribe: false,
-    currentPage: 1,
-    perPage: 20,
+  constructor(props) {
+    super(props)
+    this.state = {
+      language: true,
+      transcribe: false,
+      currentPage: 1,
+      perPage: 20,
+    }
   }
 
   componentDidMount() {
     const { dispatch, location } = this.props
     const { state } = location
+    const { currentPage } = this.state
 
     if (state !== undefined) {
       if (state.paginationCurrentPage) {
@@ -35,20 +37,20 @@ class ProductsList extends React.Component {
           () => {
             dispatch({
               type: 'lecture/GET_LECTURES',
-              page: this.state.currentPage,
+              page: currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'lecture/GET_LECTURES',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       }
     } else {
       dispatch({
         type: 'lecture/GET_LECTURES',
-        page: this.state.currentPage,
+        page: currentPage,
       })
     }
 
@@ -86,6 +88,7 @@ class ProductsList extends React.Component {
 
   handlePageChnage = page => {
     const { dispatch } = this.props
+    const { currentPage } = this.state
 
     this.setState(
       {
@@ -94,7 +97,7 @@ class ProductsList extends React.Component {
       () => {
         dispatch({
           type: 'lecture/GET_LECTURES',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       },
     )
@@ -176,8 +179,8 @@ class ProductsList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'created_date_time',
-        key: 'created_date_time',
+        dataIndex: 'lecture_date',
+        key: 'lecture_date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
@@ -224,7 +227,6 @@ class ProductsList extends React.Component {
                 unCheckedChildren={language ? 'en' : 'ru'}
                 onChange={this.handleLanguage}
                 className="toggle"
-                // style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                 style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
@@ -255,7 +257,6 @@ class ProductsList extends React.Component {
           <div className="card-body">
             <Table
               rowKey={record => record.uuid}
-              // eslint-disable-next-line no-unused-expressions
               rowClassName={record =>
                 record.translation_required === true ? 'NotTranslated' : 'translated'
               }

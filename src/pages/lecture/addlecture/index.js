@@ -171,22 +171,33 @@ class AddLecture extends React.Component {
       const htmlTranscriptionEn = lecture.editLecture
         ? lecture.editLecture.en.transcription.text
         : ''
-      const htmlSummaryEn = lecture.editLecture ? lecture.editLecture.en.summary.text : ''
+      const htmlSummaryEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.summary.text : ''
 
-      const titleEn = lecture.editLecture ? lecture.editLecture.en.title : ''
-      const titleRu = lecture.editLecture ? lecture.editLecture.ru.title : ''
+      const titleEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.title : ''
+      const titleRu =
+        lecture.editLecture && lecture.editLecture.ru ? lecture.editLecture.ru.title : ''
 
-      const locationEn = lecture.editLecture ? lecture.editLecture.en.location : ''
-      const locationRu = lecture.editLecture ? lecture.editLecture.ru.location : ''
+      const locationEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.location : ''
+      const locationRu =
+        lecture.editLecture && lecture.editLecture.ru ? lecture.editLecture.ru.location : ''
 
-      const eventEn = lecture.editLecture ? lecture.editLecture.en.event : ''
-      const eventRu = lecture.editLecture ? lecture.editLecture.ru.event : ''
+      const eventEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.event : ''
+      const eventRu =
+        lecture.editLecture && lecture.editLecture.ru ? lecture.editLecture.ru.event : ''
 
-      const topicEn = lecture.editLecture ? lecture.editLecture.en.topic : ''
-      const topicRu = lecture.editLecture ? lecture.editLecture.ru.topic : ''
+      const topicEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.topic : ''
+      const topicRu =
+        lecture.editLecture && lecture.editLecture.ru ? lecture.editLecture.ru.topic : ''
 
-      const translationEn = lecture.editLecture ? lecture.editLecture.en.translation : ''
-      const translationRu = lecture.editLecture ? lecture.editLecture.ru.translation : ''
+      const translationEn =
+        lecture.editLecture && lecture.editLecture.en ? lecture.editLecture.en.translation : ''
+      const translationRu =
+        lecture.editLecture && lecture.editLecture.ru ? lecture.editLecture.ru.translation : ''
 
       if (htmlTranscriptionEn && htmlTranscriptionEn.length > 0) {
         const contentBlockEn = htmlToDraft(htmlTranscriptionEn)
@@ -472,7 +483,7 @@ class AddLecture extends React.Component {
       chapter,
       author,
       tags: tag,
-      created_date_time: date,
+      lecture_date: date,
       published_date: publishDate,
       audio_link: audioLink,
       translation_required: translationRequired,
@@ -1589,9 +1600,10 @@ class AddLecture extends React.Component {
                                   message: 'Date is required',
                                 },
                               ],
-                              initialValue: editinglecture
-                                ? moment(new Date(editinglecture.created_date_time), dateFormat)
-                                : moment(new Date(), dateFormat),
+                              initialValue:
+                                editinglecture && editinglecture.lecture_date
+                                  ? moment(new Date(editinglecture.lecture_date), dateFormat)
+                                  : moment(new Date(), dateFormat),
                             })(<DatePicker onChange={this.onChange} />)}
                           </FormItem>
                         </div>
