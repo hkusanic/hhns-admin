@@ -29,6 +29,14 @@ class MainGallery extends React.Component {
     dispatch({
       type: 'galleryListing/GET_MAIN_GALLERY_LIST',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -73,10 +81,6 @@ class MainGallery extends React.Component {
     event.preventDefault()
     const { form, dispatch } = this.props
     const { titleEn, titleRu } = this.state
-    // const name = form.getFieldValue('title')
-    // form.validateFields(['title'], (err, values) => {
-    // console.info(values)
-    // if (!err) {
     const body = {
       uuid: this.uuidv4(),
       date: new Date().toLocaleDateString(),
@@ -87,8 +91,6 @@ class MainGallery extends React.Component {
       type: 'galleryListing/CREATE_MAIN_GALLERY',
       body,
     })
-    // }
-    // })
   }
 
   handleLanguage = () => {
@@ -217,17 +219,6 @@ class MainGallery extends React.Component {
                       <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                     ) : null}
                   </FormItem>
-
-                  {/* <FormItem label="Title">
-                    {form.getFieldDecorator('title', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Title is required',
-                        },
-                      ],
-                    })(<Input placeholder="Enter Title" />)}
-                  </FormItem> */}
                 </div>
               </Form>
             </div>

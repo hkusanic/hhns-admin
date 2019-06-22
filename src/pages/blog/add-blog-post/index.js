@@ -62,10 +62,11 @@ class BlogAddPost extends React.Component {
       titleRu: '',
       tagsEn: '',
       tagsRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
+      fileList: [],
     }
   }
 
@@ -95,6 +96,14 @@ class BlogAddPost extends React.Component {
         })
       }
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -103,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : EditorState.createEmpty()
-      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : EditorState.createEmpty()
+      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : ''
+      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -229,8 +238,16 @@ class BlogAddPost extends React.Component {
     const languageField = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
 
-    const bodyContentStateEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    const bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    let bodyContentStateEn = ''
+    let bodyContentStateRu = ''
+
+    if (bodyContentEn) {
+      bodyContentStateEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    }
+
+    if (bodyContentRu) {
+      bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    }
 
     if (titleEn === '' || tagsEn === '') {
       notification.error({
@@ -308,17 +325,14 @@ class BlogAddPost extends React.Component {
       titleRu: '',
       tagsEn: '',
       tagsRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
     })
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -350,21 +364,24 @@ class BlogAddPost extends React.Component {
     reader.readAsDataURL(img)
   }
 
-  handleFileChange = info => {
-    // if (info.file.status === 'done') {
-    //   this.setState({ uploading: false }, () => {
-    //     this.uploads3(info.file)
-    //   })
-    // }
+  dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess('ok')
+    }, 0)
+  }
 
-    this.setState(
-      {
-        uploading: false,
-      },
-      () => {
-        this.uploads3(info)
-      },
-    )
+  handleFileChange = info => {
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   uploads3 = info => {
@@ -400,48 +417,32 @@ class BlogAddPost extends React.Component {
           description: `Some error occured. Please check your internet connection`,
         })
       })
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     const { files } = this.state
-    //     const array = [...files]
-
-    //     array.push(finalUrl)
-    //     this.setState({ files: array })
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, Please try again',
-    //     })
-    //   },
-    // })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
         notification.warning({
@@ -449,35 +450,14 @@ class BlogAddPost extends React.Component {
           description: 'Error occured during uploading, try again',
         })
       })
-
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: data => {
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, Please try again',
-    //     })
-    //   },
-    // })
   }
 
-  setUploadedFiles = (finalUrl, percentCompleted) => {
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
     const { files } = this.state
 
     const tempFilesArray = [...files]
+
+    const tempFileList = [...fileList]
 
     const objIndex = tempFilesArray.findIndex(obj => obj.fileName === finalUrl)
 
@@ -491,31 +471,20 @@ class BlogAddPost extends React.Component {
       tempFilesArray.push(tempFilesObject)
     }
 
-    const valueArray = tempFilesArray.map(function(item) {
-      return item.percentage
-    })
-
-    const result = valueArray.every((val, index, arr) => {
-      if (val === 100 || val === 'zeroPercent') {
-        if (val === arr[0] || arr[0] === 'zeroPercent') {
-          return true
-        }
-        // return false
+    const result = tempFileList.every((val, index, arr) => {
+      if (val.percent === 100) {
+        return true
       }
       return false
     })
 
-    let arrayLength = 0
-    for (let i = 0; i < valueArray.length; i += 1) {
-      if (valueArray[i] !== 'zeroPercent') {
-        arrayLength += 1
-      }
-    }
-
     if (result) {
       notification.success({
         message: 'Success',
-        description: `${arrayLength} file(s) have been uploaded successfully`,
+        description: `${fileList.length} file(s) have been uploaded successfully`,
+      })
+      this.setState({
+        fileList: [],
       })
     }
 
@@ -524,13 +493,10 @@ class BlogAddPost extends React.Component {
     })
   }
 
-  dummyRequest = ({ file, onSuccess }) => {
-    setTimeout(() => {
-      onSuccess('ok')
-    }, 0)
-  }
-
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -557,10 +523,10 @@ class BlogAddPost extends React.Component {
           files,
         })
       },
-      error() {
+      error(err) {
         notification.error({
           message: 'error',
-          description: 'Error occured during uploading, Please try again',
+          description: 'Error occured during deleting, Please try again',
         })
       },
     })
@@ -748,7 +714,7 @@ class BlogAddPost extends React.Component {
                     unCheckedChildren={language ? 'en' : 'ru'}
                     onChange={this.handleLanguage}
                     className="toggle"
-                    style={{ width: '100px', marginLeft: '10px' }}
+                    style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                   />
                 </div>
               </div>
@@ -770,27 +736,8 @@ class BlogAddPost extends React.Component {
                           <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                         ) : null}
                       </FormItem>
-
-                      {/* <FormItem label={english ? 'Title' : 'Title'}>
-                            {form.getFieldDecorator('title', {
-                              initialValue: editingBlog
-                                ? english
-                                  ? editingBlog.title_en
-                                  : editingBlog.title_ru
-                                : '',
-                            })(<Input placeholder="Post title" />)}
-                          </FormItem> */}
                     </div>
                     <div className="form-group">
-                      {/* <FormItem label={english ? 'Tags' : 'Tags'}>
-                            {form.getFieldDecorator('tag', {
-                              initialValue: editingBlog
-                                ? english
-                                  ? editingBlog.tags_en
-                                  : editingBlog.tags_ru
-                                : '',
-                            })(<Input placeholder="Tags" />)}
-                          </FormItem> */}
                       <FormItem label={language ? 'Tags' : 'Tags'}>
                         <Input
                           onChange={this.handleTagsChange}
@@ -900,38 +847,11 @@ class BlogAddPost extends React.Component {
                             onEditorStateChange={this.onEditorStateChangeBody}
                           />
                         </div>
-
-                        {/* {form.getFieldDecorator('content', {
-                          initialValue: editorState || '',
-                        })(
-                          <div className={styles.editor}>
-                            <Editor
-                              editorState={editorState}
-                              onEditorStateChange={this.onEditorStateChange}
-                            />
-                          </div>,
-                        )} */}
                       </FormItem>
                     </div>
                     <div className="form-group" style={customStyle}>
                       <FormItem label="Attachment">
                         <ul>
-                          {/* {files && files.length > 0
-                            ? files.map(item => {
-                                return (
-                                  <li className="filesList">
-                                    {item}
-                                    <i
-                                      className="fa fa-close closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item)
-                                      }}
-                                    />
-                                  </li>
-                                )
-                              })
-                            : null} */}
-
                           {files.length > 0 &&
                             files.map((item, index) => {
                               return (
@@ -943,7 +863,11 @@ class BlogAddPost extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -957,28 +881,6 @@ class BlogAddPost extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName)
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })}
@@ -989,9 +891,10 @@ class BlogAddPost extends React.Component {
                       <FormItem>
                         {form.getFieldDecorator('Files')(
                           <Dragger
+                            fileList={this.state.fileList}
                             showUploadList={false}
-                            customRequest={this.handleFileChange}
-                            // onChange={this.handleFileChange}
+                            customRequest={this.dummyRequest}
+                            onChange={this.handleFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />

@@ -201,6 +201,22 @@ export function* updateVideoSaga(payload) {
   }
 }
 
+export function* resetStoreSaga() {
+  try {
+    yield put({
+      type: 'video/SET_STATE',
+      payload: {
+        editVideo: '',
+      },
+    })
+  } catch (err) {
+    notification.warning({
+      message: 'Error',
+      description: 'Some Error Occured',
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.CREATE_VIDEO, createVideoSaga),
@@ -209,5 +225,6 @@ export default function* rootSaga() {
     takeEvery(actions.DELETE_VIDEOS, deleteVideoByUuidSaga),
     takeEvery(actions.GET_VIDEO_BY_ID, getVideoByUuidSaga),
     takeEvery(actions.UPDATE_VIDEO, updateVideoSaga),
+    takeEvery(actions.RESET_STORE, resetStoreSaga),
   ])
 }

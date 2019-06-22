@@ -47,6 +47,14 @@ class UsersList extends Component {
         })
       }
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   handleInputChange = event => {

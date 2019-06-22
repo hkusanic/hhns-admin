@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
@@ -75,6 +76,7 @@ class CreateGallery extends React.Component {
       titleRu: '',
       formElements: formInputElements,
       switchDisabled: true,
+      fileList: [],
     }
   }
 
@@ -105,6 +107,14 @@ class CreateGallery extends React.Component {
 
     dispatch({
       type: 'gallery/GET_GALLERY_LIST',
+    })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
     })
   }
 
@@ -215,34 +225,24 @@ class CreateGallery extends React.Component {
     })
   }
 
-  handleFileChange = info => {
-    this.setState(
-      {
-        uploading: false,
-      },
-      () => {
-        // this.handleUploading(info)
-        this.uploads3(info)
-      },
-    )
-  }
-
-  // handleUploading = info => {
-  //   if (info.file.status === 'uploading') {
-  //     notification.success({
-  //       message: 'Uploading Started',
-  //       description: 'File uploading is started',
-  //     })
-  //   }
-  //   if (info.file.status === 'done') {
-  //     this.uploads3(info.file)
-  //   }
-  // }
-
   getBase64 = (img, callback) => {
     const reader = new FileReader()
     reader.addEventListener('load', () => callback(reader.result))
     reader.readAsDataURL(img)
+  }
+
+  handleFileChange = info => {
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   uploads3 = info => {
@@ -254,63 +254,53 @@ class CreateGallery extends React.Component {
     axios({
       method: 'GET',
       url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    }).then(response => {
-      const { data } = response
-      const temp = data.presignedUrl.toString()
-      const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-
-      for (let i = 0; i < photoFiles.length; i += 1) {
-        if (photoFiles[i].fileName === finalUrl) {
-          notification.warning({
-            message: 'error',
-            description: `You can't upload file with the same name.`,
-          })
-          return
-        }
-      }
-
-      this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
     })
+      .then(response => {
+        const { data } = response
+        const temp = data.presignedUrl.toString()
+        const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
 
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     setTimeout(() => {
-    //       this.setUploadedFiles(finalUrl)
-    //     }, 0)
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'Error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
+        for (let i = 0; i < photoFiles.length; i += 1) {
+          if (photoFiles[i].fileName === finalUrl) {
+            notification.warning({
+              message: 'error',
+              description: `You can't upload file with the same name.`,
+            })
+            return
+          }
+        }
+
+        this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info, finalUrl)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
         notification.warning({
@@ -318,35 +308,14 @@ class CreateGallery extends React.Component {
           description: 'Error occured during uploading, try again',
         })
       })
-
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: () => {
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.warning({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
-  setUploadedFiles = (finalUrl, percentCompleted) => {
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
     const { photoFiles } = this.state
 
     const tempPhotoFiles = [...photoFiles]
+
+    const tempFileList = [...fileList]
 
     const objIndex = tempPhotoFiles.findIndex(obj => obj.fileName === finalUrl)
 
@@ -360,31 +329,20 @@ class CreateGallery extends React.Component {
       tempPhotoFiles.push(tempPhotoObject)
     }
 
-    const valueArray = tempPhotoFiles.map(function(item) {
-      return item.percentage
-    })
-
-    const result = valueArray.every((val, index, arr) => {
-      if (val === 100 || val === 'zeroPercent') {
-        if (val === arr[0] || arr[0] === 'zeroPercent') {
-          return true
-        }
-        // return false
+    const result = tempFileList.every((val, index, arr) => {
+      if (val.percent === 100) {
+        return true
       }
       return false
     })
 
-    let arrayLength = 0
-    for (let i = 0; i < valueArray.length; i += 1) {
-      if (valueArray[i] !== 'zeroPercent') {
-        arrayLength += 1
-      }
-    }
-
     if (result) {
       notification.success({
         message: 'Success',
-        description: `${arrayLength} file(s) have been uploaded successfully`,
+        description: `${fileList.length} file(s) have been uploaded successfully`,
+      })
+      this.setState({
+        fileList: [],
       })
     }
 
@@ -429,10 +387,7 @@ class CreateGallery extends React.Component {
       photoFiles,
       galleryBody,
       gallery,
-      // createDate,
-      // publishDate,
       editGallery,
-      // language,
       translationRequired,
       titleEn,
       titleRu,
@@ -464,9 +419,6 @@ class CreateGallery extends React.Component {
       tempPhotoFiles.push(photoFiles[i].fileName)
     }
 
-    // form.validateFields(['title', 'create_date', 'publish_date'], (err, values) => {
-    // console.info(values)
-    // if (!err) {
     const body = {
       uuid: uuid || uuidv4(),
       gallery,
@@ -497,8 +449,6 @@ class CreateGallery extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
-    // }
-    // })
   }
 
   handleStateReset = () => {
@@ -533,6 +483,9 @@ class CreateGallery extends React.Component {
   }
 
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -679,7 +632,7 @@ class CreateGallery extends React.Component {
                     unCheckedChildren={language ? 'en' : 'ru'}
                     onChange={this.handleLanguage}
                     className="toggle"
-                    style={{ width: '100px', marginLeft: '10px' }}
+                    style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                   />
                 </div>
               </div>
@@ -699,21 +652,6 @@ class CreateGallery extends React.Component {
                         formElements.title.touched ? (
                           <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                         ) : null}
-
-                        {/* {form.getFieldDecorator('title', {
-                          rules: [
-                            {
-                              required: true,
-                              message: 'Title is required',
-                            },
-                          ],
-                          initialValue:
-                            editGallery && editGallery.uuid
-                              ? language
-                                ? editGallery.title_en
-                                : editGallery.title_ru
-                              : '',
-                        })(<Input placeholder="Enter Title" />)} */}
                       </FormItem>
                     </div>
                     <div className="form-group">
@@ -735,7 +673,7 @@ class CreateGallery extends React.Component {
                         <Select
                           id="gallery-item"
                           // defaultValue="2019"
-                          value={editGallery.gallery}
+                          value={this.state.gallery}
                           showSearch
                           style={{ width: '25%' }}
                           onChange={this.hadleSelectGallery}
@@ -800,24 +738,6 @@ class CreateGallery extends React.Component {
                     <div className="form-group" style={customStyle}>
                       <FormItem label="Uploaded Photos">
                         <ul>
-                          {/* {photoFiles && photoFiles.length > 0
-                            ? photoFiles.map(item => {
-                                if (item !== '') {
-                                  return (
-                                    <li className="filesList">
-                                      {item} &nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-close closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item)
-                                        }}
-                                      />
-                                    </li>
-                                  )
-                                }
-                              })
-                            : null} */}
-
                           {photoFiles.length > 0 &&
                             photoFiles.map((item, index) => {
                               return (
@@ -829,7 +749,11 @@ class CreateGallery extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -843,28 +767,6 @@ class CreateGallery extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName)
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })}
@@ -875,11 +777,11 @@ class CreateGallery extends React.Component {
                       <FormItem label="Upload Photos">
                         {form.getFieldDecorator('Files')(
                           <Dragger
-                            beforeUpload={this.beforeUploadAudio}
+                            fileList={this.state.fileList}
                             multiple
                             showUploadList={false}
-                            customRequest={this.handleFileChange}
-                            // onChange={this.handleFileChange}
+                            customRequest={this.dummyRequest}
+                            onChange={this.handleFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />

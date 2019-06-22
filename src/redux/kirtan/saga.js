@@ -86,7 +86,6 @@ export function* getKirtanByUuidSaga(body) {
   try {
     const result = yield call(getLectureByUuid, body)
     const { data } = result
-    console.log('result uuid =====>>>', result)
     if (result.status === 200) {
       yield put({
         type: 'kirtan/SET_STATE',
@@ -177,6 +176,22 @@ export function* updateKirtanSaga(payload) {
   }
 }
 
+export function* resetStoreSaga() {
+  try {
+    yield put({
+      type: 'kirtan/SET_STATE',
+      payload: {
+        editKirtan: '',
+      },
+    })
+  } catch (err) {
+    notification.warning({
+      message: 'Error',
+      description: 'Some Error Occured',
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.CREATE_KIRTAN, createKirtanSaga),
@@ -184,5 +199,6 @@ export default function* rootSaga() {
     takeEvery(actions.GET_KIRTAN_BY_ID, getKirtanByUuidSaga),
     takeEvery(actions.DELETE_KIRTAN_BY_ID, deleteKirtanByUuidSaga),
     takeEvery(actions.UPDATE_KIRTAN, updateKirtanSaga),
+    takeEvery(actions.RESET_STORE, resetStoreSaga),
   ])
 }

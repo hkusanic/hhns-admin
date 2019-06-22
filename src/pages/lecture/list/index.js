@@ -51,6 +51,14 @@ class ProductsList extends React.Component {
         page: this.state.currentPage,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -166,16 +174,6 @@ class ProductsList extends React.Component {
         key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(title.substring(0, 40)) : ''),
       },
-      // {
-      //   title: 'Event',
-      //   dataIndex: language ? 'en.event' : 'ru.event',
-      //   key: language ? 'en.event' : 'ru.event',
-      // },
-      // {
-      //   title: 'Author',
-      //   dataIndex: 'author',
-      //   key: 'author',
-      // },
       {
         title: 'Date',
         dataIndex: 'created_date_time',

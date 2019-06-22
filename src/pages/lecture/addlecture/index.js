@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable eqeqeq */
@@ -57,12 +58,6 @@ class AddLecture extends React.Component {
   constructor(props) {
     super(props)
 
-    // console.log('props from constructor ====>', props)
-
-    // const transcriptionText =
-    //   props.lecture.editLecture.en.transcription.text &&
-    //   props.lecture.editLecture.en.transcription.text
-
     this.state = {
       date: new Date(),
       // publishDate: new Date(),
@@ -73,11 +68,11 @@ class AddLecture extends React.Component {
       summaryFiles: [],
       summaryFilesEn: [],
       summaryFilesRu: [],
-      editorState: EditorState.createEmpty(),
-      editorStateSummaryEn: EditorState.createEmpty(),
-      editorStateSummaryRu: EditorState.createEmpty(),
-      editorStateTranscriptionEn: EditorState.createEmpty(),
-      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editorState: '',
+      editorStateSummaryEn: '',
+      editorStateSummaryRu: '',
+      editorStateTranscriptionEn: '',
+      editorStateTranscriptionRu: '',
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -107,6 +102,8 @@ class AddLecture extends React.Component {
       summArrayEn: [],
       summArrayRu: [],
       paginationCurrentPage: '',
+      fileList: [],
+      audioDuration: '',
     }
   }
 
@@ -150,6 +147,14 @@ class AddLecture extends React.Component {
     dispatch({
       type: 'lecture/GET_TRANSLATIONS',
     })
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -166,9 +171,7 @@ class AddLecture extends React.Component {
       const htmlTranscriptionEn = lecture.editLecture
         ? lecture.editLecture.en.transcription.text
         : ''
-      const htmlSummaryEn = lecture.editLecture
-        ? lecture.editLecture.en.summary.text
-        : EditorState.createEmpty()
+      const htmlSummaryEn = lecture.editLecture ? lecture.editLecture.en.summary.text : ''
 
       const titleEn = lecture.editLecture ? lecture.editLecture.en.title : ''
       const titleRu = lecture.editLecture ? lecture.editLecture.ru.title : ''
@@ -191,8 +194,6 @@ class AddLecture extends React.Component {
           const contentStateEn = ContentState.createFromBlockArray(contentBlockEn.contentBlocks)
           editorStateTranscriptionEn = EditorState.createWithContent(contentStateEn)
         }
-      } else {
-        editorStateTranscriptionEn = EditorState.createEmpty()
       }
 
       if (htmlSummaryEn && htmlSummaryEn.length > 0) {
@@ -201,16 +202,12 @@ class AddLecture extends React.Component {
           const csEn = ContentState.createFromBlockArray(cbEn.contentBlocks)
           editorStateSummaryEn = EditorState.createWithContent(csEn)
         }
-      } else {
-        editorStateSummaryEn = EditorState.createEmpty()
       }
 
       const htmlTranscriptionRu = lecture.editLecture
         ? lecture.editLecture.ru.transcription.text
         : ''
-      const htmlSummaryRu = lecture.editLecture
-        ? lecture.editLecture.ru.summary.text
-        : EditorState.createEmpty()
+      const htmlSummaryRu = lecture.editLecture ? lecture.editLecture.ru.summary.text : ''
 
       if (htmlTranscriptionRu && htmlTranscriptionRu.length > 0) {
         const contentBlockRu = htmlToDraft(htmlTranscriptionRu)
@@ -218,8 +215,6 @@ class AddLecture extends React.Component {
           const contentStateRu = ContentState.createFromBlockArray(contentBlockRu.contentBlocks)
           editorStateTranscriptionRu = EditorState.createWithContent(contentStateRu)
         }
-      } else {
-        editorStateTranscriptionRu = EditorState.createEmpty()
       }
 
       if (htmlSummaryRu && htmlSummaryRu.length > 0) {
@@ -228,8 +223,6 @@ class AddLecture extends React.Component {
           const csRu = ContentState.createFromBlockArray(cbRu.contentBlocks)
           editorStateSummaryRu = EditorState.createWithContent(csRu)
         }
-      } else {
-        editorStateSummaryRu = EditorState.createEmpty()
       }
 
       const transcriptionFilesEn = lecture.editLecture.en.transcription.attachment_link
@@ -309,6 +302,7 @@ class AddLecture extends React.Component {
           transArrayRu,
           summArrayEn,
           summArrayRu,
+          audioDuration: lecture.editLecture.duration,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -330,11 +324,11 @@ class AddLecture extends React.Component {
       audioLink: '',
       transcriptionFiles: [],
       summaryFiles: [],
-      editorState: EditorState.createEmpty(),
-      editorStateSummaryEn: EditorState.createEmpty(),
-      editorStateSummaryRu: EditorState.createEmpty(),
-      editorStateTranscriptionEn: EditorState.createEmpty(),
-      editorStateTranscriptionRu: EditorState.createEmpty(),
+      editorState: '',
+      editorStateSummaryEn: '',
+      editorStateSummaryRu: '',
+      editorStateTranscriptionEn: '',
+      editorStateTranscriptionRu: '',
       editinglecture: '',
       editedBody: '',
       translation: '',
@@ -382,10 +376,7 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
-      // transcriptionFilesRu,
-      // transcriptionFilesEn,
-      // summaryFilesEn,
-      // summaryFilesRu,
+      audioDuration,
     } = this.state
     const { location } = router
     const { state } = location
@@ -395,24 +386,19 @@ class AddLecture extends React.Component {
       const { id } = state
       uuid = id
     }
-    // const title = form.getFieldValue('title')
+
     const date = form.getFieldValue('date')
     const publishDate = form.getFieldValue('publish_date')
     const tag = form.getFieldValue('tag')
-    // const language = form.getFieldValue('language')
-    const bodylecture = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     const author = form.getFieldValue('author')
-    // const locationlecture = form.getFieldValue('location')
-    // const event = form.getFieldValue('event')
-    // const topic = form.getFieldValue('topic')
     const part = form.getFieldValue('part')
     const chapter = form.getFieldValue('chapter')
     const verse = form.getFieldValue('verse')
 
-    let editorTranscriptionEn = null
-    let editorTranscriptionRu = null
-    let editorSummaryEn = null
-    let editorSummaryRu = null
+    let editorTranscriptionEn = ''
+    let editorTranscriptionRu = ''
+    let editorSummaryEn = ''
+    let editorSummaryRu = ''
 
     const transcriptionFilesEn = []
     for (let i = 0; i < transArrayEn.length; i += 1) {
@@ -432,15 +418,25 @@ class AddLecture extends React.Component {
       summaryFilesRu.push(summArrayRu[i].fileName)
     }
 
-    editorTranscriptionEn = draftToHtml(
-      convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
-    )
-    editorTranscriptionRu = draftToHtml(
-      convertToRaw(editorStateTranscriptionRu.getCurrentContent()),
-    )
+    if (editorStateTranscriptionEn && editorStateTranscriptionEn) {
+      editorTranscriptionEn = draftToHtml(
+        convertToRaw(editorStateTranscriptionEn.getCurrentContent()),
+      )
+    }
 
-    editorSummaryEn = draftToHtml(convertToRaw(editorStateSummaryEn.getCurrentContent()))
-    editorSummaryRu = draftToHtml(convertToRaw(editorStateSummaryRu.getCurrentContent()))
+    if (editorStateTranscriptionRu) {
+      editorTranscriptionRu = draftToHtml(
+        convertToRaw(editorStateTranscriptionRu.getCurrentContent()),
+      )
+    }
+
+    if (editorStateSummaryEn) {
+      editorSummaryEn = draftToHtml(convertToRaw(editorStateSummaryEn.getCurrentContent()))
+    }
+
+    if (editorStateSummaryRu) {
+      editorSummaryRu = draftToHtml(convertToRaw(editorStateSummaryRu.getCurrentContent()))
+    }
 
     let body = {}
 
@@ -470,6 +466,7 @@ class AddLecture extends React.Component {
 
     body = {
       uuid: uuid || uuidv4(),
+      duration: audioDuration,
       part,
       verse,
       chapter,
@@ -619,12 +616,6 @@ class AddLecture extends React.Component {
     })
   }
 
-  // onEditorChangeStateSummary: Function = editorStateSummary => {
-  //   this.setState({
-  //     editorStateSummary,
-  //   })
-  // }
-
   onEditorChangeStateSummary = summary => {
     const { language } = this.state
 
@@ -640,12 +631,6 @@ class AddLecture extends React.Component {
       })
     }
   }
-
-  // onEditorChangeStateTranscription: Function = editorStateTranscription => {
-  //   this.setState({
-  //     editorStateTranscription,
-  //   })
-  // }
 
   onEditorChangeStateTranscription = transcription => {
     const { language } = this.state
@@ -663,70 +648,122 @@ class AddLecture extends React.Component {
     }
   }
 
-  // getBase64 = (img, callback) => {
-  //   const reader = new FileReader()
-  //   reader.addEventListener('load', () => callback(reader.result))
-  //   reader.readAsDataURL(img)
-  // }
+  dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess('ok')
+    }, 0)
+  }
+
+  getAudioFileDuration = file => {
+    return new Promise(resolve => {
+      const objectURL = URL.createObjectURL(file)
+      const mySound = new Audio([objectURL])
+      mySound.addEventListener(
+        'canplaythrough',
+        () => {
+          URL.revokeObjectURL(objectURL)
+          resolve({
+            file,
+            duration: mySound.duration,
+          })
+        },
+        false,
+      )
+    })
+  }
 
   handleFileChange = info => {
-    this.setState(
-      {
-        audioUploading: true,
-        uploading: false,
-        percentage: 0,
-      },
-      () => {
-        // this.handleUploading(info)
-        this.uploads3(info)
-      },
-    )
+    this.getAudioFileDuration(info.file.originFileObj)
+      .then(response => {
+        let second = parseInt('00', 10)
+        let minute = parseInt('00', 10)
+        let hour = parseInt('00', 10)
+        let totalDuration = `${hour}:${minute}:${second}`
+        const totalSecond = parseInt(response.duration, 10)
+        if (totalSecond < 60) {
+          second = totalSecond
+          totalDuration = `0${hour}:0${minute}:${second}`
+        }
+        if (totalSecond >= 60) {
+          minute = totalSecond / 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        if (totalSecond >= 3600) {
+          minute = totalSecond / 60
+          const tempMinute = parseInt(minute, 10)
+
+          minute = tempMinute % 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          hour = parseInt(tempMinute / 60, 10)
+          hour = parseInt(hour, 10)
+          hour = hour.toString().length > 1 ? hour : `0${hour}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        this.setState({
+          audioDuration: totalDuration,
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          audioUploading: true,
+          uploading: false,
+          percentage: 0,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   handleSummaryFileChange = info => {
-    this.setState(
-      {
-        summaryUploading: true,
-        transcriptionUploading: false,
-        audioUploading: false,
-        uploading: false,
-      },
-      () => {
-        this.uploads3(info)
-      },
-    )
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          summaryUploading: true,
+          transcriptionUploading: false,
+          audioUploading: false,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   handleTranscriptionFileChange = info => {
-    this.setState(
-      {
-        transcriptionUploading: true,
-        summaryUploading: false,
-        audioUploading: false,
-        uploading: false,
-      },
-      () => {
-        this.uploads3(info)
-      },
-    )
-  }
-
-  // dummyRequest = info => {
-  //   this.handleUploading(info)
-  //   setTimeout(() => {
-  //     onSuccess('ok')
-  //   }, 0)
-  // }
-
-  handleUploading = info => {
     if (info.file.status === 'uploading') {
-      notification.success({
-        message: 'Uploading Started',
-        description: 'File uploading is started',
-      })
-    }
-    if (info.file.status === 'done') {
-      this.uploads3(info)
+      this.setState(
+        {
+          fileList: info.fileList,
+          transcriptionUploading: true,
+          summaryUploading: false,
+          audioUploading: false,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
     }
   }
 
@@ -752,7 +789,6 @@ class AddLecture extends React.Component {
         const { data } = response
         const temp = data.presignedUrl.toString()
         const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-        // this.setUploadedFiles(finalUrl)
 
         if (language) {
           if (transcriptionUploading && !uploading) {
@@ -761,6 +797,9 @@ class AddLecture extends React.Component {
                 notification.warning({
                   message: 'error',
                   description: `You can't upload file with the same name.`,
+                })
+                this.setState({
+                  fileList: [],
                 })
                 return
               }
@@ -774,6 +813,9 @@ class AddLecture extends React.Component {
                   message: 'error',
                   description: `You can't upload file with the same name.`,
                 })
+                this.setState({
+                  fileList: [],
+                })
                 return
               }
             }
@@ -786,6 +828,9 @@ class AddLecture extends React.Component {
                   message: 'error',
                   description: `You can't upload file with the same name.`,
                 })
+                this.setState({
+                  fileList: [],
+                })
                 return
               }
             }
@@ -797,6 +842,9 @@ class AddLecture extends React.Component {
                 notification.warning({
                   message: 'error',
                   description: `You can't upload file with the same name.`,
+                })
+                this.setState({
+                  fileList: [],
                 })
                 return
               }
@@ -812,47 +860,33 @@ class AddLecture extends React.Component {
           description: `Some error occured. Please check your internet connection`,
         })
       })
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     console.log('data===>',data)
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     this.setUploadedFiles(finalUrl)
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, info.file)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'Error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
-        // const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
         this.setState({ percentage: percentCompleted })
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
         notification.warning({
@@ -860,32 +894,9 @@ class AddLecture extends React.Component {
           description: 'Error occured during uploading, try again',
         })
       })
-
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: data => {
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.warning({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
-  setUploadedFiles = (finalUrl, percentCompleted) => {
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
     const {
       transcriptionFiles,
       transcriptionFilesEn,
@@ -901,23 +912,28 @@ class AddLecture extends React.Component {
       transArrayRu,
       summArrayEn,
       summArrayRu,
+      percentage,
     } = this.state
 
     if (audioUploading) {
-      if (percentCompleted === 100) {
-        notification.success({
-          message: 'Success',
-          description: 'File has been uploaded successfully',
-        })
-      }
-
-      this.setState({
-        audioLink: finalUrl,
-        transcriptionUploading: false,
-        summaryUploading: false,
-        audioUploading: true,
-        percentage: 0,
-      })
+      this.setState(
+        {
+          audioLink: finalUrl,
+          transcriptionUploading: false,
+          summaryUploading: false,
+          audioUploading: true,
+          percentage: percentCompleted,
+          fileList: [],
+        },
+        () => {
+          if (this.state.percentage === 100) {
+            notification.success({
+              message: 'Success',
+              description: 'File has been uploaded successfully',
+            })
+          }
+        },
+      )
     } else if (transcriptionUploading) {
       const array = [...transcriptionFiles]
       const arrayEn = [...transcriptionFilesEn]
@@ -940,38 +956,22 @@ class AddLecture extends React.Component {
           transEnTemp.push(tempObjectEn)
         }
 
-        // let arrayLength = 0
-        // for (let i = 0; i < transEnTemp.length; i += 1) {
-        //   if (transEnTemp[i].percentage !== 'zeroPercent') {
-        //     arrayLength += 1
-        //   }
-        // }
+        const tempFileList = [...fileList]
 
-        const valueArray = transEnTemp.map(function(item) {
-          return item.percentage
-        })
-
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
       } else {
@@ -989,31 +989,22 @@ class AddLecture extends React.Component {
           transRuTemp.push(tempObjectRu)
         }
 
-        const valueArray = transRuTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
       }
@@ -1051,31 +1042,22 @@ class AddLecture extends React.Component {
           summEnTemp.push(tempObjectEnSumm)
         }
 
-        const valueArray = summEnTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
       } else {
@@ -1093,31 +1075,22 @@ class AddLecture extends React.Component {
           summRuTemp.push(tempObjectRuSumm)
         }
 
-        const valueArray = summRuTemp.map(function(item) {
-          return item.percentage
-        })
+        const tempFileList = [...fileList]
 
-        const result = valueArray.every((val, index, arr) => {
-          if (val === 100 || val === 'zeroPercent') {
-            if (val === arr[0] || arr[0] === 'zeroPercent') {
-              return true
-            }
-            // return false
+        const result = tempFileList.every((val, index, arr) => {
+          if (val.percent === 100) {
+            return true
           }
           return false
         })
 
-        let arrayLength = 0
-        for (let i = 0; i < valueArray.length; i += 1) {
-          if (valueArray[i] !== 'zeroPercent') {
-            arrayLength += 1
-          }
-        }
-
         if (result) {
           notification.success({
             message: 'Success',
-            description: `${arrayLength} file(s) have been uploaded successfully`,
+            description: `${fileList.length} file(s) have been uploaded successfully`,
+          })
+          this.setState({
+            fileList: [],
           })
         }
       }
@@ -1136,13 +1109,10 @@ class AddLecture extends React.Component {
     }
   }
 
-  // dummyRequest = ({ file, onSuccess }) => {
-  //   setTimeout(() => {
-  //     onSuccess('ok')
-  //   }, 0)
-  // }
-
   deleteFile = (item, type) => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -1184,16 +1154,6 @@ class AddLecture extends React.Component {
       this.setState({ audioLink: '' })
     }
     if (type === 'transcription') {
-      // for (let i = 0; i < transcriptionFiles.length; i += 1) {
-      //   if (transcriptionFiles[i] === item) {
-      //     transcriptionFiles.splice(i, 1)
-      //     break
-      //   }
-      // }
-      // this.setState({
-      //   transcriptionFiles,
-      // })
-
       if (language) {
         for (let i = 0; i < transcriptionFilesEn.length; i += 1) {
           if (transcriptionFilesEn[i] === item) {
@@ -1232,16 +1192,6 @@ class AddLecture extends React.Component {
       }
     }
     if (type === 'summary') {
-      // for (let i = 0; i < summaryFiles.length; i += 1) {
-      //   if (summaryFiles[i] === item) {
-      //     summaryFiles.splice(i, 1)
-      //     break
-      //   }
-      // }
-      // this.setState({
-      //   summaryFiles,
-      // })
-
       if (language) {
         for (let i = 0; i < summaryFilesEn.length; i += 1) {
           if (summaryFilesEn[i] === item) {
@@ -1496,6 +1446,7 @@ class AddLecture extends React.Component {
       summArrayEn,
       summArrayRu,
       paginationCurrentPage,
+      audioDuration,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -1568,34 +1519,6 @@ class AddLecture extends React.Component {
                               </div>
                             ) : null}
                           </FormItem>
-
-                          {/* <FormItem label={language ? 'Title' : 'Title'}>
-                          {form.getFieldDecorator('title', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Title is required',
-                              },
-                            ],
-                            initialValue: language ? titleEn : titleRu,
-                          })(
-                            <Input
-                              placeholder="lecture title"
-                              onChange={this.handleTitleChange}
-                            />,
-                          )}
-                        </FormItem> */}
-
-                          {/* <FormItem label={language ? 'Title' : 'Title'}>
-                          {form.getFieldDecorator('title', {
-                            initialValue:
-                              editinglecture && editinglecture.en && editinglecture.ru
-                                ? language
-                                  ? editinglecture.en.title
-                                  : editinglecture.ru.title
-                                : '',
-                          })(<Input placeholder="lecture title" />)}
-                        </FormItem> */}
                         </div>
                         <div className="form-group">
                           <FormItem label="Author">
@@ -1740,50 +1663,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('location', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Location is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.location
-                            //       : editinglecture.ru.location
-                            //     : '',
-                            initialValue: language ? locationEn : locationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Location"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {locations && locations.length > 0
-                                ? locations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleLocationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -1816,50 +1695,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('event', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Event is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.event
-                            //       : editinglecture.ru.event
-                            //     : '',
-                            initialValue: language ? eventEn : eventRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Event"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {events && events.length > 0
-                                ? events.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleEventChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -1892,50 +1727,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('topic', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Topic is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.topic
-                            //       : editinglecture.ru.topic
-                            //     : '',
-                            initialValue: language ? topicEn : topicRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Topic"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {topics && topics.length > 0
-                                ? topics.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleTopicChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -1990,51 +1781,6 @@ class AddLecture extends React.Component {
                                   })
                                 : null}
                             </Select>
-
-                            {/* {form.getFieldDecorator('translation', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Translation is required',
-                              },
-                            ],
-                            // initialValue:
-                            //   editinglecture && editinglecture.en && editinglecture.ru
-                            //     ? language
-                            //       ? editinglecture.en.translation
-                            //       : editinglecture.ru.translation
-                            //     : '',
-                            initialValue: language ? translationEn : translationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Artist"
-                              // onChange={this.handleSelectTranslation}
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {translations && translations.length > 0
-                                ? translations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleTranslationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -2042,20 +1788,6 @@ class AddLecture extends React.Component {
                             <Checkbox checked={transcribe} onChange={this.handleTranscribe}>
                               &nbsp; Need Transcribe ?
                             </Checkbox>
-
-                            {/* {form.getFieldDecorator('transcribe', {
-                            rules: [
-                              {
-                                required: true,
-                                message: 'Need Transcribe is required',
-                              },
-                            ],
-                            initialValue: editinglecture ? editinglecture.translation_required : '',
-                          })(
-                            <Checkbox checked={translationRequired} onChange={this.handleCheckbox}>
-                              &nbsp; Need Translation ?
-                            </Checkbox>,
-                          )} */}
                           </FormItem>
                         </div>
                         <div className="form-group">
@@ -2076,20 +1808,19 @@ class AddLecture extends React.Component {
                           </FormItem>
                         </div>
                         <div className="form-group">
+                          <FormItem label={language ? 'Audio Duration' : 'Audio Duration'}>
+                            <Input
+                              disabled
+                              value={this.state.audioDuration}
+                              placeholder="Audio Duration"
+                              name="audioDuration"
+                            />
+                          </FormItem>
+                        </div>
+                        <div className="form-group">
                           <FormItem label="Attachment">
                             {audioLink ? (
                               <ul>
-                                {/* <li className="filesList">
-                                {audioLink}
-                                &nbsp;&nbsp;
-                                <i
-                                  className="fa fa-close closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
-                              </li> */}
-
                                 <li className="filesList">
                                   <div className="fileDisplay">
                                     <div className="uploadedFileName">
@@ -2098,7 +1829,7 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div className="deleteIcon" key={audioLink} id={audioLink}>
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2110,28 +1841,6 @@ class AddLecture extends React.Component {
                                       {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {audioLink.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(audioLink, 'audio')
-                                      }}
-                                    />
-                                  </div>
-                                  {percentage !== 0 ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               </ul>
                             ) : (
@@ -2146,8 +1855,8 @@ class AddLecture extends React.Component {
                                 beforeUpload={this.beforeUploadAudio}
                                 multiple={false}
                                 showUploadList={false}
-                                customRequest={this.handleFileChange}
-                                // onChange={this.handleFileChange}
+                                customRequest={this.dummyRequest}
+                                onChange={this.handleFileChange}
                               >
                                 <p className="ant-upload-drag-icon">
                                   <Icon type="inbox" />
@@ -2183,40 +1892,13 @@ class AddLecture extends React.Component {
                             onEditorStateChange={this.onEditorChangeStateSummary}
                           />
                         </div>
-                        {/* {form.getFieldDecorator('summary', {
-                        initialValue: editorStateSummary,
-                      })(
-                        <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                          <Editor
-                            editorState={editorStateSummary}
-                            onEditorStateChange={this.onEditorChangeStateSummary}
-                          />
-                        </div>,
-                      )} */}
                       </FormItem>
                     </div>
                     <div className="form-group" style={customStyleSumm}>
                       <FormItem label="Attachment">
                         <ul>
                           {language
-                            ? // summaryFilesEn.length > 0 &&
-                              //   summaryFilesEn.map((item, index) => {
-                              //     if (item !== '') {
-                              //       return (
-                              //         <li className="filesList">
-                              //           {item} &nbsp;&nbsp;
-                              //           <i
-                              //             className="fa fa-close closeIcon"
-                              //             onClick={() => {
-                              //               this.deleteFile(item, 'transcription')
-                              //             }}
-                              //           />
-                              //         </li>
-                              //       )
-                              //     }
-                              //   })
-
-                              summArrayEn.length > 0 &&
+                            ? summArrayEn.length > 0 &&
                               summArrayEn.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
@@ -2227,7 +1909,11 @@ class AddLecture extends React.Component {
                                           .pop(-1)
                                           .substring(0, 30)}
                                       </div>
-                                      <div className="deleteIcon">
+                                      <div
+                                        className="deleteIcon"
+                                        key={item.fileName}
+                                        id={item.fileName}
+                                      >
                                         <i
                                           className="fa fa-trash closeIcon"
                                           onClick={() => {
@@ -2241,48 +1927,10 @@ class AddLecture extends React.Component {
                                         ) : null}
                                       </div>
                                     </div>
-                                    {/* <div
-                                      style={{
-                                        display: 'inline-block',
-                                        width: 'auto',
-                                        paddingLeft: '15px',
-                                        marginRight: '15px',
-                                      }}
-                                    >
-                                      {item.fileName && item.fileName.split('/').pop(-1)}
-                                      &nbsp;&nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-trash closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item.fileName, 'summary')
-                                        }}
-                                      />
-                                    </div>
-                                    {item.percentage !== 'zeroPercent' ? (
-                                      <div style={{ display: 'inline-block', width: '20rem' }}>
-                                        <Progress percent={item.percentage} />
-                                      </div>
-                                    ) : null} */}
                                   </li>
                                 )
                               })
-                            : // summaryFilesRu.length > 0 &&
-                              //   summaryFilesRu.map((item, index) => {
-                              //     if (item !== '') {
-                              //       return (
-                              //         <li className="filesList">
-                              //           {item} &nbsp;&nbsp;
-                              //           <i
-                              //             className="fa fa-close closeIcon"
-                              //             onClick={() => {
-                              //               this.deleteFile(item, 'transcription')
-                              //             }}
-                              //           />
-                              //         </li>
-                              //       )
-                              //     }
-                              //   })
-                              summArrayRu.length > 0 &&
+                            : summArrayRu.length > 0 &&
                               summArrayRu.map((item, index) => {
                                 return (
                                   <li className="filesList" key={index}>
@@ -2293,7 +1941,11 @@ class AddLecture extends React.Component {
                                           .pop(-1)
                                           .substring(0, 30)}
                                       </div>
-                                      <div className="deleteIcon">
+                                      <div
+                                        className="deleteIcon"
+                                        key={item.fileName}
+                                        id={item.fileName}
+                                      >
                                         <i
                                           className="fa fa-trash closeIcon"
                                           onClick={() => {
@@ -2307,55 +1959,11 @@ class AddLecture extends React.Component {
                                         ) : null}
                                       </div>
                                     </div>
-                                    {/* <div
-                                      style={{
-                                        display: 'inline-block',
-                                        width: 'auto',
-                                        paddingLeft: '15px',
-                                        marginRight: '15px',
-                                      }}
-                                    >
-                                      {item.fileName && item.fileName.split('/').pop(-1)}
-                                      &nbsp;&nbsp;&nbsp;
-                                      <i
-                                        className="fa fa-trash closeIcon"
-                                        onClick={() => {
-                                          this.deleteFile(item.fileName, 'summary')
-                                        }}
-                                      />
-                                    </div>
-                                    {item.percentage !== 'zeroPercent' ? (
-                                      <div style={{ display: 'inline-block', width: '20rem' }}>
-                                        <Progress percent={item.percentage} />
-                                      </div>
-                                    ) : null} */}
                                   </li>
                                 )
                               })}
                         </ul>
                       </FormItem>
-
-                      {/* <FormItem label="Attachment">
-                      <ul>
-                        {summaryFiles && summaryFiles.length > 0
-                          ? summaryFiles.map(item => {
-                              if (item !== '') {
-                                return (
-                                  <li className="filesList">
-                                    {item} &nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-close closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item, 'summary')
-                                      }}
-                                    />
-                                  </li>
-                                )
-                              }
-                            })
-                          : null}
-                      </ul>
-                    </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem>
@@ -2364,8 +1972,9 @@ class AddLecture extends React.Component {
                             beforeUpload={this.beforeUpload}
                             showUploadList={false}
                             multiple
-                            customRequest={this.handleSummaryFileChange}
-                            // onChange={this.handleSummaryFileChange}
+                            fileList={this.state.fileList}
+                            customRequest={this.dummyRequest}
+                            onChange={this.handleSummaryFileChange}
                           >
                             <p className="ant-upload-drag-icon">
                               <Icon type="inbox" />
@@ -2401,57 +2010,13 @@ class AddLecture extends React.Component {
                           onEditorStateChange={this.onEditorChangeStateTranscription}
                         />
                       </div>
-
-                      {/* {form.getFieldDecorator('transcription', {
-                      initialValue: editinglecture
-                        ? language
-                          ? editorStateTranscriptionEn
-                          : editorStateTranscriptionRu
-                        : '',
-                    })(
-                      <div className={styles.editor} style={{ backgroundColor: '#fff' }}>
-                        <Editor
-                          editorState={
-                            language ? editorStateTranscriptionEn : editorStateTranscriptionRu
-                          }
-                          onEditorStateChange={this.onEditorChangeStateTranscription}
-                        />
-                      </div>,
-                    )} */}
                     </FormItem>
                   </div>
                   <div className="form-group" style={customStyleTrans}>
                     <FormItem label="Attachment">
                       <ul>
                         {language
-                          ? // transcriptionFilesEn.length > 0 &&
-                            //   transcriptionFilesEn.map((item, index) => {
-                            //     if (item !== '') {
-                            //       return (
-                            //         <li className="filesList">
-                            //           <i
-                            //             className="fa fa-trash closeIcon"
-                            //             onClick={() => {
-                            //               this.deleteFile(item, 'transcription')
-                            //             }}
-                            //           />
-                            //           <div
-                            //             style={{
-                            //               display: 'inline-block',
-                            //               width: '20rem',
-                            //               paddingLeft: '15px',
-                            //             }}
-                            //           >
-                            //             {item.split('/').pop(-1)}
-                            //           </div>
-                            //           <div style={{ display: 'inline-block', width: '20rem' }}>
-                            //             <Progress percent={percentage} />
-                            //           </div>
-                            //         </li>
-                            //       )
-                            //     }
-                            //   })
-                            transArrayEn.length > 0 &&
+                          ? transArrayEn.length > 0 &&
                             transArrayEn.map((item, index) => {
                               return (
                                 <li className="filesList" key={index}>
@@ -2462,7 +2027,11 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2476,28 +2045,6 @@ class AddLecture extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'transcription')
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })
@@ -2512,7 +2059,11 @@ class AddLecture extends React.Component {
                                         .pop(-1)
                                         .substring(0, 30)}
                                     </div>
-                                    <div className="deleteIcon">
+                                    <div
+                                      className="deleteIcon"
+                                      key={item.fileName}
+                                      id={item.fileName}
+                                    >
                                       <i
                                         className="fa fa-trash closeIcon"
                                         onClick={() => {
@@ -2526,66 +2077,23 @@ class AddLecture extends React.Component {
                                       ) : null}
                                     </div>
                                   </div>
-                                  {/* <div
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 'auto',
-                                      paddingLeft: '15px',
-                                      marginRight: '15px',
-                                    }}
-                                  >
-                                    {item.fileName && item.fileName.split('/').pop(-1)}
-                                    &nbsp;&nbsp;&nbsp;
-                                    <i
-                                      className="fa fa-trash closeIcon"
-                                      onClick={() => {
-                                        this.deleteFile(item.fileName, 'transcription')
-                                      }}
-                                    />
-                                  </div>
-                                  {item.percentage !== 'zeroPercent' ? (
-                                    <div style={{ display: 'inline-block', width: '20rem' }}>
-                                      <Progress percent={item.percentage} />
-                                    </div>
-                                  ) : null} */}
                                 </li>
                               )
                             })}
                       </ul>
                     </FormItem>
-
-                    {/* <FormItem label="Attachment">
-                    <ul>
-                      {transcriptionFiles && transcriptionFiles.length > 0
-                        ? transcriptionFiles.map(item => {
-                            if (item !== '') {
-                              return (
-                                <li className="filesList">
-                                  {item} &nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-close closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(item, 'transcription')
-                                    }}
-                                  />
-                                </li>
-                              )
-                            }
-                          })
-                        : null}
-                    </ul>
-                  </FormItem> */}
                   </div>
                   {/* <Progress percent={percentage} /> */}
                   <div className="form-group">
                     <FormItem>
                       {/* {form.getFieldDecorator('Files2')( */}
                       <Dragger
+                        fileList={this.state.fileList}
                         beforeUpload={this.beforeUpload}
                         showUploadList={false}
-                        customRequest={this.handleTranscriptionFileChange}
+                        customRequest={this.dummyRequest}
                         multiple
-                        // onChange={this.handleTranscriptionFileChange}
+                        onChange={this.handleTranscriptionFileChange}
                       >
                         <p className="ant-upload-drag-icon">
                           <Icon type="inbox" />

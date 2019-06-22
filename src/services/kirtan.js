@@ -18,6 +18,7 @@ export async function getKirtanList(page) {
 }
 
 export async function createKirtan(body) {
+  console.log('body===>', body)
   const url = `${serverAddress}/api/kirtan/create`
   return axios
     .post(url, body)

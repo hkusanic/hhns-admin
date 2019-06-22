@@ -65,11 +65,13 @@ class AddKirtan extends React.Component {
     locationRu: '',
     switchDisabled: true,
     formElements: formInputElements,
-    bodyContentEn: EditorState.createEmpty(),
-    bodyContentRu: EditorState.createEmpty(),
+    bodyContentEn: '',
+    bodyContentRu: '',
     percentage: 0,
     paginationCurrentPage: '',
     uploading: true,
+    fileList: [],
+    audioDuration: '',
   }
 
   componentDidMount() {
@@ -103,6 +105,10 @@ class AddKirtan extends React.Component {
     })
     dispatch({
       type: 'lecture/GET_LOCATIONS',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
     })
   }
 
@@ -166,6 +172,7 @@ class AddKirtan extends React.Component {
           eventRu,
           bodyContentEn,
           bodyContentRu,
+          audioDuration: editKirtan.duration,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -265,25 +272,84 @@ class AddKirtan extends React.Component {
         uploading: false,
       })
     }
+  }
 
-    // this.setState({
-    //   editorState,
-    // })
+  getAudioFileDuration = file => {
+    return new Promise(resolve => {
+      const objectURL = URL.createObjectURL(file)
+      const mySound = new Audio([objectURL])
+      mySound.addEventListener(
+        'canplaythrough',
+        () => {
+          URL.revokeObjectURL(objectURL)
+          resolve({
+            file,
+            duration: mySound.duration,
+          })
+        },
+        false,
+      )
+    })
   }
 
   handleUploading = info => {
-    this.setState({ percentage: 0, uploading: false }, () => {
-      this.uploads3(info)
-    })
-    // if (info.file.status === 'uploading') {
-    //   notification.success({
-    //     message: 'Uploading Started',
-    //     description: 'File uploading is started',
-    //   })
-    // }
-    // if (info.file.status === 'done') {
-    //   this.uploads3(info.file)
-    // }
+    this.getAudioFileDuration(info.file.originFileObj)
+      .then(response => {
+        let second = parseInt('00', 10)
+        let minute = parseInt('00', 10)
+        let hour = parseInt('00', 10)
+        let totalDuration = `${hour}:${minute}:${second}`
+        const totalSecond = parseInt(response.duration, 10)
+        if (totalSecond < 60) {
+          second = totalSecond
+          totalDuration = `0${hour}:0${minute}:${second}`
+        }
+        if (totalSecond >= 60) {
+          minute = totalSecond / 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        if (totalSecond >= 3600) {
+          minute = totalSecond / 60
+          const tempMinute = parseInt(minute, 10)
+
+          minute = tempMinute % 60
+          minute = parseInt(minute, 10)
+          minute = minute.toString().length > 1 ? minute : `0${minute}`
+          hour = parseInt(tempMinute / 60, 10)
+          hour = parseInt(hour, 10)
+          hour = hour.toString().length > 1 ? hour : `0${hour}`
+          second = totalSecond % 60
+          second = parseInt(second, 10)
+          second = second.toString().length > 1 ? second : `0${second}`
+          totalDuration = `${hour}:${minute}:${second}`
+        }
+
+        this.setState({
+          audioDuration: totalDuration,
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    if (info.file.status === 'uploading') {
+      this.setState(
+        {
+          fileList: info.fileList,
+          percentage: 0,
+          uploading: false,
+        },
+        () => {
+          this.uploads3(info)
+        },
+      )
+    }
   }
 
   uploads3 = info => {
@@ -306,78 +372,62 @@ class AddKirtan extends React.Component {
           description: `Some error occured. Please check your internet connection`,
         })
       })
-
-    // $.ajax({
-    //   type: 'GET',
-    //   url: `${serverAddress}/api/blog/generateUploadUrl?name=folder1/${fileName}&type=${fileType}`,
-    //   success: data => {
-    //     const temp = data.presignedUrl.toString()
-    //     const finalUrl = temp.substr(0, temp.lastIndexOf('?'))
-    //     // this.setUploadedFiles(finalUrl)
-    //     this.uploadFileToS3UsingPresignedUrl(data.presignedUrl, file, finalUrl)
-    //   },
-    //   error() {
-    //     notification.error({
-    //       message: 'Error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
   }
 
   uploadFileToS3UsingPresignedUrl = (presignedUrl, info, finalUrl) => {
+    const { fileList } = this.state
+
     axios({
       method: 'PUT',
       url: presignedUrl,
-      data: info.file,
+      data: info.file.originFileObj,
       headers: {
         'Content-Type': info.file.type,
       },
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
 
-        this.setUploadedFiles(finalUrl, percentCompleted)
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name === finalUrl.split('/').pop(-1))
+            fileList[i].percent = percentCompleted
+        }
+
+        this.setUploadedFiles(finalUrl, percentCompleted, fileList)
       },
     })
       .then(response => {
-        // notification.success({
-        //   message: 'Success',
-        //   description: 'file has been uploaded successfully',
-        // })
+        // console.log(response)
       })
       .catch(err => {
-        // notification.warning({
-        //   message: 'error',
-        //   description: 'Error occured during uploading, try again',
-        // })
+        notification.warning({
+          message: 'error',
+          description: 'Error occured during uploading, try again',
+        })
       })
+  }
 
-    // $.ajax({
-    //   type: 'PUT',
-    //   url: presignedUrl,
-    //   data: file.originFileObj,
-    //   headers: {
-    //     'Content-Type': file.type,
-    //     reportProgress: true,
-    //   },
-    //   processData: false,
-    //   success: data => {
-    //     console.info(data)
-    //     notification.success({
-    //       message: 'Success',
-    //       description: 'file has been uploaded successfully',
-    //     })
-    //   },
-    //   error() {
-    //     notification.warning({
-    //       message: 'error',
-    //       description: 'Error occured during uploading, try again',
-    //     })
-    //   },
-    // })
+  setUploadedFiles = (finalUrl, percentCompleted, fileList) => {
+    this.setState(
+      {
+        audioLink: finalUrl,
+        percentage: percentCompleted,
+      },
+      () => {
+        if (this.state.percentage === 100) {
+          notification.success({
+            message: 'Success',
+            description: 'File has been uploaded successfully',
+          })
+        }
+      },
+    )
   }
 
   deleteFile = item => {
+    document.getElementById(item).style.pointerEvents = 'none'
+    document.getElementById(item).style.opacity = '0.4'
+
     const fileName = item.substr(item.lastIndexOf('.com/') + 5)
 
     const tempFileName = fileName.split('/').pop(-1)
@@ -418,23 +468,6 @@ class AddKirtan extends React.Component {
     this.setState({ audioLink: '' })
   }
 
-  setUploadedFiles = (finalUrl, percentCompleted) => {
-    this.setState(
-      {
-        audioLink: finalUrl,
-        percentage: percentCompleted,
-      },
-      () => {
-        if (this.state.percentage === 100) {
-          notification.success({
-            message: 'Success',
-            description: 'File has been uploaded successfully',
-          })
-        }
-      },
-    )
-  }
-
   dummyRequest = ({ file, onSuccess }) => {
     // console.info(file)
     setTimeout(() => {
@@ -444,7 +477,6 @@ class AddKirtan extends React.Component {
 
   handleSubmitForm = () => {
     const { form, dispatch, router } = this.props
-    // const uuid = router.location.state
     const { location } = router
     const { state } = location
 
@@ -454,12 +486,10 @@ class AddKirtan extends React.Component {
       uuid = id
     }
     const {
-      // language,
       audioLink,
       createDate,
       publishDate,
       translationRequired,
-      // editorState,
       editingKirtan,
       titleEn,
       titleRu,
@@ -469,11 +499,9 @@ class AddKirtan extends React.Component {
       locationRu,
       bodyContentEn,
       bodyContentRu,
+      audioDuration,
     } = this.state
-    // const titlekirtan = form.getFieldValue('title')
-    // const kirtanBody = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    // const locationKirtan = form.getFieldValue('location')
-    // const event = form.getFieldValue('event')
+
     const type = form.getFieldValue('type')
     const artist = form.getFieldValue('artist')
     const kirtanLanguage = form.getFieldValue('language')
@@ -481,17 +509,25 @@ class AddKirtan extends React.Component {
     let editorbodyContentEn = null
     let editorbodyContentRu = null
 
-    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    if (bodyContentEn)
+      editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
 
-    // form.validateFields(['title', 'create_date'], (err, values) => {
-    //   console.info(values)
-    //   if (!err) {
+    if (bodyContentRu)
+      editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
 
     if (titleEn === '' || locationEn === '' || eventEn === '') {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
+      })
+
+      return
+    }
+
+    if (audioLink === '') {
+      notification.error({
+        message: 'Error',
+        description: 'You must upload an audio.',
       })
 
       return
@@ -504,6 +540,7 @@ class AddKirtan extends React.Component {
       language: kirtanLanguage,
       audio_link: audioLink,
       translation_required: translationRequired,
+      duration: audioDuration,
       artist,
       type,
       en: {
@@ -541,8 +578,6 @@ class AddKirtan extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
-    // }
-    // })
   }
 
   handleStateReset = () => {
@@ -571,9 +606,6 @@ class AddKirtan extends React.Component {
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -707,6 +739,7 @@ class AddKirtan extends React.Component {
       bodyContentRu,
       percentage,
       paginationCurrentPage,
+      audioDuration,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
@@ -741,7 +774,7 @@ class AddKirtan extends React.Component {
                       unCheckedChildren={language ? 'en' : 'ru'}
                       onChange={this.handleLanguage}
                       className="toggle"
-                      style={{ width: '100px', marginLeft: '10px' }}
+                      style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                     />
                   </div>
                 </div>
@@ -910,45 +943,6 @@ class AddKirtan extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('location', {
-                            // initialValue:
-                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
-                            //     ? language
-                            //       ? editingKirtan.en.location
-                            //       : editingKirtan.ru.location
-                            //     : '',
-                            initialValue: language ? locationEn : locationRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Location"
-                              optionFilterProp="children"
-                              // onChange={this.handleSelectLocation}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {locations && locations.length > 0
-                                ? locations.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleLocationChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -980,45 +974,6 @@ class AddKirtan extends React.Component {
                                 })
                               : null}
                           </Select>
-
-                          {/* {form.getFieldDecorator('event', {
-                            // initialValue:
-                            //   editingKirtan && editingKirtan.en && editingKirtan.ru
-                            //     ? language
-                            //       ? editingKirtan.en.event
-                            //       : editingKirtan.ru.event
-                            //     : '',
-                            initialValue: language ? eventEn : eventRu,
-                          })(
-                            <Select
-                              id="product-edit-colors"
-                              showSearch
-                              style={{ width: '100%' }}
-                              placeholder="Select Event"
-                              optionFilterProp="children"
-                              // onChange={this.handleSelectEvent}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                                0
-                              }
-                            >
-                              {events && events.length > 0
-                                ? events.map(item => {
-                                    return (
-                                      <Option
-                                        onClick={() => {
-                                          this.handleEventChange(item)
-                                        }}
-                                        key={item._id}
-                                        value={language ? item.title_en : item.title_ru}
-                                      >
-                                        {language ? item.title_en : item.title_ru}
-                                      </Option>
-                                    )
-                                  })
-                                : null}
-                            </Select>,
-                          )} */}
                         </FormItem>
                       </div>
                       <div className="form-group">
@@ -1032,35 +987,21 @@ class AddKirtan extends React.Component {
                             />
                           </div>
                         </FormItem>
-
-                        {/* <FormItem label="Body">
-                          {form.getFieldDecorator('content', {
-                            initialValue: editorState || '',
-                          })(
-                            <div className={styles.editor}>
-                              <Editor
-                                editorState={editorState}
-                                onEditorStateChange={this.onEditorStateChange}
-                              />
-                            </div>,
-                          )}
-                        </FormItem> */}
+                      </div>
+                      <div className="form-group">
+                        <FormItem label={language ? 'Audio Duration' : 'Audio Duration'}>
+                          <Input
+                            disabled
+                            value={this.state.audioDuration}
+                            placeholder="Audio Duration"
+                            name="audioDuration"
+                          />
+                        </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label="Attachment">
                           {audioLink ? (
                             <ul>
-                              {/* <li className="filesList">
-                                {audioLink}
-                                &nbsp;&nbsp;
-                                <i
-                                  className="fa fa-close closeIcon"
-                                  onClick={() => {
-                                    this.deleteFile(audioLink, 'audio')
-                                  }}
-                                />
-                              </li> */}
-
                               <li className="filesList">
                                 <div className="fileDisplay">
                                   <div className="uploadedFileName">
@@ -1069,7 +1010,7 @@ class AddKirtan extends React.Component {
                                       .pop(-1)
                                       .substring(0, 30)}
                                   </div>
-                                  <div className="deleteIcon">
+                                  <div className="deleteIcon" key={audioLink} id={audioLink}>
                                     <i
                                       className="fa fa-trash closeIcon"
                                       onClick={() => {
@@ -1081,28 +1022,6 @@ class AddKirtan extends React.Component {
                                     {percentage !== 0 ? <Progress percent={percentage} /> : null}
                                   </div>
                                 </div>
-                                {/* <div
-                                  style={{
-                                    display: 'inline-block',
-                                    width: 'auto',
-                                    paddingLeft: '15px',
-                                    marginRight: '15px',
-                                  }}
-                                >
-                                  {audioLink.split('/').pop(-1)}
-                                  &nbsp;&nbsp;&nbsp;
-                                  <i
-                                    className="fa fa-trash closeIcon"
-                                    onClick={() => {
-                                      this.deleteFile(audioLink)
-                                    }}
-                                  />
-                                </div>
-                                {percentage !== 0 ? (
-                                  <div style={{ display: 'inline-block', width: '20rem' }}>
-                                    <Progress percent={percentage} />
-                                  </div>
-                                ) : null} */}
                               </li>
                             </ul>
                           ) : (
@@ -1117,8 +1036,9 @@ class AddKirtan extends React.Component {
                               beforeUpload={this.beforeUploadAudio}
                               multiple={false}
                               showUploadList={false}
-                              customRequest={this.handleUploading}
-                              // onChange={this.handleUploading}
+                              fileList={this.state.fileList}
+                              customRequest={this.dummyRequest}
+                              onChange={this.handleUploading}
                             >
                               <p className="ant-upload-drag-icon">
                                 <Icon type="inbox" />

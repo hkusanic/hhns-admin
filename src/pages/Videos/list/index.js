@@ -1,6 +1,6 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import { Table, Switch } from 'antd'
 import { Helmet } from 'react-helmet'
@@ -46,6 +46,10 @@ class VideoList extends React.Component {
         page: this.state.currentPage,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -204,21 +208,6 @@ class VideoList extends React.Component {
                 style={{ width: '100px', marginLeft: '10px' }}
               />
             </div>
-            {/* <DatePicker onChange={this.onChangeDate} />
-            <Select
-              id="product-edit-colors"
-              showSearch
-              style={{ width: '20%' }}
-              onChange={this.onChangeDateSort}
-              placeholder="Select Order"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Option value="asc">Ascending</Option>
-              <Option value="desc">Descending</Option>
-            </Select> */}
           </div>
           <div className="card-body">
             <Table

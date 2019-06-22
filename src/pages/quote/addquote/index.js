@@ -55,8 +55,8 @@ class AddQuote extends React.Component {
     translationRequired: true,
     titleEn: '',
     titleRu: '',
-    bodyContentEn: EditorState.createEmpty(),
-    bodyContentRu: EditorState.createEmpty(),
+    bodyContentEn: '',
+    bodyContentRu: '',
     switchDisabled: true,
     formElements: formInputElements,
     formSourceQuote: formInputSourceQuote,
@@ -94,6 +94,14 @@ class AddQuote extends React.Component {
         })
       }
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -112,17 +120,9 @@ class AddQuote extends React.Component {
       let bodyContentEn = ''
       let bodyContentRu = ''
 
-      const htmlbodyContentEn = editQuote
-        ? editQuote.en
-          ? editQuote.en.body
-          : EditorState.createEmpty()
-        : EditorState.createEmpty()
+      const htmlbodyContentEn = editQuote ? (editQuote.en ? editQuote.en.body : '') : ''
 
-      const htmlbodyContentRu = editQuote
-        ? editQuote.ru
-          ? editQuote.ru.body
-          : EditorState.createEmpty()
-        : EditorState.createEmpty()
+      const htmlbodyContentRu = editQuote ? (editQuote.ru ? editQuote.ru.body : '') : ''
 
       if (htmlbodyContentEn && htmlbodyContentEn.length > 0) {
         const contentBlockEn = htmlToDraft(htmlbodyContentEn)
@@ -154,33 +154,8 @@ class AddQuote extends React.Component {
         },
         () => {
           this.onFieldValueChange()
-          // if (!this.onFieldValueChange()) {
-          //   this.setState({ switchDisabled: false })
-          // }
         },
       )
-
-      // const html = editQuote
-      //   ? language
-      //     ? editQuote.en.body
-      //     : editQuote.ru
-      //     ? editQuote.ru.body
-      //     : ''
-      //   : ''
-      // let editorState = ''
-      // if (html.length > 0) {
-      //   const contentBlock = htmlToDraft(html)
-      //   if (contentBlock) {
-      //     const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-      //     editorState = EditorState.createWithContent(contentState)
-      //   }
-      //   this.setState({
-      //     editingQuote: quote.editQuote,
-      //     editorState,
-      //     titleEn,
-      //     titleRu
-      //   })
-      // }
     }
     // this.setState({
     //   language: window.localStorage['app.settings.locale'] === '"en-US"',
@@ -255,11 +230,16 @@ class AddQuote extends React.Component {
     const languageData = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
 
-    let editorbodyContentEn = null
-    let editorbodyContentRu = null
+    let editorbodyContentEn = ''
+    let editorbodyContentRu = ''
 
-    editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
-    editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    if (bodyContentEn) {
+      editorbodyContentEn = draftToHtml(convertToRaw(bodyContentEn.getCurrentContent()))
+    }
+
+    if (bodyContentRu) {
+      editorbodyContentRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
+    }
 
     if (titleEn === '') {
       notification.error({
@@ -322,8 +302,8 @@ class AddQuote extends React.Component {
       translationRequired: true,
       titleEn: '',
       titleRu: '',
-      bodyContentEn: EditorState.createEmpty(),
-      bodyContentRu: EditorState.createEmpty(),
+      bodyContentEn: '',
+      bodyContentRu: '',
       switchDisabled: true,
       formElements: formInputElements,
       paginationCurrentPage: '',
@@ -333,9 +313,6 @@ class AddQuote extends React.Component {
   }
 
   scrollToTopPage = () => {
-    // $('html, body').animate({ scrollTop: 0 }, 'fast')
-    // return false
-
     const scrollDuration = 500
     const scrollStep = -window.scrollY / (scrollDuration / 15),
       scrollInterval = setInterval(function() {
@@ -453,31 +430,6 @@ class AddQuote extends React.Component {
     return true
   }
 
-  // handleLanguage = () => {
-  //   const { language, editingQuote } = this.state
-  //   this.setState({
-  //     language: !language,
-  //   })
-  //   const html = editingQuote
-  //     ? language
-  //       ? editingQuote.en.body
-  //       : editingQuote.ru
-  //       ? editingQuote.ru.body
-  //       : ''
-  //     : ''
-  //   let editorState = ''
-  //   if (html.length > 0) {
-  //     const contentBlock = htmlToDraft(html)
-  //     if (contentBlock) {
-  //       const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-  //       editorState = EditorState.createWithContent(contentState)
-  //     }
-  //     this.setState({
-  //       editorState,
-  //     })
-  //   }
-  // }
-
   render() {
     const { form, english, quote } = this.props
 
@@ -533,7 +485,7 @@ class AddQuote extends React.Component {
                     unCheckedChildren={language ? 'en' : 'ru'}
                     onChange={this.handleLanguage}
                     className="toggle"
-                    style={{ width: '100px', marginLeft: '10px' }}
+                    style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
                   />
                 </div>
               </div>
@@ -554,18 +506,6 @@ class AddQuote extends React.Component {
                           <div className="invalidFeedback">{formElements.title.errorMessage}</div>
                         ) : null}
                       </FormItem>
-
-                      {/* <FormItem label={language ? 'Title' : 'Title'}>
-                        {form.getFieldDecorator('title', {
-                          initialValue: editingQuote
-                            ? language
-                              ? editingQuote.en.title
-                              : editingQuote.ru
-                              ? editingQuote.ru.title
-                              : ''
-                            : '',
-                        })(<Input placeholder="Post title" />)}
-                      </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem label={language ? 'Topic' : 'Topic'}>
@@ -651,26 +591,6 @@ class AddQuote extends React.Component {
                           </Select>,
                         )}
                       </FormItem>
-
-                      {/* <FormItem label="Language">
-                        {form.getFieldDecorator('language', {
-                          initialValue: editingQuote ? editingQuote.language : '',
-                        })(
-                          <Select
-                            id="product-edit-colors"
-                            showSearch
-                            style={{ width: '100%' }}
-                            placeholder="Select a color"
-                            optionFilterProp="children"
-                            filterOption={(input, option) =>
-                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            <Option value="english">English</Option>
-                            <Option value="russian">Russian</Option>
-                          </Select>,
-                        )}
-                      </FormItem> */}
                     </div>
                     <div className="form-group">
                       <FormItem label="Date">
@@ -683,8 +603,7 @@ class AddQuote extends React.Component {
                           ],
                           initialValue:
                             editingQuote && editingQuote.date
-                              ? // ? moment(editingQuote.date, dateFormat)
-                                moment(new Date(editingQuote.date), dateFormat)
+                              ? moment(new Date(editingQuote.date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleDate} />)}
                       </FormItem>
@@ -750,17 +669,6 @@ class AddQuote extends React.Component {
                             onEditorStateChange={this.onEditorChangeStatebodyContent}
                           />
                         </div>
-
-                        {/* {form.getFieldDecorator('content', {
-                          initialValue: editorState || '',
-                        })(
-                          <div className={styles.editor}>
-                            <Editor
-                              editorState={editorState}
-                              onEditorStateChange={this.onEditorStateChange}
-                            />
-                          </div>,
-                        )} */}
                       </FormItem>
                     </div>
                   </Form>

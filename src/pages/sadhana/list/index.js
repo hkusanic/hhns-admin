@@ -71,6 +71,14 @@ class SadhanaList extends React.Component {
         date: currentDate,
       })
     }
+
+    dispatch({
+      type: 'kirtan/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'video/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -123,17 +131,6 @@ class SadhanaList extends React.Component {
       language: !language,
     })
   }
-
-  // handlePageChange = page => {
-  //   const { dispatch } = this.props
-  //   const { currentDate } = this.state
-
-  //   dispatch({
-  //     type: 'sadhana/GET_SADHANAS',
-  //     page,
-  //     date: currentDate,
-  //   })
-  // }
 
   handlePageChange = page => {
     this.setState({
@@ -212,7 +209,6 @@ class SadhanaList extends React.Component {
 
   render() {
     const { language, currentDate, sadhanas, perPage, currentPage } = this.state
-    // const { totalSadhanas } = this.props
 
     const nowDate = formatDate(new Date())
 
