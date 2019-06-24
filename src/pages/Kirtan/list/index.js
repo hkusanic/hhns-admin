@@ -13,7 +13,8 @@ import './index.css'
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
   state = {
-    language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
     currentPage: 1,
     perPage: 20,
   }
@@ -66,9 +67,9 @@ class KirtanList extends React.Component {
         page: 1,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   handlePageChnage = page => {
@@ -121,13 +122,13 @@ class KirtanList extends React.Component {
       {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
-        key: 'en.title',
+        key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Event',
         dataIndex: language ? 'en.event' : 'ru.event',
-        key: 'en.event',
+        key: language ? 'en.event' : 'ru.event',
       },
       {
         title: 'Type',
@@ -136,9 +137,9 @@ class KirtanList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'created_date',
-        key: 'created_date',
-        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
+        dataIndex: language ? 'kirtan_creation_date' : 'kirtan_creation_date',
+        key: language ? 'kirtan_creation_date' : 'kirtan_creation_date',
+        render: text => (text ? <span>{`${new Date(text).toDateString()}`}</span> : ''),
       },
       {
         title: 'Action',

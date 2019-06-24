@@ -90,6 +90,7 @@ class AddKirtan extends React.Component {
       const { id } = state
 
       const uuid = id
+      console.log('uuid***===>', uuid)
       if (uuid !== undefined) {
         const body = {
           uuid,
@@ -125,21 +126,68 @@ class AddKirtan extends React.Component {
       const { language } = this.state
       this.handleUpdateBody(language, editKirtan)
 
-      const titleEn = editKirtan ? editKirtan.en.title : ''
-      const titleRu = editKirtan ? editKirtan.ru.title : ''
+      const titleEn = editKirtan
+        ? editKirtan.en
+          ? editKirtan.en.title
+            ? editKirtan.en.title
+            : ''
+          : ''
+        : ''
+      const titleRu = editKirtan
+        ? editKirtan.ru
+          ? editKirtan.ru.title
+            ? editKirtan.ru.title
+            : ''
+          : ''
+        : ''
 
-      const locationEn = editKirtan ? editKirtan.en.location : ''
-      const locationRu = editKirtan ? editKirtan.ru.location : ''
+      const locationEn = editKirtan
+        ? editKirtan.en
+          ? editKirtan.en.location
+            ? editKirtan.en.location
+            : ''
+          : ''
+        : ''
+      const locationRu = editKirtan
+        ? editKirtan.ru
+          ? editKirtan.ru.location
+            ? editKirtan.ru.location
+            : ''
+          : ''
+        : ''
 
-      const eventEn = editKirtan ? editKirtan.en.event : ''
-      const eventRu = editKirtan ? editKirtan.ru.event : ''
+      const eventEn = editKirtan
+        ? editKirtan.en
+          ? editKirtan.en.event
+            ? editKirtan.en.event
+            : ''
+          : ''
+        : ''
+      const eventRu = editKirtan
+        ? editKirtan.ru
+          ? editKirtan.ru.event
+            ? editKirtan.ru.event
+            : ''
+          : ''
+        : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
 
-      const htmlBodyEn = editKirtan ? editKirtan.en.body : ''
-
-      const htmlBodyRu = editKirtan ? editKirtan.ru.body : ''
+      const htmlBodyEn = editKirtan
+        ? editKirtan.en
+          ? editKirtan.en.body
+            ? editKirtan.en.body
+            : ''
+          : ''
+        : ''
+      const htmlBodyRu = editKirtan
+        ? editKirtan.ru
+          ? editKirtan.ru.body
+            ? editKirtan.ru.body
+            : ''
+          : ''
+        : ''
 
       if (htmlBodyEn && htmlBodyEn.length > 0) {
         const contentBlockEn = htmlToDraft(htmlBodyEn)
@@ -743,6 +791,9 @@ class AddKirtan extends React.Component {
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
 
+    console.log('bodyContentEn===>', bodyContentEn)
+    console.log('bodyContentRu===>', bodyContentRu)
+
     const linkState = {
       paginationCurrentPage,
     }
@@ -892,7 +943,7 @@ class AddKirtan extends React.Component {
                             ],
                             initialValue:
                               editingKirtan && editingKirtan.published_date
-                                ? moment(editingKirtan.published_date, dateFormat)
+                                ? moment(editingKirtan.published_date.substring(0, 10), dateFormat)
                                 : moment(new Date(), dateFormat),
                           })(<DatePicker onChange={this.handlePublishDate} disabled />)}
                         </FormItem>

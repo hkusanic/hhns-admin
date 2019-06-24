@@ -112,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.body_en : ''
-      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.body_ru : ''
+      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.en.body : ''
+      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.ru.body : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -134,11 +134,11 @@ class BlogAddPost extends React.Component {
         }
       }
 
-      const titleEn = blog.editBlog ? blog.editBlog.title_en : ''
-      const titleRu = blog.editBlog ? blog.editBlog.title_ru : ''
+      const titleEn = blog.editBlog ? blog.editBlog.en.title : ''
+      const titleRu = blog.editBlog ? blog.editBlog.ru.title : ''
 
-      const tagsEn = blog.editBlog ? blog.editBlog.tags_en : ''
-      const tagsRu = blog.editBlog ? blog.editBlog.tags_ru : ''
+      const tagsEn = blog.editBlog ? blog.editBlog.en.tags : ''
+      const tagsRu = blog.editBlog ? blog.editBlog.ru.tags : ''
 
       let tempFilesArray = []
       let tempFilesObject = {}
@@ -271,17 +271,17 @@ class BlogAddPost extends React.Component {
       needs_translation: translationRequired,
       date,
       publish_date: publishDate,
+      en: {
+        title: titleEn,
+        body: bodyContentStateEn,
+        tags: tagsEn,
+      },
+      ru: {
+        title: titleRu,
+        body: bodyContentStateRu,
+        tags: tagsRu,
+      },
     }
-
-    body.title_en = titleEn
-    body.body_en = bodyContentStateEn
-    body.tags_en = tagsEn
-    body.needs_translation = translationRequired
-
-    body.title_ru = titleRu
-    body.body_ru = bodyContentStateRu
-    body.tags_ru = tagsRu
-    body.needs_translation = translationRequired
 
     if (editingBlog) {
       body.audit = editingBlog.audit
@@ -782,7 +782,7 @@ class BlogAddPost extends React.Component {
                             id="product-edit-colors"
                             showSearch
                             style={{ width: '100%' }}
-                            placeholder="Select a color"
+                            placeholder="Select a language"
                             optionFilterProp="children"
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -815,8 +815,8 @@ class BlogAddPost extends React.Component {
                             },
                           ],
                           initialValue:
-                            editingBlog && editingBlog.date
-                              ? moment(new Date(editingBlog.date), dateFormat)
+                            editingBlog && editingBlog.blog_creation_date
+                              ? moment(new Date(editingBlog.blog_creation_date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleCreateDate} />)}
                       </FormItem>
@@ -831,8 +831,8 @@ class BlogAddPost extends React.Component {
                             },
                           ],
                           initialValue:
-                            editingBlog && editingBlog.published_date
-                              ? moment(editingBlog.published_date, dateFormat)
+                            editingBlog && editingBlog.publish_date
+                              ? moment(editingBlog.publish_date.substring(0, 10), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handlePublishDate} disabled />)}
                       </FormItem>
