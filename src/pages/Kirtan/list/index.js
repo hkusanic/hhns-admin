@@ -137,9 +137,9 @@ class KirtanList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: language ? 'kirtan_creation_date' : 'kirtan_creation_date',
-        key: language ? 'kirtan_creation_date' : 'kirtan_creation_date',
-        render: text => (text ? <span>{`${new Date(text).toDateString()}`}</span> : ''),
+        dataIndex: 'created_date_time',
+        key: 'created_date_time',
+        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
         title: 'Action',

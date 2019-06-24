@@ -176,8 +176,8 @@ class ProductsList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'lecture_date',
-        key: 'lecture_date',
+        dataIndex: 'created_date_time',
+        key: 'created_date_time',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {

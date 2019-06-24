@@ -142,9 +142,9 @@ class BlogList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: language ? 'blog_creation_date' : 'blog_creation_date',
-        key: language ? 'blog_creation_date' : 'blog_creation_date',
-        render: text => (text ? <span>{`${new Date(text).toDateString()}`}</span> : ''),
+        dataIndex: 'blog_creation_date',
+        key: 'blog_creation_date',
+        render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {
         title: 'Action',

@@ -472,7 +472,7 @@ class AddLecture extends React.Component {
       chapter,
       author,
       tags: tag,
-      lecture_date: date,
+      created_date_time: date,
       published_date: publishDate,
       audio_link: audioLink,
       translation_required: translationRequired,
@@ -1590,7 +1590,7 @@ class AddLecture extends React.Component {
                                 },
                               ],
                               initialValue: editinglecture
-                                ? moment(new Date(editinglecture.lecture_date), dateFormat)
+                                ? moment(new Date(editinglecture.created_date_time), dateFormat)
                                 : moment(new Date(), dateFormat),
                             })(<DatePicker onChange={this.onChange} />)}
                           </FormItem>
