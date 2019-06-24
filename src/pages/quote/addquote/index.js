@@ -476,13 +476,23 @@ class AddQuote extends React.Component {
     return (
       <div>
         <BackNavigation link="/quote/list" title="Quote List" linkState={linkState} />
-        {editingQuote && editingQuote.en && editingQuote.ru ? (
+        {editingQuote ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
-                {language ? editingQuote.en.title : editingQuote.ru ? editingQuote.ru.title : ''}
+                {language
+                  ? editingQuote.en
+                    ? editingQuote.en.title
+                      ? editingQuote.en.title
+                      : ''
+                    : ''
+                  : editingQuote.ru
+                  ? editingQuote.ru.title
+                    ? editingQuote.ru.title
+                    : ''
+                  : ''}
               </span>
             </div>
           </div>

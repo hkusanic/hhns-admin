@@ -330,6 +330,7 @@ class BlogAddPost extends React.Component {
       bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
+      fileList: [],
     })
   }
 
@@ -690,21 +691,34 @@ class BlogAddPost extends React.Component {
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
-        {editingBlog && editingBlog.en.title ? (
+        {editingBlog ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
                 {language
-                  ? editingBlog.en.title
-                  : editingBlog.ru && editingBlog.ru.title
+                  ? editingBlog.en
+                    ? editingBlog.en.title
+                      ? editingBlog.en.title
+                      : ''
+                    : ''
+                  : editingBlog.ru
                   ? editingBlog.ru.title
+                    ? editingBlog.ru.title
+                    : ''
                   : ''}
               </span>
             </div>
           </div>
         ) : null}
+        {/* <div style={{ paddingTop: '10px' }}>
+          <div>
+            <strong>Title :</strong>
+            &nbsp;&nbsp;
+            <span>{language ? titleEn : titleRu}</span>
+          </div>
+        </div> */}
         <Tabs defaultActiveKey="1">
           <TabPane tab="Blog" key="1">
             <section className="card">

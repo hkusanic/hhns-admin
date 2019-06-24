@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable func-names */
 /* eslint-disable one-var */
 /* eslint-disable prefer-destructuring */
@@ -563,12 +564,24 @@ class AddVideo extends React.Component {
       <React.Fragment>
         <div>
           <BackNavigation link="/video/list" title="Video List" linkState={linkState} />
-          {editingvideo && editingvideo.en && editingvideo.ru ? (
+          {editingvideo ? (
             <div style={{ paddingTop: '10px' }}>
               <div>
                 <strong>Title :</strong>
                 &nbsp;&nbsp;
-                <span>{language ? editingvideo.en.title : editingvideo.ru.title}</span>
+                <span>
+                  {language
+                    ? editingvideo.en
+                      ? editingvideo.en.title
+                        ? editingvideo.en.title
+                        : ''
+                      : ''
+                    : editingvideo.ru
+                    ? editingvideo.ru.title
+                      ? editingvideo.ru.title
+                      : ''
+                    : ''}
+                </span>
               </div>
             </div>
           ) : null}

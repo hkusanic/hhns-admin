@@ -807,16 +807,22 @@ class AddKirtan extends React.Component {
       <React.Fragment>
         <div>
           <BackNavigation link="/kirtan/list" title="Kirtan List" linkState={linkState} />
-          {editingKirtan && editingKirtan.en ? (
+          {editingKirtan ? (
             <div style={{ paddingTop: '10px' }}>
               <div>
                 <strong>Title :</strong>
                 &nbsp;&nbsp;
                 <span>
                   {language
-                    ? editingKirtan.en.title
-                    : editingKirtan.ru && editingKirtan.ru.title
+                    ? editingKirtan.en
+                      ? editingKirtan.en.title
+                        ? editingKirtan.en.title
+                        : ''
+                      : ''
+                    : editingKirtan.ru
                     ? editingKirtan.ru.title
+                      ? editingKirtan.ru.title
+                      : ''
                     : ''}
                 </span>
               </div>
