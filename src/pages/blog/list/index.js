@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -33,14 +34,14 @@ class BlogList extends React.Component {
           () => {
             dispatch({
               type: 'blog/GET_LIST',
-              page: currentPage,
+              page: this.state.currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'blog/GET_LIST',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       }
     } else {
@@ -85,7 +86,6 @@ class BlogList extends React.Component {
 
   handlePageChnage = page => {
     const { dispatch } = this.props
-    const { currentPage } = this.state
 
     this.setState(
       {
@@ -94,7 +94,7 @@ class BlogList extends React.Component {
       () => {
         dispatch({
           type: 'blog/GET_LIST',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       },
     )

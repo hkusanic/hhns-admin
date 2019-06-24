@@ -168,6 +168,8 @@ class BlogAddPost extends React.Component {
           titleRu,
           tagsEn,
           tagsRu,
+          date: blog.editBlog.blog_creation_date,
+          publishDate: blog.editBlog.publish_date,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -200,7 +202,6 @@ class BlogAddPost extends React.Component {
   }
 
   handleCreateDate = (date, dateString) => {
-    console.info(date, dateString)
     setTimeout(() => {
       this.setState({
         date: dateString,
@@ -685,7 +686,6 @@ class BlogAddPost extends React.Component {
     const linkState = {
       paginationCurrentPage,
     }
-
     return (
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
