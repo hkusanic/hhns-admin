@@ -157,8 +157,8 @@ class VideoList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
+        dataIndex: 'video_date',
+        key: 'video_date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {

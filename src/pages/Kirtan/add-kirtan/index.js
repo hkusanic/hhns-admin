@@ -90,7 +90,7 @@ class AddKirtan extends React.Component {
       const { id } = state
 
       const uuid = id
-      console.log('uuid***===>', uuid)
+
       if (uuid !== undefined) {
         const body = {
           uuid,
@@ -794,11 +794,10 @@ class AddKirtan extends React.Component {
       percentage,
       paginationCurrentPage,
       audioDuration,
+      createDate,
+      publishDate,
     } = this.state
     const dateFormat = 'YYYY/MM/DD'
-
-    console.log('bodyContentEn===>', bodyContentEn)
-    console.log('bodyContentRu===>', bodyContentRu)
 
     const linkState = {
       paginationCurrentPage,

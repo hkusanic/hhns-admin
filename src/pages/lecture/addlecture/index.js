@@ -60,7 +60,7 @@ class AddLecture extends React.Component {
 
     this.state = {
       date: new Date(),
-      // publishDate: new Date(),
+      publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
       transcriptionFilesEn: [],
@@ -314,6 +314,8 @@ class AddLecture extends React.Component {
           summArrayEn,
           summArrayRu,
           audioDuration: lecture.editLecture.duration,
+          date: lecture.editLecture.lecture_date,
+          publishDate: lecture.editLecture.published_date,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -331,7 +333,7 @@ class AddLecture extends React.Component {
     this.handleReset()
     this.setState({
       date: new Date(),
-      // publishDate: new Date(),
+      publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
       summaryFiles: [],

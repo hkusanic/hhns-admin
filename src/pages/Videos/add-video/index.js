@@ -51,6 +51,8 @@ class AddVideo extends React.Component {
     switchDisabled: true,
     formElements: formInputElements,
     paginationCurrentPage: '',
+    createDate: new Date(),
+    publishDate: new Date(),
   }
 
   componentDidMount() {
@@ -118,6 +120,18 @@ class AddVideo extends React.Component {
           locationRu,
           eventEn,
           eventRu,
+          // eslint-disable-next-line no-nested-ternary
+          createDate: video.editVideo
+            ? video.editVideo.video_date
+              ? video.editVideo.video_date
+              : ''
+            : '',
+          // eslint-disable-next-line no-nested-ternary
+          publishDate: video.editVideo
+            ? video.editVideo.published_date
+              ? video.editVideo.published_date
+              : ''
+            : '',
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -226,12 +240,12 @@ class AddVideo extends React.Component {
       titleRu,
       locationRu,
       eventRu,
+      createDate,
+      publishDate,
     } = this.state
 
     const author = form.getFieldValue('author')
     const videoLanguage = form.getFieldValue('language')
-    const date = form.getFieldValue('date')
-    const publishDate = form.getFieldValue('publish_date')
     const type = form.getFieldValue('type')
     const videoReference = form.getFieldValue('reference')
 
@@ -256,7 +270,7 @@ class AddVideo extends React.Component {
 
     const body = {
       uuid: uuid || uuidv4(),
-      date,
+      video_date: createDate,
       published_date: publishDate,
       language: videoLanguage,
       reference: videoReference,
@@ -295,6 +309,28 @@ class AddVideo extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
+  }
+
+  handleCreateDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        createDate: dateString,
+        // eslint-disable-next-line react/no-unused-state
+        uploading: false,
+      })
+    }, 0)
+  }
+
+  handlePublishDate = (date, dateString) => {
+    console.info(date, dateString)
+    setTimeout(() => {
+      this.setState({
+        publishDate: dateString,
+        // eslint-disable-next-line react/no-unused-state
+        uploading: false,
+      })
+    }, 0)
   }
 
   handleStateReset = () => {
@@ -689,19 +725,21 @@ class AddVideo extends React.Component {
                       <div className="form-group">
                         <FormItem label="Date">
                           {form.getFieldDecorator('date', {
-                            initialValue: editingvideo
-                              ? moment(new Date(editingvideo.date), dateFormat)
-                              : moment(new Date(), dateFormat),
-                          })(<DatePicker />)}
+                            initialValue:
+                              editingvideo && editingvideo.video_date
+                                ? moment(new Date(editingvideo.video_date), dateFormat)
+                                : moment(new Date(), dateFormat),
+                          })(<DatePicker onChange={this.handleCreateDate} />)}
                         </FormItem>
                       </div>
                       <div className="form-group">
                         <FormItem label="Publish Date">
                           {form.getFieldDecorator('publish_date', {
-                            initialValue: editingvideo
-                              ? moment(editingvideo.published_date, dateFormat)
-                              : moment(new Date(), dateFormat),
-                          })(<DatePicker disabled />)}
+                            initialValue:
+                              editingvideo && editingvideo.published_date
+                                ? moment(editingvideo.published_date, dateFormat)
+                                : moment(new Date(), dateFormat),
+                          })(<DatePicker disabled onChange={this.handlePublishDate} />)}
                         </FormItem>
                       </div>
                       <div className="form-group">
