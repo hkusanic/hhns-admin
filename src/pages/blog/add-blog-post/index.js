@@ -112,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? blog.editBlog.en.body : ''
-      const htmlbodyContentRu = blog.editBlog ? blog.editBlog.ru.body : ''
+      const htmlbodyContentEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.body : '') : ''
+      const htmlbodyContentRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.body : '') : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -134,11 +134,11 @@ class BlogAddPost extends React.Component {
         }
       }
 
-      const titleEn = blog.editBlog ? blog.editBlog.en.title : ''
-      const titleRu = blog.editBlog ? blog.editBlog.ru.title : ''
+      const titleEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.title : '') : ''
+      const titleRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.title : '') : ''
 
-      const tagsEn = blog.editBlog ? blog.editBlog.en.tags : ''
-      const tagsRu = blog.editBlog ? blog.editBlog.ru.tags : ''
+      const tagsEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.tags : '') : ''
+      const tagsRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.tags : '') : ''
 
       let tempFilesArray = []
       let tempFilesObject = {}
@@ -269,7 +269,7 @@ class BlogAddPost extends React.Component {
       author,
       files: tempFilesArray,
       needs_translation: translationRequired,
-      date,
+      blog_creation_date: date,
       publish_date: publishDate,
       en: {
         title: titleEn,

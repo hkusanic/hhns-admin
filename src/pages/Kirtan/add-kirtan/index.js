@@ -927,7 +927,7 @@ class AddKirtan extends React.Component {
                             ],
                             initialValue:
                               editingKirtan && editingKirtan.created_date_time
-                                ? moment(editingKirtan.created_date_time, dateFormat)
+                                ? moment(new Date(editingKirtan.created_date_time), dateFormat)
                                 : moment(new Date(), dateFormat),
                           })(<DatePicker onChange={this.handleCreateDate} />)}
                         </FormItem>
