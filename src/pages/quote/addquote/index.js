@@ -254,7 +254,7 @@ class AddQuote extends React.Component {
       author,
       uuid: uuid || uuidv4(),
       language: languageData,
-      date,
+      quote_date: date,
       published_date: publishDate,
       needs_translation: translationRequired,
       en: {
@@ -602,8 +602,8 @@ class AddQuote extends React.Component {
                             },
                           ],
                           initialValue:
-                            editingQuote && editingQuote.date
-                              ? moment(new Date(editingQuote.date), dateFormat)
+                            editingQuote && editingQuote.quote_date
+                              ? moment(new Date(editingQuote.quote_date), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handleDate} />)}
                       </FormItem>

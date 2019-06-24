@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -20,14 +19,10 @@ class KirtanList extends React.Component {
   }
 
   componentDidMount() {
-    // const { dispatch } = this.props
-    // dispatch({
-    //   type: 'kirtan/GET_KIRTAN',
-    //   page: 1,
-    // })
-
     const { dispatch, location } = this.props
     const { state } = location
+    const { currentPage } = this.state
+
     if (state !== undefined) {
       if (state.paginationCurrentPage) {
         this.setState(
@@ -37,20 +32,20 @@ class KirtanList extends React.Component {
           () => {
             dispatch({
               type: 'kirtan/GET_KIRTAN',
-              page: this.state.currentPage,
+              page: currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'kirtan/GET_KIRTAN',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       }
     } else {
       dispatch({
         type: 'kirtan/GET_KIRTAN',
-        page: this.state.currentPage,
+        page: currentPage,
       })
     }
 
@@ -74,6 +69,7 @@ class KirtanList extends React.Component {
 
   handlePageChnage = page => {
     const { dispatch } = this.props
+    const { currentPage } = this.state
 
     this.setState(
       {
@@ -82,7 +78,7 @@ class KirtanList extends React.Component {
       () => {
         dispatch({
           type: 'kirtan/GET_KIRTAN',
-          page: this.state.currentPage,
+          page: currentPage,
         })
       },
     )
@@ -137,8 +133,8 @@ class KirtanList extends React.Component {
       },
       {
         title: 'Date',
-        dataIndex: 'created_date_time',
-        key: 'created_date_time',
+        dataIndex: 'kirtan_creation_date',
+        key: 'kirtan_creation_date',
         render: date => <span>{`${new Date(date).toDateString()}`}</span>,
       },
       {

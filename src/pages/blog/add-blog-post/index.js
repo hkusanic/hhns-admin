@@ -112,8 +112,8 @@ class BlogAddPost extends React.Component {
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
 
-      const htmlbodyContentEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.body : '') : ''
-      const htmlbodyContentRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.body : '') : ''
+      const htmlbodyContentEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.body : ''
+      const htmlbodyContentRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.body : ''
 
       let bodyContentEn = ''
       let bodyContentRu = ''
@@ -134,11 +134,11 @@ class BlogAddPost extends React.Component {
         }
       }
 
-      const titleEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.title : '') : ''
-      const titleRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.title : '') : ''
+      const titleEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.title : ''
+      const titleRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.title : ''
 
-      const tagsEn = blog.editBlog ? (blog.editBlog.en ? blog.editBlog.en.tags : '') : ''
-      const tagsRu = blog.editBlog ? (blog.editBlog.ru ? blog.editBlog.ru.tags : '') : ''
+      const tagsEn = blog.editBlog && blog.editBlog.en ? blog.editBlog.en.tags : ''
+      const tagsRu = blog.editBlog && blog.editBlog.ru ? blog.editBlog.ru.tags : ''
 
       let tempFilesArray = []
       let tempFilesObject = {}
@@ -690,13 +690,17 @@ class BlogAddPost extends React.Component {
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
-        {editingBlog && editingBlog.title_en ? (
+        {editingBlog && editingBlog.en.title ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
-                {language ? editingBlog.title_en : editingBlog.title_ru ? editingBlog.title_ru : ''}
+                {language
+                  ? editingBlog.en.title
+                  : editingBlog.ru && editingBlog.ru.title
+                  ? editingBlog.ru.title
+                  : ''}
               </span>
             </div>
           </div>

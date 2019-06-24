@@ -209,7 +209,7 @@ class AddKirtan extends React.Component {
         {
           editingKirtan: editKirtan,
           audioLink: editKirtan.audio_link,
-          createDate: editKirtan ? editKirtan.created_date_time : '',
+          createDate: editKirtan ? editKirtan.kirtan_creation_date : '',
           publishDate: editKirtan && editKirtan.published_date ? editKirtan.published_date : '',
           translationRequired: editKirtan ? editKirtan.translation_required : false,
           titleEn,
@@ -260,7 +260,13 @@ class AddKirtan extends React.Component {
   }
 
   handleUpdateBody = (language, editKirtan) => {
-    const html = editKirtan ? (language ? editKirtan.en.body : editKirtan.ru.body) : ''
+    const html = editKirtan
+      ? language
+        ? editKirtan.en.body
+        : editKirtan.ru
+        ? editKirtan.ru.body
+        : ''
+      : ''
     let editorState = ''
     if (html && html.length > 0) {
       const contentBlock = htmlToDraft(html)
@@ -583,7 +589,7 @@ class AddKirtan extends React.Component {
 
     const body = {
       uuid: uuid || uuidv4(),
-      created_date_time: createDate,
+      kirtan_creation_date: createDate,
       published_date: publishDate,
       language: kirtanLanguage,
       audio_link: audioLink,
@@ -802,12 +808,18 @@ class AddKirtan extends React.Component {
       <React.Fragment>
         <div>
           <BackNavigation link="/kirtan/list" title="Kirtan List" linkState={linkState} />
-          {editingKirtan && editingKirtan.en && editingKirtan.ru ? (
+          {editingKirtan && editingKirtan.en ? (
             <div style={{ paddingTop: '10px' }}>
               <div>
                 <strong>Title :</strong>
                 &nbsp;&nbsp;
-                <span>{language ? editingKirtan.en.title : editingKirtan.ru.title}</span>
+                <span>
+                  {language
+                    ? editingKirtan.en.title
+                    : editingKirtan.ru && editingKirtan.ru.title
+                    ? editingKirtan.ru.title
+                    : ''}
+                </span>
               </div>
             </div>
           ) : null}
