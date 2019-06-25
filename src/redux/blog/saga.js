@@ -76,6 +76,7 @@ export function* getBlogListSaga(payload) {
           isBlogCreated: false,
           isDeleted: false,
           isUpdated: false,
+          editBlog: '',
         },
       })
     }

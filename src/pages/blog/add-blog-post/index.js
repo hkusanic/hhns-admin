@@ -250,7 +250,7 @@ class BlogAddPost extends React.Component {
       bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
     }
 
-    if (titleEn === '' || tagsEn === '') {
+    if (titleEn === '') {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
@@ -549,6 +549,7 @@ class BlogAddPost extends React.Component {
     setTimeout(() => {
       this.setState({
         translationRequired: event.target.checked,
+        uploading: false,
       })
     }, 0)
   }
@@ -631,7 +632,7 @@ class BlogAddPost extends React.Component {
   onFieldValueChange = () => {
     const { titleEn, tagsEn } = this.state
 
-    if (titleEn !== '' && tagsEn !== '') {
+    if (titleEn !== '') {
       this.setState({ switchDisabled: false })
       return false
     }
@@ -656,6 +657,12 @@ class BlogAddPost extends React.Component {
         uploading: false,
       })
     }
+  }
+
+  handleState = () => {
+    this.setState({
+      uploading: false,
+    })
   }
 
   render() {
@@ -781,6 +788,8 @@ class BlogAddPost extends React.Component {
                             style={{ width: '100%' }}
                             placeholder="Select Author"
                             optionFilterProp="children"
+                            onSelect={this.handleState}
+                            onChange={this.handleState}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
@@ -802,6 +811,8 @@ class BlogAddPost extends React.Component {
                             style={{ width: '100%' }}
                             placeholder="Select a language"
                             optionFilterProp="children"
+                            onSelect={this.handleState}
+                            onChange={this.handleState}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
