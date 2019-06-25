@@ -33,15 +33,17 @@ class BasicProfile extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.userDetails !== prevState.user) {
-      return {
-        user: nextProps.userDetails,
-        sadhanaSheetEnable:
-          nextProps.userDetails.sadhanaSheetEnable !== null &&
-          nextProps.userDetails.sadhanaSheetEnable !== undefined
-            ? nextProps.userDetails.sadhanaSheetEnable.toString()
-            : '',
-        language: nextProps.userDetails.language,
+    if (nextProps.userDetails) {
+      if (nextProps.userDetails !== prevState.user) {
+        return {
+          user: nextProps.userDetails,
+          sadhanaSheetEnable:
+            nextProps.userDetails.sadhanaSheetEnable !== null &&
+            nextProps.userDetails.sadhanaSheetEnable !== undefined
+              ? nextProps.userDetails.sadhanaSheetEnable.toString()
+              : '',
+          language: nextProps.userDetails.language,
+        }
       }
     }
     return null

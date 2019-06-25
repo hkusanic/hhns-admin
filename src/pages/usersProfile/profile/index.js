@@ -21,7 +21,10 @@ class UsersProfile extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.userProfile.userDetails !== prevState.userDetails) {
-      sessionStorage.setItem('userDetails', JSON.stringify(nextProps.userProfile.userDetails))
+      sessionStorage.removeItem('userDetails')
+      if (nextProps.userProfile.userDetails.user_id) {
+        sessionStorage.setItem('userDetails', JSON.stringify(nextProps.userProfile.userDetails))
+      }
       return {
         userDetails: nextProps.userProfile.userDetails,
       }
