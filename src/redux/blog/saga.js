@@ -92,7 +92,6 @@ export function* getBlogByUuidSaga(body) {
   try {
     const result = yield call(getBlogByUuid, body)
     const { data } = result
-    console.log('blog uuid', data)
     if (result.status === 200) {
       yield put({
         type: 'blog/SET_STATE',
@@ -184,6 +183,22 @@ export function* updateBlogSaga(payload) {
   }
 }
 
+export function* resetBlogStoreSaga() {
+  try {
+    yield put({
+      type: 'blog/SET_STATE',
+      payload: {
+        editBlog: '',
+      },
+    })
+  } catch (err) {
+    notification.warning({
+      message: 'Error',
+      description: 'Some Error Occured',
+    })
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     takeEvery(actions.CREATE_BLOG, createBlogSaga),
@@ -191,5 +206,6 @@ export default function* rootSaga() {
     takeEvery(actions.GET_BLOG_BY_ID, getBlogByUuidSaga),
     takeEvery(actions.DELETE_BLOG_BY_ID, deleteBlogByUuidSaga),
     takeEvery(actions.UPDATE_BLOG, updateBlogSaga),
+    takeEvery(actions.RESET_STORE, resetBlogStoreSaga),
   ])
 }

@@ -42,6 +42,8 @@ const { Dragger } = Upload
 
 const { TabPane } = Tabs
 
+let dispatchedStatus = true
+
 @Form.create()
 @connect(({ blog, router }) => ({ blog, router }))
 class BlogAddPost extends React.Component {
@@ -108,6 +110,7 @@ class BlogAddPost extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { uploading, files } = this.state
+    const { dispatch, router } = nextProps
 
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
@@ -175,6 +178,13 @@ class BlogAddPost extends React.Component {
           if (!this.onFieldValueChange()) {
             this.setState({ switchDisabled: false })
           }
+
+          // if (dispatchedStatus) {
+          //   dispatch({
+          //     type: 'blog/RESET_STORE',
+          //   })
+          //   dispatchedStatus = false
+          // }
         },
       )
     }

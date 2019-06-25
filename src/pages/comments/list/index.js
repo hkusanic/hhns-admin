@@ -41,6 +41,10 @@ class CommentsList extends Component {
     dispatch({
       type: 'video/RESET_STORE',
     })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
+    })
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {

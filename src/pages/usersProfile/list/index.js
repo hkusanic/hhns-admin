@@ -55,6 +55,10 @@ class UsersList extends Component {
     dispatch({
       type: 'video/RESET_STORE',
     })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
+    })
   }
 
   handleInputChange = event => {
