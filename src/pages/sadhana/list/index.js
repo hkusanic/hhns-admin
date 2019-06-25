@@ -200,10 +200,10 @@ class SadhanaList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
-    const { language } = this.state
+    const { language, currentPage } = this.state
     history.push({
       pathname: '/sadhana/add',
-      state: { uuid: record.itemIndex, language },
+      state: { uuid: record.itemIndex, language, currentPage },
     })
   }
 
