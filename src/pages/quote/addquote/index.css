@@ -18,3 +18,30 @@
   padding: 5px !important;
   border-radius: 2px !important;
 }
+
+.rdw-image-modal {
+  margin-left: -145px !important;
+}
+
+.rdw-embedded-modal {
+  height: 300px !important;
+  margin-left: -60px !important;
+}
+
+.rdw-link-modal {
+  height: 300px !important;
+  margin-top: 10px !important;
+  margin-left: -130px !important;
+}
+
+.rdw-emoji-modal {
+  margin-left: -90px !important;
+ }
+
+.rdw-colorpicker-modal {
+  width: 200px !important;
+}
+
+.rdw-embedded-modal-btn, .rdw-link-modal-btn, .rdw-image-modal-btn {
+  height: 100%;
+}

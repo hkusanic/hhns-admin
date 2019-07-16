@@ -54,7 +54,7 @@ class DiscipleProfile extends Component {
     const { user, firstDate, secondDate } = this.state
 
     return (
-      <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
+      <Form layout="vertical" hideRequiredMark>
         <div className="container">
           <div className="row">
             <div className="col-lg-6">
