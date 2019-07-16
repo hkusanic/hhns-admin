@@ -25,7 +25,7 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { uuidv4 } from '../../../../services/custom'
-import styles from '../style.module.scss'
+import '../index.css'
 import serverAddress from '../../../../services/config'
 
 const { Option } = Select
@@ -437,8 +437,10 @@ class AddForm extends React.Component {
               {form.getFieldDecorator('content', {
                 initialValue: editorState || '',
               })(
-                <div className={styles.editor}>
+                <div className="editor">
                   <Editor
+                    wrapperClassName="demo-wrapper"
+                    editorClassName="demo-editor"
                     editorState={editorState}
                     onEditorStateChange={this.onEditorStateChange}
                   />
@@ -488,7 +490,7 @@ class AddForm extends React.Component {
             </FormItem>
           </div>
           <FormItem>
-            <div className={styles.submit}>
+            <div className="submit">
               <span className="mr-3">
                 <Button type="primary" htmlType="submit">
                   Save and Post

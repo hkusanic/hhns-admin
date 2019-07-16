@@ -39,3 +39,28 @@
   width: 20rem;
   display: inline-block;
 }
+
+.rdw-image-modal {
+  height: 275px !important;
+  width: 250px !important;
+}
+
+.rdw-link-modal {
+  height: 300px !important;
+  margin-top: 10px !important;
+  margin-left: -130px !important;
+}
+
+.rdw-embedded-modal {
+  margin-left: -198px !important;
+  height: 300px !important;
+}
+
+.rdw-colorpicker-modal {
+  width: 200px !important;
+  margin-left: -60px !important;
+}
+
+.rdw-embedded-modal-btn, .rdw-link-modal-btn, .rdw-image-modal-btn {
+  height: 100%;
+}
