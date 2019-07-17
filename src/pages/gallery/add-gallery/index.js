@@ -116,6 +116,10 @@ class CreateGallery extends React.Component {
     dispatch({
       type: 'video/RESET_STORE',
     })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -614,7 +618,15 @@ class CreateGallery extends React.Component {
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
-              <span>{language ? editGallery.title_en : editGallery.title_ru}</span>
+              <span>
+                {language
+                  ? editGallery.title_en
+                    ? editGallery.title_en
+                    : ''
+                  : editGallery.title_ru
+                  ? editGallery.title_ru
+                  : ''}
+              </span>
             </div>
           </div>
         ) : null}

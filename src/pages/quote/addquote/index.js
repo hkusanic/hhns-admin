@@ -63,6 +63,8 @@ class AddQuote extends React.Component {
     sourceOfQuoteEn: '',
     sourceOfQuoteRu: '',
     paginationCurrentPage: '',
+    date: new Date(),
+    publishDate: new Date(),
   }
 
   componentDidMount() {
@@ -101,6 +103,10 @@ class AddQuote extends React.Component {
 
     dispatch({
       type: 'video/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
     })
   }
 
@@ -149,6 +155,8 @@ class AddQuote extends React.Component {
           titleRu,
           sourceOfQuoteEn,
           sourceOfQuoteRu,
+          date: quote.editQuote.quote_date,
+          publishDate: quote.editQuote.published_date,
           // eslint-disable-next-line react/no-unused-state
           author,
         },
@@ -221,11 +229,11 @@ class AddQuote extends React.Component {
       bodyContentRu,
       sourceOfQuoteEn,
       sourceOfQuoteRu,
+      date,
+      publishDate,
     } = this.state
     // const titleEn = form.getFieldValue('title')
     const topic = form.getFieldValue('topic')
-    const date = form.getFieldValue('date')
-    const publishDate = form.getFieldValue('publish_date')
     const author = form.getFieldValue('author')
     const languageData = form.getFieldValue('language')
     const bodyEn = draftToHtml(convertToRaw(editorState.getCurrentContent()))
@@ -290,6 +298,18 @@ class AddQuote extends React.Component {
       this.scrollToTopPage()
       this.handleStateReset()
     }
+  }
+
+  handleDate = (date, dateString) => {
+    this.setState({
+      date: dateString,
+    })
+  }
+
+  handlePublishDate = (date, dateString) => {
+    this.setState({
+      date: dateString,
+    })
   }
 
   handleStateReset = () => {
@@ -460,13 +480,23 @@ class AddQuote extends React.Component {
     return (
       <div>
         <BackNavigation link="/quote/list" title="Quote List" linkState={linkState} />
-        {editingQuote && editingQuote.en && editingQuote.ru ? (
+        {editingQuote ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
-                {language ? editingQuote.en.title : editingQuote.ru ? editingQuote.ru.title : ''}
+                {language
+                  ? editingQuote.en
+                    ? editingQuote.en.title
+                      ? editingQuote.en.title
+                      : ''
+                    : ''
+                  : editingQuote.ru
+                  ? editingQuote.ru.title
+                    ? editingQuote.ru.title
+                    : ''
+                  : ''}
               </span>
             </div>
           </div>
@@ -621,7 +651,7 @@ class AddQuote extends React.Component {
                             editingQuote && editingQuote.published_date
                               ? moment(editingQuote.published_date, dateFormat)
                               : moment(new Date(), dateFormat),
-                        })(<DatePicker disabled />)}
+                        })(<DatePicker disabled onChange={this.handlePublishDate} />)}
                       </FormItem>
                     </div>
                     <div className="form-group">

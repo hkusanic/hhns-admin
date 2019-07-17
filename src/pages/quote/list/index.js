@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -26,7 +27,6 @@ class QuotesList extends React.Component {
   componentDidMount() {
     const { dispatch, location } = this.props
     const { state } = location
-    const { currentPage } = this.state
     if (state !== undefined) {
       if (state.paginationCurrentPage) {
         this.setState(
@@ -36,20 +36,20 @@ class QuotesList extends React.Component {
           () => {
             dispatch({
               type: 'quote/GET_QUOTES',
-              page: currentPage,
+              page: this.state.currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       }
     } else {
       dispatch({
         type: 'quote/GET_QUOTES',
-        page: currentPage,
+        page: this.state.currentPage,
       })
     }
 
@@ -59,6 +59,10 @@ class QuotesList extends React.Component {
 
     dispatch({
       type: 'video/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
     })
   }
 
@@ -87,7 +91,6 @@ class QuotesList extends React.Component {
 
   handlePageChnage = page => {
     const { dispatch } = this.props
-    const { currentPage } = this.state
 
     this.setState(
       {
@@ -96,7 +99,7 @@ class QuotesList extends React.Component {
       () => {
         dispatch({
           type: 'quote/GET_QUOTES',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       },
     )

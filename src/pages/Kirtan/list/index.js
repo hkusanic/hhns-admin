@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react'
@@ -11,19 +12,16 @@ import './index.css'
 
 @connect(({ kirtan }) => ({ kirtan }))
 class KirtanList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-      currentPage: 1,
-      perPage: 20,
-    }
+  state = {
+    // language: window.localStorage['app.settings.locale'] === '"en-US"',
+    language: true,
+    currentPage: 1,
+    perPage: 20,
   }
 
   componentDidMount() {
     const { dispatch, location } = this.props
     const { state } = location
-    const { currentPage } = this.state
 
     if (state !== undefined) {
       if (state.paginationCurrentPage) {
@@ -34,20 +32,20 @@ class KirtanList extends React.Component {
           () => {
             dispatch({
               type: 'kirtan/GET_KIRTAN',
-              page: currentPage,
+              page: this.state.currentPage,
             })
           },
         )
       } else {
         dispatch({
           type: 'kirtan/GET_KIRTAN',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       }
     } else {
       dispatch({
         type: 'kirtan/GET_KIRTAN',
-        page: currentPage,
+        page: this.state.currentPage,
       })
     }
 
@@ -64,14 +62,13 @@ class KirtanList extends React.Component {
         page: 1,
       })
     }
-    this.setState({
-      language: window.localStorage['app.settings.locale'] === '"en-US"',
-    })
+    // this.setState({
+    //   language: window.localStorage['app.settings.locale'] === '"en-US"',
+    // })
   }
 
   handlePageChnage = page => {
     const { dispatch } = this.props
-    const { currentPage } = this.state
 
     this.setState(
       {
@@ -80,7 +77,7 @@ class KirtanList extends React.Component {
       () => {
         dispatch({
           type: 'kirtan/GET_KIRTAN',
-          page: currentPage,
+          page: this.state.currentPage,
         })
       },
     )
@@ -120,13 +117,13 @@ class KirtanList extends React.Component {
       {
         title: 'Title',
         dataIndex: language ? 'en.title' : 'ru.title',
-        key: 'en.title',
+        key: language ? 'en.title' : 'ru.title',
         render: title => (title ? renderHTML(title.substring(0, 30)) : ''),
       },
       {
         title: 'Event',
         dataIndex: language ? 'en.event' : 'ru.event',
-        key: 'en.event',
+        key: language ? 'en.event' : 'ru.event',
       },
       {
         title: 'Type',

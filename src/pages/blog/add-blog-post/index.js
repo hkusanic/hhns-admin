@@ -42,6 +42,8 @@ const { Dragger } = Upload
 
 const { TabPane } = Tabs
 
+let dispatchedStatus = true
+
 @Form.create()
 @connect(({ blog, router }) => ({ blog, router }))
 class BlogAddPost extends React.Component {
@@ -108,6 +110,7 @@ class BlogAddPost extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { uploading, files } = this.state
+    const { dispatch, router } = nextProps
 
     if (nextProps.blog.editBlog !== '' && uploading) {
       const { blog } = nextProps
@@ -168,11 +171,20 @@ class BlogAddPost extends React.Component {
           titleRu,
           tagsEn,
           tagsRu,
+          date: blog.editBlog.blog_creation_date,
+          publishDate: blog.editBlog.publish_date,
         },
         () => {
           if (!this.onFieldValueChange()) {
             this.setState({ switchDisabled: false })
           }
+
+          // if (dispatchedStatus) {
+          //   dispatch({
+          //     type: 'blog/RESET_STORE',
+          //   })
+          //   dispatchedStatus = false
+          // }
         },
       )
     }
@@ -200,7 +212,6 @@ class BlogAddPost extends React.Component {
   }
 
   handleCreateDate = (date, dateString) => {
-    console.info(date, dateString)
     setTimeout(() => {
       this.setState({
         date: dateString,
@@ -249,7 +260,7 @@ class BlogAddPost extends React.Component {
       bodyContentStateRu = draftToHtml(convertToRaw(bodyContentRu.getCurrentContent()))
     }
 
-    if (titleEn === '' || tagsEn === '') {
+    if (titleEn === '') {
       notification.error({
         message: 'Error',
         description: 'Please fill all the fields',
@@ -271,20 +282,17 @@ class BlogAddPost extends React.Component {
       needs_translation: translationRequired,
       blog_creation_date: date,
       publish_date: publishDate,
-      created_date_time: new Date(),
-      en: {},
-      ru: {},
+      en: {
+        title: titleEn,
+        body: bodyContentStateEn,
+        tags: tagsEn,
+      },
+      ru: {
+        title: titleRu,
+        body: bodyContentStateRu,
+        tags: tagsRu,
+      },
     }
-
-    body.en.title = titleEn
-    body.en.body = bodyContentStateEn
-    body.en.tags = tagsEn
-    body.needs_translation = translationRequired
-
-    body.ru.title = titleRu
-    body.ru.body = bodyContentStateRu
-    body.ru.tags = tagsRu
-    body.needs_translation = translationRequired
 
     if (editingBlog) {
       body.audit = editingBlog.audit
@@ -332,6 +340,7 @@ class BlogAddPost extends React.Component {
       bodyContentRu: '',
       formElements: formInputElements,
       paginationCurrentPage: '',
+      fileList: [],
     })
   }
 
@@ -550,6 +559,7 @@ class BlogAddPost extends React.Component {
     setTimeout(() => {
       this.setState({
         translationRequired: event.target.checked,
+        uploading: false,
       })
     }, 0)
   }
@@ -632,7 +642,7 @@ class BlogAddPost extends React.Component {
   onFieldValueChange = () => {
     const { titleEn, tagsEn } = this.state
 
-    if (titleEn !== '' && tagsEn !== '') {
+    if (titleEn !== '') {
       this.setState({ switchDisabled: false })
       return false
     }
@@ -657,6 +667,12 @@ class BlogAddPost extends React.Component {
         uploading: false,
       })
     }
+  }
+
+  handleState = () => {
+    this.setState({
+      uploading: false,
+    })
   }
 
   render() {
@@ -688,26 +704,38 @@ class BlogAddPost extends React.Component {
     const linkState = {
       paginationCurrentPage,
     }
-
     return (
       <div>
         <BackNavigation link="/blog/blog-list" title="Blog List" linkState={linkState} />
         <Helmet title="Add Blog Post" />
-        {editingBlog && editingBlog.en.title ? (
+        {editingBlog ? (
           <div style={{ paddingTop: '10px' }}>
             <div>
               <strong>Title :</strong>
               &nbsp;&nbsp;
               <span>
                 {language
-                  ? editingBlog.en.title
-                  : editingBlog.ru && editingBlog.ru.title
+                  ? editingBlog.en
+                    ? editingBlog.en.title
+                      ? editingBlog.en.title
+                      : ''
+                    : ''
+                  : editingBlog.ru
                   ? editingBlog.ru.title
+                    ? editingBlog.ru.title
+                    : ''
                   : ''}
               </span>
             </div>
           </div>
         ) : null}
+        {/* <div style={{ paddingTop: '10px' }}>
+          <div>
+            <strong>Title :</strong>
+            &nbsp;&nbsp;
+            <span>{language ? titleEn : titleRu}</span>
+          </div>
+        </div> */}
         <Tabs defaultActiveKey="1">
           <TabPane tab="Blog" key="1">
             <section className="card">
@@ -770,6 +798,8 @@ class BlogAddPost extends React.Component {
                             style={{ width: '100%' }}
                             placeholder="Select Author"
                             optionFilterProp="children"
+                            onSelect={this.handleState}
+                            onChange={this.handleState}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
@@ -789,8 +819,10 @@ class BlogAddPost extends React.Component {
                             id="product-edit-colors"
                             showSearch
                             style={{ width: '100%' }}
-                            placeholder="Select a color"
+                            placeholder="Select a language"
                             optionFilterProp="children"
+                            onSelect={this.handleState}
+                            onChange={this.handleState}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
@@ -838,8 +870,8 @@ class BlogAddPost extends React.Component {
                             },
                           ],
                           initialValue:
-                            editingBlog && editingBlog.published_date
-                              ? moment(editingBlog.published_date, dateFormat)
+                            editingBlog && editingBlog.publish_date
+                              ? moment(editingBlog.publish_date.substring(0, 10), dateFormat)
                               : moment(new Date(), dateFormat),
                         })(<DatePicker onChange={this.handlePublishDate} disabled />)}
                       </FormItem>

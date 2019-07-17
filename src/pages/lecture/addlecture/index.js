@@ -60,7 +60,7 @@ class AddLecture extends React.Component {
 
     this.state = {
       date: new Date(),
-      // publishDate: new Date(),
+      publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
       transcriptionFilesEn: [],
@@ -154,6 +154,10 @@ class AddLecture extends React.Component {
 
     dispatch({
       type: 'video/RESET_STORE',
+    })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
     })
   }
 
@@ -314,6 +318,8 @@ class AddLecture extends React.Component {
           summArrayEn,
           summArrayRu,
           audioDuration: lecture.editLecture.duration,
+          date: lecture.editLecture.lecture_date,
+          publishDate: lecture.editLecture.published_date,
         },
         () => {
           if (!this.onFieldValueChange()) {
@@ -331,7 +337,7 @@ class AddLecture extends React.Component {
     this.handleReset()
     this.setState({
       date: new Date(),
-      // publishDate: new Date(),
+      publishDate: new Date(),
       audioLink: '',
       transcriptionFiles: [],
       summaryFiles: [],
@@ -1495,17 +1501,27 @@ class AddLecture extends React.Component {
             className="toggle"
             style={{ width: '100px', float: 'right', margin: '0px 10px 10px 0px' }}
           />
-          {editinglecture && editinglecture.en && editinglecture.ru ? (
+          {editinglecture ? (
             <div style={{ paddingTop: '0px', paddingLeft: '15px', fontSize: '1.2rem' }}>
               <div>
                 <strong>Title :</strong>
                 &nbsp;&nbsp;
-                <span>{language ? editinglecture.en.title : editinglecture.ru.title}</span>
+                <span>
+                  {language
+                    ? editinglecture.en
+                      ? editinglecture.en.title
+                        ? editinglecture.en.title
+                        : ''
+                      : ''
+                    : editinglecture.ru
+                    ? editinglecture.ru.title
+                      ? editinglecture.ru.title
+                      : ''
+                    : ''}
+                </span>
               </div>
             </div>
-          ) : (
-            <br />
-          )}
+          ) : null}
           <Tabs defaultActiveKey="1">
             <TabPane tab="Lecture" key="1">
               <div>

@@ -79,6 +79,10 @@ class SadhanaList extends React.Component {
     dispatch({
       type: 'video/RESET_STORE',
     })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -200,10 +204,10 @@ class SadhanaList extends React.Component {
 
   hanldeRedirect = record => {
     const { history } = this.props
-    const { language } = this.state
+    const { language, currentPage } = this.state
     history.push({
       pathname: '/sadhana/add',
-      state: { uuid: record.itemIndex, language },
+      state: { uuid: record.itemIndex, language, currentPage },
     })
   }
 
