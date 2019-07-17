@@ -313,11 +313,11 @@ class AddSadhana extends React.Component {
                     <div className="row">
                       <div className="col-lg-6">
                         <div className="form-group">
-                          {editSadhana.user && editSadhana.user.discipleName ? (
+                          {editSadhana && editSadhana.user && editSadhana.user.discipleName ? (
                             <FormItem label={language ? 'Disciple Name' : 'Disciple Name'}>
                               <Input
                                 disabled
-                                value={editSadhana.user.discipleName}
+                                value={editSadhana && editSadhana.user.discipleName}
                                 placeholder="Disciple Name"
                                 name="discipleName"
                               />
@@ -327,7 +327,9 @@ class AddSadhana extends React.Component {
                               <Input
                                 disabled
                                 value={
+                                  editSadhana &&
                                   editSadhana.user &&
+                                  editSadhana.user.name &&
                                   `${editSadhana.user.name.first} ${editSadhana.user.name.last}`
                                 }
                                 placeholder="Name"

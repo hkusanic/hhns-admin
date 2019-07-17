@@ -37,6 +37,10 @@ class MainGallery extends React.Component {
     dispatch({
       type: 'video/RESET_STORE',
     })
+
+    dispatch({
+      type: 'blog/RESET_STORE',
+    })
   }
 
   componentWillReceiveProps(nextProps) {
