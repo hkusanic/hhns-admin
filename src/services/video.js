@@ -3,7 +3,7 @@ import serverAddress from './config'
 
 export async function createVideo(body) {
   const url = `${serverAddress}/api/video/create`
-  console.log(body);
+  console.log(body)
   return axios
     .post(url, body)
     .then(response => {
@@ -18,9 +18,9 @@ export async function createVideo(body) {
 }
 
 export async function getSuggestions(body) {
-  const type = body.payload.type
+  const { payload } = body
+  const { type, parameter } = payload
   let url
-  const parameter = body.payload.parameter
   if (type === 'lecture') {
     url = `${serverAddress}/api/lecture/?title=${parameter}`
   } else if (type === 'kirtan') {
@@ -44,13 +44,10 @@ export async function getVideoList(page, date, createdDateSort) {
   const pageNumber = page || 1
   const dateNow = date || null
   const createdDateSorting = createdDateSort || null
-  const url =
-    serverAddress +
-    '/api/video?page=' +
-    pageNumber +
-    (dateNow ? '&date=' + date : '') +
-    (createdDateSorting ? '&createdDateSort=' + createdDateSorting : '')
-    console.log(url);
+  const url = `${serverAddress}/api/video?page=${pageNumber}${dateNow ? `&date=${date}` : ''}${
+    createdDateSorting ? `&createdDateSort=${createdDateSorting}` : ''
+  }`
+  console.log(url)
   return axios
     .get(url)
     .then(response => {
@@ -79,7 +76,7 @@ export async function deleteVideoByUuid(uuid) {
 }
 export async function getVideoByUuid(request) {
   const body = request.payload
-  const url = `${serverAddress}/api/video/getquotebyid/`
+  const url = `${serverAddress}/api/video/getvideobyid/`
   return axios
     .post(url, body)
     .then(response => {
